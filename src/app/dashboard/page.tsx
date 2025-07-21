@@ -39,6 +39,7 @@ import {
 import { useLogs } from '@/context/LogContext';
 import { useBotName } from '@/context/BotNameContext';
 import { Sidebar } from '@/components/layout/sidebar';
+import { MobileSidebar } from '@/components/layout/mobile-sidebar';
 
 type ModuleVisibility = {
   [key: string]: boolean;
@@ -306,108 +307,114 @@ export default function DashboardPage() {
       <SetupDialog open={showSetup} onOpenChange={setShowSetup} />
       <div className="flex min-h-screen w-full">
         <Sidebar />
-        <main className="flex-1 flex flex-col overflow-auto p-4 md:p-6 space-y-6">
-            <div className="flex items-center justify-between flex-shrink-0">
-                <h1 className="text-xl md:text-3xl font-bold tracking-tight">Dashboard</h1>
-                <div className="flex items-center gap-2">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm">
-                            <Settings className="mr-2 h-4 w-4" />
-                            View Options
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Toggle Service Modules</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            {serviceModules.map(module => (
-                            <DropdownMenuCheckboxItem key={module.id} checked={module.visible} onCheckedChange={handleCheckedChange(module.id)}>
-                                {module.component.props.title}
-                            </DropdownMenuCheckboxItem>
-                            ))}
-                            <DropdownMenuSeparator />
-                            <DropdownMenuLabel>Toggle Tool Modules</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            {allModules.map(module => (
-                            <DropdownMenuCheckboxItem key={module.id} checked={visibleModules[module.id]} onCheckedChange={handleCheckedChange(module.id)}>
-                                {module.title}
-                            </DropdownMenuCheckboxItem>
-                            ))}
-                            <DropdownMenuSeparator />
-                            <div className="p-1">
-                                <Button className="w-full" size="sm" onClick={handleSaveLayout}>
-                                    <Save className="mr-2 h-4 w-4" />
-                                    Save Layout
+        <main className="flex-1 flex flex-col overflow-auto">
+            <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 md:hidden">
+              <MobileSidebar />
+              <h1 className="text-lg font-bold">Dashboard</h1>
+            </header>
+            <div className="flex-1 flex flex-col p-4 md:p-6 space-y-6">
+                <div className="hidden md:flex items-center justify-between flex-shrink-0">
+                    <h1 className="text-xl md:text-3xl font-bold tracking-tight">Dashboard</h1>
+                    <div className="flex items-center gap-2">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" size="sm">
+                                <Settings className="mr-2 h-4 w-4" />
+                                View Options
                                 </Button>
-                            </div>
-                            <div className="p-1">
-                                <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                    <Button variant="destructive" size="sm" className="w-full">
-                                        <Trash2 className="mr-2 h-4 w-4" />
-                                        Reset All Settings
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Toggle Service Modules</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                {serviceModules.map(module => (
+                                <DropdownMenuCheckboxItem key={module.id} checked={module.visible} onCheckedChange={handleCheckedChange(module.id)}>
+                                    {module.component.props.title}
+                                </DropdownMenuCheckboxItem>
+                                ))}
+                                <DropdownMenuSeparator />
+                                <DropdownMenuLabel>Toggle Tool Modules</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                {allModules.map(module => (
+                                <DropdownMenuCheckboxItem key={module.id} checked={visibleModules[module.id]} onCheckedChange={handleCheckedChange(module.id)}>
+                                    {module.title}
+                                </DropdownMenuCheckboxItem>
+                                ))}
+                                <DropdownMenuSeparator />
+                                <div className="p-1">
+                                    <Button className="w-full" size="sm" onClick={handleSaveLayout}>
+                                        <Save className="mr-2 h-4 w-4" />
+                                        Save Layout
                                     </Button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                        This will permanently delete all API keys, settings, and layouts from your browser and close all windows.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={handleClearSettings}>
-                                        Yes, reset everything
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
-                            </div>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                                </div>
+                                <div className="p-1">
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                        <Button variant="destructive" size="sm" className="w-full">
+                                            <Trash2 className="mr-2 h-4 w-4" />
+                                            Reset All Settings
+                                        </Button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                            This will permanently delete all API keys, settings, and layouts from your browser and close all windows.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction onClick={handleClearSettings}>
+                                            Yes, reset everything
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                </div>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
                 </div>
-            </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 flex-shrink-0">
-                {visibleServiceModules.map(m => <div key={m.id}>{m.component}</div>)}
-            </div>
-            
-             <div className="flex-grow flex flex-col gap-6 overflow-hidden">
-                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 h-[350px]">
-                  {topRowModules
-                    .filter(m => visibleModules[m.id])
-                    .map(m => {
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 flex-shrink-0">
+                    {visibleServiceModules.map(m => <div key={m.id}>{m.component}</div>)}
+                </div>
+                
+                <div className="flex-grow flex flex-col gap-6 overflow-hidden">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {topRowModules
+                        .filter(m => visibleModules[m.id])
+                        .map(m => {
+                            const ModuleComponent = m.component;
+                            return (
+                            <div key={m.id} className="relative h-[350px]">
+                                <ModuleComponent 
+                                onPopOut={() => handlePopOut(m.id, m.title)}
+                                isPoppedOut={false}
+                                {...(m.id === 'apiSettings' ? { botName, setBotName } : {})}
+                                />
+                            </div>
+                            );
+                        })}
+                    </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
+                    {bottomRowModules
+                        .filter(m => visibleModules[m.id])
+                        .map(m => {
                         const ModuleComponent = m.component;
                         return (
-                          <div key={m.id} className="relative h-full">
-                            <ModuleComponent 
-                              onPopOut={() => handlePopOut(m.id, m.title)}
-                              isPoppedOut={false}
-                              {...(m.id === 'apiSettings' ? { botName, setBotName } : {})}
-                            />
-                          </div>
+                            <div key={m.id} className="relative h-[350px]">
+                                <ModuleComponent 
+                                onPopOut={() => handlePopOut(m.id, m.title)}
+                                isPoppedOut={false}
+                                {...(m.id === 'apiSettings' ? { botName, setBotName } : {})}
+                                />
+                            </div>
                         );
-                    })}
+                        })}
+                    </div>
                 </div>
-                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6 h-[350px]">
-                  {bottomRowModules
-                    .filter(m => visibleModules[m.id])
-                    .map(m => {
-                       const ModuleComponent = m.component;
-                       return (
-                          <div key={m.id} className="relative h-full">
-                            <ModuleComponent 
-                              onPopOut={() => handlePopOut(m.id, m.title)}
-                              isPoppedOut={false}
-                              {...(m.id === 'apiSettings' ? { botName, setBotName } : {})}
-                            />
-                          </div>
-                       );
-                    })}
-                </div>
-            </div>
 
+            </div>
         </main>
       </div>
     </>
