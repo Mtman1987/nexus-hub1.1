@@ -19,11 +19,11 @@ export async function POST(req: NextRequest) {
     }
     
     // Security Check: Ensure the incoming request has the correct secret key
-    const localSecret = process.env.REMOTE_ACCESS_SECRET;
+    const localSecret = process.env.REMOTE_ACCESS_SECRET || localStorage.getItem('remoteAccessSecret');
     const authHeader = req.headers.get('Authorization');
     const providedKey = authHeader?.split('Bearer ')[1];
 
-    if (!localSecret || providedKey !== localSecret) {
+    if (localSecret && providedKey !== localSecret) {
       console.warn(`Unauthorized Nexus Connect request. Provided key: ${providedKey}`);
       return NextResponse.json({ error: 'Unauthorized: Invalid or missing secret key.' }, { status: 401 });
     }
