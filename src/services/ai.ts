@@ -21,7 +21,7 @@ import type { LoreWeaverInput, LoreWeaverOutput } from '@/ai/types';
 import type { ImageGeneratorInput, ImageGeneratorOutput } from '@/ai/types';
 import type { LoreEditorInput, LoreEditorOutput } from '@/ai/types';
 import type { LoreCuratorInput, LoreCuratorOutput } from '@/ai/types';
-import type { TtsOutput } from '@/ai/types';
+import type { TtsInput, TtsOutput } from '@/ai/types';
 
 /**
  * Main service function to handle unified chat requests.
@@ -75,6 +75,6 @@ export async function getCuratedTimeline(input: LoreCuratorInput): Promise<LoreC
 /**
  * Service function to convert text to speech.
  */
-export async function getTTSAudio(text: string): Promise<TtsOutput> {
-    return ttsFlow(text);
+export async function getTTSAudio(input: TtsInput): Promise<TtsOutput> {
+    return ttsFlow(input);
 }

@@ -129,7 +129,10 @@ export const LoreCuratorOutputSchema = z.object({
 export type LoreCuratorOutput = z.infer<typeof LoreCuratorOutputSchema>;
 
 // --- Text to Speech (TTS) ---
-export const TtsInputSchema = z.string();
+export const TtsInputSchema = z.object({
+  text: z.string(),
+  voice: z.string().optional().describe("The prebuilt voice to use for generation, e.g., 'Algenib'."),
+});
 export type TtsInput = z.infer<typeof TtsInputSchema>;
 
 export const TtsOutputSchema = z.object({

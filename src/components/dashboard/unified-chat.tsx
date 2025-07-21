@@ -141,7 +141,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
         'streamerbotRequestType', 'streamerbotActionName', 'streamerbotVariableName',
         'edenApiKey', 'googleApiKey', 'openaiApiKey', 'groqApiKey',
         'edenAiModelName', 'googleModelName', 'openaiModelName', 'groqModelName',
-        'providerStatus', 'fallbackStrategy', 'botPersonalityPrompt', 'botName',
+        'providerStatus', 'fallbackStrategy', 'botPersonalityPrompt', 'botName', 'botVoice',
         'remoteHubAddress', 'remoteAccessSecret'
       ];
       configKeys.forEach(key => {
@@ -210,7 +210,8 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
   const handlePlayAudio = async (messageId: string, text: string) => {
       setLoadingAudio(messageId);
       try {
-        const { media } = await getTTSAudio(text);
+        const voice = localStorage.getItem('botVoice') || 'Algenib';
+        const { media } = await getTTSAudio({ text, voice });
         
         setMessages(prev => prev.map(msg => 
             msg.id === messageId ? {...msg, audioData: media} : msg

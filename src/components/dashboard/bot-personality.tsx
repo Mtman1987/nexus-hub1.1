@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Bot, PlusCircle, Trash2, GripVertical, EyeOff, Save, Smile, Download, Upload, Store } from 'lucide-react';
+import { Bot, PlusCircle, Trash2, GripVertical, EyeOff, Save, Smile, Download, Upload, Store, Mic } from 'lucide-react';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useLogs } from '@/context/LogContext';
@@ -19,16 +19,20 @@ export type BotPersonalityType = {
   id: string;
   name: string;
   prompt: string;
+  voice?: string;
   isDefault?: boolean;
 }
 
 const BOT_STORE_KEY = 'apollo-station-bot-store';
+
+const availableVoices = ['Algenib', 'Achernar', 'Spica', 'Sirius', 'Arcturus', 'Canopus', 'Vega', 'Rigel'];
 
 const defaultPersonalities: BotPersonalityType[] = [
     {
         id: 'default-cosmo', 
         name: 'COSMO', 
         prompt: 'You are COSMO (Central Operating System Management Orbiter), the AI assistant for Apollo Station, the community\'s HQ, created by mtman1987. Your purpose is to act as a creative partner and lore master.',
+        voice: 'Algenib',
         isDefault: true,
     }
 ];
@@ -83,7 +87,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
     }
   }, [setBotName, addLog, loadBotStore]);
   
-  const handlePersonalityChange = (field: 'name' | 'prompt', value: string) => {
+  const handlePersonalityChange = (field: 'name' | 'prompt' | 'voice', value: string) => {
     if (!selectedPersonalityId) return;
 
     setPersonalities(prev => prev.map(p => {
@@ -113,7 +117,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
   
   const handleAddNewPersonality = () => {
     const newId = `personality-${Date.now()}`;
-    const newPersonality: BotPersonalityType = { id: newId, name: 'New Bot', prompt: 'You are a helpful assistant.'};
+    const newPersonality: BotPersonalityType = { id: newId, name: 'New Bot', prompt: 'You are a helpful assistant.', voice: 'Algenib'};
     const newPersonalities = [...personalities, newPersonality];
     setPersonalities(newPersonalities);
     setSelectedPersonalityId(newId);
@@ -177,6 +181,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
       id: `imported-${Date.now()}`,
       name: botToImport.name,
       prompt: botToImport.prompt,
+      voice: botToImport.voice || 'Algenib',
     };
 
     setPersonalities(prev => [...prev, newPersonality]);
@@ -196,6 +201,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
       if (currentPersonality) {
         localStorage.setItem('botPersonalityPrompt', currentPersonality.prompt);
         localStorage.setItem('botName', currentPersonality.name);
+        localStorage.setItem('botVoice', currentPersonality.voice || 'Algenib');
       }
 
       toast({
@@ -268,16 +274,38 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
 
             {selectedPersonality && (
                 <>
-                    <div className="space-y-2">
-                        <Label htmlFor="bot-name">Bot Name</Label>
-                        <Input 
-                            id="bot-name" 
-                            type="text" 
-                            placeholder="e.g., Station AI" 
-                            value={selectedPersonality?.name || ''} 
-                            onChange={(e) => handlePersonalityChange('name', e.target.value)} 
-                            disabled={isSelectedPersonalityDefault}
-                        />
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="bot-name">Bot Name</Label>
+                            <Input 
+                                id="bot-name" 
+                                type="text" 
+                                placeholder="e.g., Station AI" 
+                                value={selectedPersonality?.name || ''} 
+                                onChange={(e) => handlePersonalityChange('name', e.target.value)} 
+                                disabled={isSelectedPersonalityDefault}
+                            />
+                        </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="bot-voice">Voice</Label>
+                            <Select 
+                                value={selectedPersonality?.voice || 'Algenib'}
+                                onValueChange={(value) => handlePersonalityChange('voice', value)}
+                                disabled={isSelectedPersonalityDefault}
+                            >
+                                <SelectTrigger id="bot-voice">
+                                    <div className="flex items-center gap-2">
+                                        <Mic className="h-4 w-4" />
+                                        <SelectValue placeholder="Select a voice..."/>
+                                    </div>
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {availableVoices.map(v => (
+                                        <SelectItem key={v} value={v}>{v}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
                     </div>
                     <div className="space-y-2 flex-grow flex flex-col">
                         <Label htmlFor="bot-prompt">System Prompt</Label>
