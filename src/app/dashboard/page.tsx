@@ -1,15 +1,14 @@
+
 "use client";
 
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { ModuleCard } from '@/components/dashboard/module-card';
 import { LogViewer } from '@/components/dashboard/log-viewer';
 import { Fallback } from '@/components/dashboard/fallback';
 import { ApiSettings } from '@/components/dashboard/api-settings';
 import { UnifiedChat } from '@/components/dashboard/unified-chat';
 import { SetupDialog } from '@/components/dashboard/setup-dialog';
-import { Bot, Twitch, Globe, Radio, Settings, Puzzle, Shuffle, BookText, Save, Users, Trash2 } from 'lucide-react';
-import DiscordLogo from '@/components/icons/discord-logo';
+import { Settings, Puzzle, Save, Trash2 } from 'lucide-react';
 import { SITES } from '@/lib/sites';
 import { Button } from '@/components/ui/button';
 import {
@@ -37,10 +36,14 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useLogs } from '@/context/LogContext';
-import { useBotName } from '@/context/BotNameContext';
 import { PopOutWindow } from '@/components/layout/pop-out-window';
 import { PopOutButton } from '@/components/dashboard/pop-out-button';
 import { Sidebar } from '@/components/layout/sidebar';
+import { ModuleCard } from '@/components/dashboard/module-card';
+import DiscordLogo from '@/components/icons/discord-logo';
+import { Bot, Twitch, Globe, Radio } from 'lucide-react';
+import { useBotName } from '@/context/BotNameContext';
+
 
 type ModuleVisibility = {
   [key: string]: boolean;
@@ -254,25 +257,27 @@ export default function DashboardPage() {
                 {visibleServiceModules.map(m => <div key={m.id}>{m.component}</div>)}
             </div>
             
-            <div className="flex-grow flex flex-col gap-6 overflow-hidden">
+             <div className="flex-grow flex flex-col gap-6 overflow-hidden">
+                {/* Top Row */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 h-full">
                   {topRowModules
                     .filter(m => visibleModules[m.id] && !poppedOutModules.includes(m.id))
                     .map(m => (
                       <div key={m.id} className="relative h-full">
-                        {React.createElement(m.component, { isPoppedOut: false })}
+                        <m.component isPoppedOut={false} />
                         <div className="absolute top-3 right-3">
                           <PopOutButton onClick={() => handlePopOut(m.id)} />
                         </div>
                       </div>
                   ))}
                 </div>
+                {/* Bottom Row */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6 h-full">
                   {bottomRowModules
                     .filter(m => visibleModules[m.id] && !poppedOutModules.includes(m.id))
                     .map(m => (
                       <div key={m.id} className="relative h-full">
-                        {React.createElement(m.component, { isPoppedOut: false })}
+                        <m.component isPoppedOut={false} />
                         <div className="absolute top-3 right-3">
                           <PopOutButton onClick={() => handlePopOut(m.id)} />
                         </div>
