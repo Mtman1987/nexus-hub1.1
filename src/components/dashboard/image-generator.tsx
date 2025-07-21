@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Wand2, GripVertical, EyeOff, Image as ImageIcon, Save, Info } from 'lucide-react';
+import { Loader2, Wand2, GripVertical, EyeOff, Image as ImageIcon, Save, Info, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { PopOutButton } from './pop-out-button';
 import { useLogs } from '@/context/LogContext';
@@ -14,6 +14,7 @@ import type { ImageGeneratorOutput } from '@/ai/types';
 import Image from 'next/image';
 import { Skeleton } from '../ui/skeleton';
 import { Alert, AlertTitle, AlertDescription } from '../ui/alert';
+import { Input } from '../ui/input';
 
 interface ImageGeneratorProps {
   onPopOut?: () => void;
@@ -67,20 +68,19 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
         }
     }
     
-    const handleSaveImage = () => {
+    const handleViewImage = () => {
         if (!result) return;
-        
-        const link = document.createElement('a');
-        link.href = result.imageUrl;
-        link.download = `stargate-imagery-${Date.now()}.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-        toast({
-            title: "Image Saved",
-            description: "The generated image has been downloaded.",
-        });
+        const newWindow = window.open();
+        if (newWindow) {
+            newWindow.document.write(`<body style="margin:0; background: #111;"><img src="${result.imageUrl}" style="width:100%; height:auto;"/></body>`);
+            newWindow.document.title = "Stargate Imagery";
+        } else {
+            toast({
+                title: "Could not open window",
+                description: "Please allow pop-ups for this site.",
+                variant: "destructive"
+            });
+        }
     };
 
   return (
@@ -114,7 +114,7 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
         </div>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col gap-4 overflow-hidden">
-        <div className="flex-grow flex items-center justify-center bg-muted/50 rounded-lg p-2 relative">
+        <div className="flex-grow flex flex-col items-center justify-center bg-muted/50 rounded-lg p-4 relative">
             {isLoading ? (
                 <div className="flex flex-col items-center gap-2 text-muted-foreground">
                     <Loader2 className="h-8 w-8 animate-spin"/>
@@ -122,16 +122,20 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
                     <p className="text-xs">This may take a moment.</p>
                 </div>
             ) : result?.imageUrl ? (
-                <>
-                 <Image src={result.imageUrl} alt={result.enhancedPrompt} layout="fill" objectFit="contain" className="rounded-md" />
-                 <Button variant="outline" size="sm" onClick={handleSaveImage} className="absolute bottom-4 right-4">
-                    <Save className="mr-2 h-4 w-4" /> Save
-                 </Button>
-                </>
+                <div className="w-full space-y-2">
+                    <Label htmlFor="image-url">Image URL (Data URI)</Label>
+                    <div className="flex gap-2">
+                         <Input id="image-url" readOnly value={result.imageUrl} className="text-xs" />
+                         <Button variant="outline" size="icon" onClick={handleViewImage}>
+                            <ExternalLink className="h-4 w-4" />
+                         </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Click the button to view the full-size image in a new window.</p>
+                </div>
             ) : (
                 <div className="text-center text-muted-foreground">
                     <ImageIcon className="h-12 w-12 mx-auto mb-2" />
-                    <p>Your generated image will appear here.</p>
+                    <p>Your generated image URL will appear here.</p>
                 </div>
             )}
         </div>
@@ -139,7 +143,7 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
         {result && (
              <Alert variant="default" className="text-xs">
                 <Info className="h-4 w-4" />
-                <AlertTitle>Enhanced Prompt</AlertTitle>
+                <AlertTitle>Enhanced Prompt Used</AlertTitle>
                 <AlertDescription>
                     {result.enhancedPrompt}
                 </AlertDescription>

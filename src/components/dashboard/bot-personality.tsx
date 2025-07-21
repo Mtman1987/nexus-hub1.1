@@ -5,14 +5,15 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Bot, PlusCircle, Trash2, GripVertical, EyeOff, Save, Smile, Download, Upload } from 'lucide-react';
-import React, { useState, useEffect, useRef } from 'react';
+import { Bot, PlusCircle, Trash2, GripVertical, EyeOff, Save, Smile, Download, Upload, Store } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useLogs } from '@/context/LogContext';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PopOutButton } from './pop-out-button';
 import { useBotName } from '@/context/BotNameContext';
 import { Textarea } from '../ui/textarea';
+import { Separator } from '../ui/separator';
 
 export type BotPersonalityType = {
   id: string;
@@ -20,6 +21,8 @@ export type BotPersonalityType = {
   prompt: string;
   isDefault?: boolean;
 }
+
+const BOT_STORE_KEY = 'apollo-station-bot-store';
 
 const defaultPersonalities: BotPersonalityType[] = [
     {
@@ -41,10 +44,21 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
   const { toast } = useToast();
   const { addLog } = useLogs();
   const { setBotName } = useBotName();
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [personalities, setPersonalities] = useState<BotPersonalityType[]>(defaultPersonalities);
   const [selectedPersonalityId, setSelectedPersonalityId] = useState<string | null>(defaultPersonalities[0].id);
+  const [botStore, setBotStore] = useState<Omit<BotPersonalityType, 'id' | 'isDefault'>[]>([]);
+
+  const loadBotStore = useCallback(() => {
+    try {
+        const storedBots = localStorage.getItem(BOT_STORE_KEY);
+        if (storedBots) {
+            setBotStore(JSON.parse(storedBots));
+        }
+    } catch (e) {
+        console.error("Failed to load bot store", e);
+    }
+  }, []);
 
   useEffect(() => {
     try {
@@ -60,13 +74,14 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
         if (selectedPersonality) {
             setBotName(selectedPersonality.name);
         }
-
+        
+        loadBotStore();
         addLog({ service: 'System', level: 'info', message: 'Bot Personality settings loaded.' });
     } catch (error) {
         console.error("Failed to load personality settings", error);
         addLog({ service: 'System', level: 'error', message: 'Failed to load personality settings from local storage.', details: error instanceof Error ? error.stack : String(error) });
     }
-  }, [setBotName, addLog]);
+  }, [setBotName, addLog, loadBotStore]);
   
   const handlePersonalityChange = (field: 'name' | 'prompt', value: string) => {
     if (!selectedPersonalityId) return;
@@ -124,65 +139,49 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
     addLog({ service: 'System', level: 'warn', message: `User deleted bot personality: ${personalityToDelete.name}` });
   };
 
-  const handleExport = () => {
+  const handleShareToStore = () => {
     const personalityToExport = personalities.find(p => p.id === selectedPersonalityId);
     if (!personalityToExport || personalityToExport.isDefault) {
-        toast({ title: "Export Failed", description: "You can only export custom personalities.", variant: "destructive" });
+        toast({ title: "Share Failed", description: "You can only share custom personalities.", variant: "destructive" });
         return;
     }
 
     const { id, isDefault, ...exportableData } = personalityToExport;
-    const dataStr = JSON.stringify(exportableData, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${exportableData.name.toLowerCase().replace(/\s+/g, '-')}-personality.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    toast({ title: "Personality Exported", description: `${exportableData.name} has been saved.` });
-    addLog({ service: 'System', level: 'info', message: `User exported personality: ${exportableData.name}` });
+    
+    const currentStore = JSON.parse(localStorage.getItem(BOT_STORE_KEY) || '[]');
+    // Avoid duplicates
+    if (currentStore.some((p: any) => p.name === exportableData.name)) {
+         toast({ title: "Already Shared", description: `A personality named '${exportableData.name}' already exists in the store.`, variant: "destructive" });
+         return;
+    }
+
+    const newStore = [...currentStore, exportableData];
+    localStorage.setItem(BOT_STORE_KEY, JSON.stringify(newStore));
+    setBotStore(newStore);
+
+    toast({ title: "Personality Shared", description: `${exportableData.name} is now available in the Bot Store for other users.` });
+    addLog({ service: 'System', level: 'info', message: `User shared personality to store: ${exportableData.name}` });
   };
 
-  const handleImportClick = () => {
-    fileInputRef.current?.click();
-  };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const handleImportFromStore = (name: string) => {
+    const botToImport = botStore.find(p => p.name === name);
+    if (!botToImport) return;
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const content = e.target?.result;
-        if (typeof content !== 'string') throw new Error("File is not readable");
-        const imported = JSON.parse(content);
-        
-        if (!imported.name || !imported.prompt) {
-            throw new Error("Invalid personality file format.");
-        }
+    if (personalities.some(p => p.name === botToImport.name)) {
+        toast({ title: "Already exists", description: `You already have a personality named '${botToImport.name}'.`, variant: "destructive" });
+        return;
+    }
 
-        const newPersonality: BotPersonalityType = {
-          id: `imported-${Date.now()}`,
-          name: imported.name,
-          prompt: imported.prompt,
-        };
-
-        setPersonalities(prev => [...prev, newPersonality]);
-        toast({ title: "Import Successful", description: `${newPersonality.name} has been added to your personalities.` });
-        addLog({ service: 'System', level: 'info', message: `User imported personality: ${newPersonality.name}` });
-
-      } catch (error) {
-        const message = error instanceof Error ? error.message : "An unknown error occurred.";
-        toast({ title: "Import Failed", description: message, variant: "destructive" });
-        addLog({ service: 'System', level: 'error', message: `Failed to import personality: ${message}` });
-      }
+    const newPersonality: BotPersonalityType = {
+      id: `imported-${Date.now()}`,
+      name: botToImport.name,
+      prompt: botToImport.prompt,
     };
-    reader.readAsText(file);
-    event.target.value = ''; // Reset input to allow re-importing the same file
+
+    setPersonalities(prev => [...prev, newPersonality]);
+    toast({ title: "Import Successful", description: `${newPersonality.name} has been added to your personalities.` });
+    addLog({ service: 'System', level: 'info', message: `User imported personality: ${newPersonality.name}` });
   };
   
   const handleSaveChanges = async (e: React.FormEvent) => {
@@ -250,7 +249,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
         <CardContent className="flex-grow flex flex-col">
           <form id="bot-personality-form" className="space-y-4 flex-grow flex flex-col" onSubmit={handleSaveChanges}>
             <div className="space-y-2">
-                <Label>Chat Bot Personality</Label>
+                <Label>Active Personality</Label>
                 <div className="flex items-center gap-2">
                      <Select value={selectedPersonalityId || ''} onValueChange={handleSelectPersonality}>
                         <SelectTrigger>
@@ -294,16 +293,37 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                     </div>
                 </>
             )}
-             <div className="flex justify-between items-center pt-4 border-t mt-auto">
-                <div>
-                  <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".json" style={{ display: 'none' }} />
-                  <Button type="button" variant="outline" size="sm" onClick={handleImportClick}>
-                    <Upload className="mr-2 h-4 w-4"/> Import
-                  </Button>
-                  <Button type="button" variant="outline" size="sm" onClick={handleExport} className="ml-2" disabled={isSelectedPersonalityDefault}>
-                    <Download className="mr-2 h-4 w-4"/> Export
-                  </Button>
+
+            <Separator />
+            
+            <div className="space-y-2">
+                <Label>Bot Store</Label>
+                 <div className="flex items-center gap-2">
+                     <Select onValueChange={handleImportFromStore}>
+                        <SelectTrigger>
+                            <div className="flex items-center gap-2">
+                                <Store className="h-4 w-4" />
+                                <SelectValue placeholder="Import from store..."/>
+                            </div>
+                        </SelectTrigger>
+                        <SelectContent>
+                           {botStore.length > 0 ? (
+                             botStore.map(p => (
+                                <SelectItem key={p.name} value={p.name}>{p.name}</SelectItem>
+                            ))
+                           ) : (
+                            <div className="p-2 text-sm text-muted-foreground">Store is empty.</div>
+                           )}
+                        </SelectContent>
+                    </Select>
+                    <Button type="button" variant="outline" onClick={handleShareToStore} disabled={isSelectedPersonalityDefault}>
+                        <Upload className="mr-2 h-4 w-4"/> Share Active Bot
+                    </Button>
                 </div>
+            </div>
+
+
+             <div className="flex justify-end items-center pt-4 border-t mt-auto">
                 <Button type="submit" form="bot-personality-form">
                   <Save className="mr-2 h-4 w-4" />
                   Save All
