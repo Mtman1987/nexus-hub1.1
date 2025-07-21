@@ -39,8 +39,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useLogs } from '@/context/LogContext';
 import { useBotName } from '@/context/BotNameContext';
-import { PopOutWindow } from '@/components/layout/pop-out-window';
-import { PopOutButton } from '@/components/dashboard/pop-out-button';
+import { PopOutWindow } from '../layout/pop-out-window';
+import { PopOutButton } from './pop-out-button';
 
 type ModuleVisibility = {
   [key: string]: boolean;
@@ -270,5 +270,3 @@ export default function DashboardPage() {
     </>
   );
 }
-
-    
