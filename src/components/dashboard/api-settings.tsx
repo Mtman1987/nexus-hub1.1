@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -15,12 +14,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
+import { PopOutButton } from './pop-out-button';
 import { useBotName } from '@/context/BotNameContext';
 import { Textarea } from '../ui/textarea';
-import { PopOutButton } from './pop-out-button';
 
 export const settingKeys = [
-  'botPersonalities', 'selectedPersonalityId', 'edenApiKey', 'edenAiModelName', 'googleApiKey', 'googleModelName',
+  'botPersonalities', 'selectedPersonalityId', 'edenApiKey', 'edenAiProvider', 'edenAiModel', 'googleApiKey', 'googleModelName',
   'openaiApiKey', 'openaiModelName', 'groqApiKey', 'groqModelName',
   'discordToken', 'discordWebhook', 'twitchToken', 'providerStatus',
   'streamerbotServerAddress', 'streamerbotServerPort', 'streamerbotRequestType', 'streamerbotActionName', 'streamerbotVariableName', 'streamerbotWebhookUrl',
@@ -51,15 +50,33 @@ export type BotPersonality = {
   prompt: string;
 }
 
-const modelOptions = {
-    eden: [
-        { value: "openai/gpt-4-turbo", label: "openai/gpt-4-turbo" },
-        { value: "openai/gpt-4o", label: "openai/gpt-4o" },
-        { value: "google/gemini-1.5-pro-latest", label: "google/gemini-1.5-pro-latest" },
-        { value: "anthropic/claude-3-haiku-20240307", label: "anthropic/claude-3-haiku" },
-        { value: "cohere/command-r-plus", label: "cohere/command-r-plus" },
-        { value: "meta/llama-3-70b-instruct", label: "meta/llama-3-70b-instruct" },
+const edenProviderModels: Record<string, {value: string, label: string}[]> = {
+    openai: [
+        { value: "gpt-4-turbo", label: "GPT-4 Turbo" },
+        { value: "gpt-4o", label: "GPT-4o" },
+        { value: "gpt-3.5-turbo", label: "GPT-3.5 Turbo" },
     ],
+    google: [
+        { value: "gemini-1.5-pro-latest", label: "Gemini 1.5 Pro" },
+        { value: "gemini-1.5-flash-latest", label: "Gemini 1.5 Flash" },
+    ],
+    anthropic: [
+        { value: "claude-3-haiku-20240307", label: "Claude 3 Haiku" },
+        { value: "claude-3-sonnet-20240229", label: "Claude 3 Sonnet" },
+        { value: "claude-3-opus-20240229", label: "Claude 3 Opus" },
+    ],
+    cohere: [
+        { value: "command-r-plus", label: "Command R+" },
+        { value: "command-r", label: "Command R" },
+    ],
+    meta: [
+        { value: "llama-3-70b-instruct", label: "Llama 3 70b" },
+        { value: "llama-3-8b-instruct", label: "Llama 3 8b" },
+    ]
+};
+
+
+const modelOptions = {
     google: [
         { value: "gemini-1.5-flash-latest", label: "gemini-1.5-flash-latest (Default)" },
         { value: "gemini-1.5-pro-latest", label: "gemini-1.5-pro-latest" },
@@ -77,8 +94,9 @@ const modelOptions = {
     ]
 }
 
-const defaultModels: { [key in 'edenAiModelName' | 'googleModelName' | 'openaiModelName' | 'groqModelName']: string } = {
-    edenAiModelName: 'openai/gpt-4-turbo',
+const defaultModels: { [key in 'googleModelName' | 'openaiModelName' | 'groqModelName' | 'edenAiProvider' | 'edenAiModel']: string } = {
+    edenAiProvider: 'openai',
+    edenAiModel: 'gpt-4-turbo',
     googleModelName: 'gemini-1.5-flash-latest',
     openaiModelName: 'gpt-4-turbo',
     groqModelName: 'llama3-8b-8192',
@@ -153,13 +171,12 @@ const ServiceStatusToggle: React.FC<{
 
 
 interface ApiSettingsProps {
-    isPoppedOut?: boolean;
     onPopOut?: () => void;
-    botName?: string;
+    isPoppedOut?: boolean;
     setBotName?: (name: string) => void;
 }
 
-export function ApiSettings({ isPoppedOut = false, onPopOut, setBotName: setContextBotName }: ApiSettingsProps) {
+export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setContextBotName }: ApiSettingsProps) {
   const [showSetup, setShowSetup] = useState(false);
   const { toast } = useToast();
   const [settings, setSettings] = useState<Settings>(defaultSettings);
@@ -167,7 +184,7 @@ export function ApiSettings({ isPoppedOut = false, onPopOut, setBotName: setCont
   const { addLog } = useLogs();
   const [openAccordions, setOpenAccordions] = useState<string[]>(['bot-personality', 'eden', 'discord']);
   
-  const { botName, setBotName: contextSetBotName } = useBotName();
+  const { setBotName: contextSetBotName } = useBotName();
   const setBotName = setContextBotName || contextSetBotName;
 
   const [personalities, setPersonalities] = useState<BotPersonality[]>([]);
@@ -299,6 +316,13 @@ export function ApiSettings({ isPoppedOut = false, onPopOut, setBotName: setCont
     handleInputChange(key as SettingsObjectKey, value || '');
   };
 
+  const handleEdenProviderChange = (value: string) => {
+      handleInputChange('edenAiProvider', value);
+      // Reset model when provider changes
+      const defaultModelForProvider = edenProviderModels[value]?.[0]?.value;
+      handleInputChange('edenAiModel', defaultModelForProvider || '');
+  }
+
   const handleStatusChange = (providerId: ProviderId, enabled: boolean) => {
     setProviderStatus(prev => ({ ...prev, [providerId]: enabled ? 'enabled' : 'disabled' }));
   };
@@ -336,7 +360,7 @@ export function ApiSettings({ isPoppedOut = false, onPopOut, setBotName: setCont
     e.preventDefault();
     try {
       const settingsToSave: Partial<Settings> = { ...settings };
-      const modelKeys = Object.keys(defaultModels) as Array<keyof typeof defaultModels>;
+      const modelKeys: (keyof typeof defaultModels)[] = ['googleModelName', 'openaiModelName', 'groqModelName', 'edenAiProvider', 'edenAiModel'];
       for (const key of modelKeys) {
           if (!settingsToSave[key as keyof Settings]) {
               settingsToSave[key as keyof Settings] = defaultModels[key];
@@ -395,10 +419,12 @@ export function ApiSettings({ isPoppedOut = false, onPopOut, setBotName: setCont
     });
   };
 
+  const currentEdenModels = edenProviderModels[settings.edenAiProvider || ''] || [];
+
   return (
     <>
       <SetupDialog open={showSetup} onOpenChange={setShowSetup} />
-      <Card className="h-full flex flex-col relative">
+      <Card className="h-full flex flex-col">
         <CardHeader>
           <div className="flex justify-between items-start">
             <div className="flex-grow">
@@ -409,7 +435,7 @@ export function ApiSettings({ isPoppedOut = false, onPopOut, setBotName: setCont
               <CardDescription>Manage all your secret keys and connection endpoints here.</CardDescription>
             </div>
             <div className="flex items-center gap-2">
-               {!isPoppedOut && onPopOut && <PopOutButton onClick={onPopOut} />}
+              {!isPoppedOut && onPopOut && <PopOutButton onClick={onPopOut} />}
               <Button variant="outline" onClick={() => setShowSetup(true)}>
                 <LifeBuoy className="mr-2 h-4 w-4" />
                 Setup Wizard
@@ -511,16 +537,26 @@ export function ApiSettings({ isPoppedOut = false, onPopOut, setBotName: setCont
                                 <Input id="eden-key" type="password" placeholder="Your primary key from Eden AI" value={settings.edenApiKey || ''} onChange={(e) => handleInputChange('edenApiKey', e.target.value)} />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="eden-model-name">Eden AI Model (provider/model_name)</Label>
-                                <Select value={settings.edenAiModelName || ''} onValueChange={(value) => handleModelChange('edenAiModelName', value)}>
+                                <Label htmlFor="eden-provider">Provider</Label>
+                                <Select value={settings.edenAiProvider || defaultModels.edenAiProvider} onValueChange={handleEdenProviderChange}>
+                                    <SelectTrigger><SelectValue placeholder="Select a provider..." /></SelectTrigger>
+                                    <SelectContent>
+                                        {Object.keys(edenProviderModels).map(provider => <SelectItem key={provider} value={provider}>{provider.charAt(0).toUpperCase() + provider.slice(1)}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="eden-model">Model</Label>
+                                <Select value={settings.edenAiModel || ''} onValueChange={(value) => handleModelChange('edenAiModel', value)} disabled={!settings.edenAiProvider}>
                                     <SelectTrigger><SelectValue placeholder="Select a model..." /></SelectTrigger>
                                     <SelectContent>
-                                        {modelOptions.eden.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
+                                        {currentEdenModels.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
                                     </SelectContent>
                                 </Select>
                             </div>
                         </AccordionContent>
                     </AccordionItem>
+
 
                     <AccordionItem value="google">
                         <CustomAccordionTrigger icon={<Bot className="h-5 w-5"/>} title="Google AI (Fallback)" />
@@ -696,5 +732,3 @@ export function ApiSettings({ isPoppedOut = false, onPopOut, setBotName: setCont
     </>
   );
 }
-
-    
