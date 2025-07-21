@@ -250,7 +250,7 @@ export default function DashboardPage() {
                 <div className="flex-grow flex flex-col gap-6 overflow-hidden">
                     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                         <SortableContext items={visibleModuleIds} strategy={verticalListSortingStrategy}>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                                 {visibleModuleIds.map(id => {
                                     const moduleConfig = ALL_MODULES_CONFIG.find(m => m.id === id);
                                     if (!moduleConfig) return null;
