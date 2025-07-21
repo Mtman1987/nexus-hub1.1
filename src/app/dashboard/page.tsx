@@ -1,19 +1,15 @@
 "use client";
 
 import * as React from 'react';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-import { ModuleCard } from '@/components/dashboard/module-card';
 import { LogViewer } from '@/components/dashboard/log-viewer';
-import { Fallback } from '@/components/dashboard/fallback';
 import { ApiSettings } from '@/components/dashboard/api-settings';
 import { UnifiedChat } from '@/components/dashboard/unified-chat';
-import { Bot, Twitch, Globe, Radio, Settings, Puzzle, Save, Trash2, Bookmark, Eye, LayoutGrid, EyeOff, ScrollText, Clock, Smile } from 'lucide-react';
-import DiscordLogo from '@/components/icons/discord-logo';
-import { SITES } from '@/lib/sites';
+import { Save, Trash2, Eye, LayoutGrid, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { UserRoles } from '@/components/dashboard/user-roles';
@@ -28,13 +24,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LoreWeaver } from '@/components/dashboard/lore-weaver';
 import { TimeZoneConverter } from '@/components/dashboard/timezone-converter';
 import { BotPersonality } from '@/components/dashboard/bot-personality';
-
-type WindowRecord = {
-  id: string;
-  window: Window | null;
-};
-
-const OPEN_POPOUTS_KEY = 'apollo-open-popouts';
+import { Fallback } from '@/components/dashboard/fallback';
 
 // Define all modules with their components
 const ALL_MODULES_CONFIG = [
@@ -68,14 +58,13 @@ const SortableModule = ({ id, children }: { id: string, children: React.ReactNod
 
 
 export default function DashboardPage() {
-  const mainSite = SITES['main'];
   const { toast } = useToast();
   const { addLog } = useLogs();
   
   const [moduleOrder, setModuleOrder] = useState<string[]>(defaultModuleOrder);
   const [hiddenModules, setHiddenModules] = useState<string[]>([]);
   
-  const openPopoutsRef = useRef<Map<string, WindowRecord>>(new Map());
+  const openPopoutsRef = React.useRef<Map<string, Window>>(new Map());
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -104,7 +93,7 @@ export default function DashboardPage() {
 
  const handlePopOut = useCallback((componentId: string, title: string) => {
     if (openPopoutsRef.current.has(componentId)) {
-        openPopoutsRef.current.get(componentId)?.window?.focus();
+        openPopoutsRef.current.get(componentId)?.focus();
         toast({ title: "Window already open", description: "That module is already in a separate window." });
         return;
     }
@@ -114,8 +103,7 @@ export default function DashboardPage() {
 
     const newWindow = openPopoutWindow(componentId, title);
     if (newWindow) {
-        const newRecord: WindowRecord = { id: componentId, window: newWindow };
-        openPopoutsRef.current.set(componentId, newRecord);
+        openPopoutsRef.current.set(componentId, newWindow);
         setupWindowCloseWatcher(newWindow, componentId, title);
     } else {
         toast({ title: "Pop-up blocked", description: "Couldn't open window. Please allow pop-ups." });
@@ -175,7 +163,7 @@ export default function DashboardPage() {
   const handleClearSettings = () => {
     try {
       addLog({ service: 'System', level: 'warn', message: 'User initiated reset of all local settings.' });
-      openPopoutsRef.current.forEach(popout => popout.window?.close());
+      openPopoutsRef.current.forEach(popout => popout?.close());
       
       const allKeys = Object.keys(localStorage);
       allKeys.forEach(key => localStorage.removeItem(key));

@@ -25,7 +25,7 @@ const defaultPersonalities: BotPersonalityType[] = [
     {
         id: 'default-cosmo', 
         name: 'COSMO', 
-        prompt: 'You are COSMO (Central Operating System Management Orbiter), the AI assistant for Apollo Station, the Space Mountain community\'s HQ, created by mtman1987. Your purpose is to act as a creative partner and lore master.',
+        prompt: 'You are COSMO (Central Operating System Management Orbiter), the AI assistant for Nexus Hub, the community\'s HQ, created by mtman1987. Your purpose is to act as a creative partner and lore master.',
         isDefault: true,
     }
 ];

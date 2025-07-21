@@ -1,10 +1,10 @@
 export const SITES = {
   main: {
-    name: 'SpaceMountain',
+    name: 'Main Viewer',
     url: 'https://www.youtube.com'
   },
   subdomain: {
-    name: 'SPCMTN',
+    name: 'Example',
     url: 'https://www.iana.org/domains/example'
   }
 };

@@ -1,8 +1,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Bot, Twitch, BookText, Settings, Users, Globe, Radio, Shuffle, Menu, LayoutGrid, ScrollText, Clock } from 'lucide-react';
-import DiscordLogo from '@/components/icons/discord-logo';
+import { Home, Users, Globe, LayoutGrid } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { ComponentProps } from 'react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -19,19 +18,9 @@ export function SidebarNav({ isCollapsed = false, isMobile = false, className }:
   const activeClass = "bg-muted text-primary font-semibold";
 
   const navItems = [
-    { href: "/dashboard", icon: <Home className="h-5 w-5" />, label: "Dashboard" },
-    { href: "/launcher-ui", icon: <LayoutGrid className="h-5 w-5" />, label: "Creator Station" },
+    { href: "/", icon: <Home className="h-5 w-5" />, label: "Dashboard" },
     { href: "/access-control", icon: <Users className="h-5 w-5" />, label: "Access Control" },
-    { href: "/spacemountain", icon: <Globe className="h-5 w-5" />, label: "Website" },
-    { href: "#", icon: <Clock className="h-5 w-5" />, label: "Time Converter" },
-    { href: "#", icon: <ScrollText className="h-5 w-5" />, label: "Lore Weaver" },
-    { href: "#", icon: <div className="h-5 w-5 flex items-center justify-center"><DiscordLogo className="h-5 w-5" /></div>, label: "Discord" },
-    { href: "#", icon: <Bot className="h-5 w-5" />, label: "Chat Bot" },
-    { href: "#", icon: <Twitch className="h-5 w-5" />, label: "Twitch" },
-    { href: "#", icon: <Radio className="h-5 w-5" />, label: "Streamer.bot" },
-    { href: "#", icon: <BookText className="h-5 w-5" />, label: "Logs" },
-    { href: "#", icon: <Shuffle className="h-5 w-5" />, label: "Fallback Strategy" },
-    { href: "#", icon: <Settings className="h-5 w-5" />, label: "Settings" },
+    { href: "/spacemountain", icon: <Globe className="h-5 w-5" />, label: "Website Viewer" },
   ];
 
   if (isCollapsed) {
