@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from 'react';
@@ -9,7 +8,7 @@ import { Fallback } from '@/components/dashboard/fallback';
 import { ApiSettings } from '@/components/dashboard/api-settings';
 import { UnifiedChat } from '@/components/dashboard/unified-chat';
 import { SetupDialog } from '@/components/dashboard/setup-dialog';
-import { Bot, Twitch, Globe, Radio, Settings, Puzzle, Save, Trash2, Expand } from 'lucide-react';
+import { Bot, Twitch, Globe, Radio, Settings, Puzzle, Save, Trash2 } from 'lucide-react';
 import DiscordLogo from '@/components/icons/discord-logo';
 import { SITES } from '@/lib/sites';
 import { Button } from '@/components/ui/button';
@@ -38,7 +37,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useLogs } from '@/context/LogContext';
-import { PopOutButton } from '@/components/dashboard/pop-out-button';
 import { useBotName } from '@/context/BotNameContext';
 import { Sidebar } from '@/components/layout/sidebar';
 
@@ -207,10 +205,12 @@ export default function DashboardPage() {
     const isRelaunch = localStorage.getItem(RELAUNCH_IN_PROGRESS_KEY) === 'true';
 
     if (isRelaunch) {
+        addLog({ service: 'System', level: 'info', message: 'Dashboard mounted as a Relaunched Window (B).' });
         restorePopouts();
         localStorage.removeItem(RELAUNCH_IN_PROGRESS_KEY);
         localStorage.setItem(DASHBOARD_B_READY_KEY, 'true');
     } else {
+        addLog({ service: 'System', level: 'info', message: 'Dashboard mounted as a standard Window (A).' });
         const handleStorageChange = (event: StorageEvent) => {
             if (event.key === DASHBOARD_B_READY_KEY && event.newValue === 'true') {
                 addLog({ service: 'System', level: 'info', message: 'New dashboard is ready. Closing original dashboard.' });
@@ -223,11 +223,13 @@ export default function DashboardPage() {
 
         try {
             const savedVisibility = localStorage.getItem('moduleVisibility');
-            if (savedVisibility) setVisibleModules(JSON.parse(savedVisibility));
-            addLog({ service: 'System', level: 'info', message: 'Dashboard module visibility restored from local storage.' });
+            if (savedVisibility) {
+              setVisibleModules(JSON.parse(savedVisibility));
+              addLog({ service: 'System', level: 'info', message: 'Dashboard module visibility restored from local storage.' });
+            }
         } catch (error) {
             console.error("Failed to load settings from localStorage", error);
-            addLog({ service: 'System', level: 'error', message: 'Failed to load dashboard settings.', details: error instanceof Error ? error.stack : String(error) });
+            addLog({ service: 'System', level: 'error', message: 'Failed to load dashboard visibility settings.', details: error instanceof Error ? error.stack : String(error) });
         }
 
         const key = localStorage.getItem('edenApiKey') || localStorage.getItem('googleApiKey');
@@ -372,7 +374,6 @@ export default function DashboardPage() {
             </div>
             
              <div className="flex-grow flex flex-col gap-6 overflow-hidden">
-                {/* Top Row */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 h-[350px]">
                   {topRowModules
                     .filter(m => visibleModules[m.id])
@@ -381,15 +382,14 @@ export default function DashboardPage() {
                         return (
                           <div key={m.id} className="relative h-full">
                             <ModuleComponent 
-                              isPoppedOut={false} 
-                              onPopOut={() => handlePopOut(m.id, m.title)} 
+                              onPopOut={() => handlePopOut(m.id, m.title)}
+                              isPoppedOut={false}
                               {...(m.id === 'apiSettings' ? { botName, setBotName } : {})}
                             />
                           </div>
                         );
                     })}
                 </div>
-                {/* Bottom Row */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6 h-[350px]">
                   {bottomRowModules
                     .filter(m => visibleModules[m.id])
@@ -398,8 +398,8 @@ export default function DashboardPage() {
                        return (
                           <div key={m.id} className="relative h-full">
                             <ModuleComponent 
-                              isPoppedOut={false}
                               onPopOut={() => handlePopOut(m.id, m.title)}
+                              isPoppedOut={false}
                               {...(m.id === 'apiSettings' ? { botName, setBotName } : {})}
                             />
                           </div>
@@ -413,5 +413,3 @@ export default function DashboardPage() {
     </>
   );
 }
-
-    

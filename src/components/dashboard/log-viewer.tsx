@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -14,8 +13,8 @@ import { Button } from '@/components/ui/button';
 import { PopOutButton } from './pop-out-button';
 
 interface LogViewerProps {
-  isPoppedOut?: boolean;
   onPopOut?: () => void;
+  isPoppedOut?: boolean;
 }
 
 const serviceIcons: { [key: string]: React.ReactNode } = {
@@ -33,7 +32,7 @@ const levelColors = {
   error: 'destructive',
 } as const;
 
-export function LogViewer({ isPoppedOut = false, onPopOut }: LogViewerProps) {
+export function LogViewer({ onPopOut, isPoppedOut = false }: LogViewerProps) {
   const { logs } = useLogs();
   const [selectedLog, setSelectedLog] = useState<LogEntry | null>(null);
 
