@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Monitor, RefreshCw } from 'lucide-react';
+import { Monitor, RefreshCw, GripVertical, EyeOff } from 'lucide-react';
 import { SITES } from '@/lib/sites';
 import { useLogs } from '@/context/LogContext';
 import { PopOutButton } from './pop-out-button';
@@ -13,9 +13,11 @@ import { PopOutButton } from './pop-out-button';
 interface WebsiteViewerProps {
   isPoppedOut?: boolean;
   onPopOut?: () => void;
+  onHide?: () => void;
+  dragHandleProps?: any;
 }
 
-export function WebsiteViewer({ isPoppedOut = false, onPopOut }: WebsiteViewerProps) {
+export function WebsiteViewer({ isPoppedOut = false, onPopOut, onHide, dragHandleProps }: WebsiteViewerProps) {
   const [activeTab, setActiveTab] = useState(Object.keys(SITES)[0]);
   const [iframeKey, setIframeKey] = useState(Date.now());
   const [currentUrl, setCurrentUrl] = useState(SITES[activeTab as keyof typeof SITES].url);
@@ -65,6 +67,12 @@ export function WebsiteViewer({ isPoppedOut = false, onPopOut }: WebsiteViewerPr
       <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
         <CardHeader>
           <div className="flex justify-between items-start">
+             <div className="flex items-center gap-2 flex-grow">
+               {dragHandleProps && (
+                <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab">
+                  <GripVertical />
+                </Button>
+              )}
               <div className="flex-grow">
                 <CardTitle className="flex items-center gap-2">
                   <Monitor className="h-6 w-6" />
@@ -74,7 +82,15 @@ export function WebsiteViewer({ isPoppedOut = false, onPopOut }: WebsiteViewerPr
                   Currently viewing: <a href={currentSite.url} target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">{currentSite.name}</a>
                 </CardDescription>
               </div>
+            </div>
+            <div className="flex items-center">
+              {!isPoppedOut && onHide && (
+                <Button variant="ghost" size="icon" onClick={onHide}>
+                  <EyeOff className="h-4 w-4" />
+                </Button>
+              )}
               {!isPoppedOut && onPopOut && <PopOutButton onClick={onPopOut} />}
+            </div>
           </div>
           <div className="flex items-center gap-2 pt-4">
               <TabsList>

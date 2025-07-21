@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -5,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { Bot, Twitch, BookText, Radio, Info, Save } from 'lucide-react';
+import { Bot, Twitch, BookText, Radio, Info, Save, GripVertical, EyeOff } from 'lucide-react';
 import DiscordLogo from '@/components/icons/discord-logo';
 import { useLogs, type LogEntry } from '@/context/LogContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -16,6 +17,8 @@ import { useToast } from '@/hooks/use-toast';
 interface LogViewerProps {
   onPopOut?: () => void;
   isPoppedOut?: boolean;
+  onHide?: () => void;
+  dragHandleProps?: any;
 }
 
 const serviceIcons: { [key: string]: React.ReactNode } = {
@@ -33,7 +36,7 @@ const levelColors = {
   error: 'destructive',
 } as const;
 
-export function LogViewer({ onPopOut, isPoppedOut = false }: LogViewerProps) {
+export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandleProps }: LogViewerProps) {
   const { logs } = useLogs();
   const [selectedLog, setSelectedLog] = useState<LogEntry | null>(null);
   const { toast } = useToast();
@@ -78,14 +81,28 @@ export function LogViewer({ onPopOut, isPoppedOut = false }: LogViewerProps) {
       <Card className="h-full flex flex-col">
         <CardHeader>
           <div className="flex justify-between items-start">
-            <div className="flex-grow">
-              <CardTitle className="flex items-center gap-2">
-                <BookText className="h-6 w-6 text-accent" />
-                Captain's Log
-              </CardTitle>
-              <CardDescription>Live feed of all service activities. Click a row for more details.</CardDescription>
+             <div className="flex items-center gap-2 flex-grow">
+               {dragHandleProps && (
+                <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab">
+                  <GripVertical />
+                </Button>
+              )}
+              <div className="flex-grow">
+                <CardTitle className="flex items-center gap-2">
+                  <BookText className="h-6 w-6 text-accent" />
+                  Captain's Log
+                </CardTitle>
+                <CardDescription>Live feed of all service activities. Click a row for more details.</CardDescription>
+              </div>
             </div>
-            {!isPoppedOut && onPopOut && <PopOutButton onClick={onPopOut} />}
+            <div className="flex items-center">
+              {!isPoppedOut && onHide && (
+                <Button variant="ghost" size="icon" onClick={onHide}>
+                  <EyeOff className="h-4 w-4" />
+                </Button>
+              )}
+              {!isPoppedOut && onPopOut && <PopOutButton onClick={onPopOut} />}
+            </div>
           </div>
         </CardHeader>
         <CardContent className="flex-grow overflow-hidden">

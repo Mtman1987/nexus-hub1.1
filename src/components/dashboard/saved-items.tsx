@@ -1,10 +1,11 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Save, Trash2, Bot, User, BookText } from 'lucide-react';
+import { Save, Trash2, Bot, User, BookText, GripVertical, EyeOff } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { PopOutButton } from './pop-out-button';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -20,11 +21,13 @@ export type SavedItem = {
 interface SavedItemsProps {
   onPopOut?: () => void;
   isPoppedOut?: boolean;
+  onHide?: () => void;
+  dragHandleProps?: any;
 }
 
 const STORAGE_KEY = 'nexus-saved-items';
 
-export function SavedItems({ onPopOut, isPoppedOut = false }: SavedItemsProps) {
+export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandleProps }: SavedItemsProps) {
   const [savedItems, setSavedItems] = useState<SavedItem[]>([]);
   const { toast } = useToast();
 
@@ -94,12 +97,19 @@ export function SavedItems({ onPopOut, isPoppedOut = false }: SavedItemsProps) {
     <Card className="h-full flex flex-col">
       <CardHeader>
         <div className="flex justify-between items-start">
-          <div className="flex-grow">
-            <CardTitle className="flex items-center gap-2">
-              <Save className="h-6 w-6 text-accent" />
-              Saved Items
-            </CardTitle>
-            <CardDescription>A collection of your pinned logs and messages.</CardDescription>
+          <div className="flex items-center gap-2 flex-grow">
+             {dragHandleProps && (
+                <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab">
+                  <GripVertical />
+                </Button>
+              )}
+            <div className="flex-grow">
+              <CardTitle className="flex items-center gap-2">
+                <Save className="h-6 w-6 text-accent" />
+                Saved Items
+              </CardTitle>
+              <CardDescription>A collection of your pinned logs and messages.</CardDescription>
+            </div>
           </div>
           <div className="flex items-center gap-2">
               {savedItems.length > 0 && (
@@ -124,6 +134,11 @@ export function SavedItems({ onPopOut, isPoppedOut = false }: SavedItemsProps) {
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
+              )}
+             {!isPoppedOut && onHide && (
+                <Button variant="ghost" size="icon" onClick={onHide}>
+                  <EyeOff className="h-4 w-4" />
+                </Button>
               )}
              {!isPoppedOut && onPopOut && <PopOutButton onClick={onPopOut} />}
           </div>

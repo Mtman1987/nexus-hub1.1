@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Users, Shield, Save, Loader2 } from 'lucide-react';
+import { Users, Shield, Save, Loader2, GripVertical, EyeOff } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -53,9 +53,11 @@ async function manageUserRoles(users: { id: string, name: string, role: string }
 interface UserRolesProps {
   isPoppedOut?: boolean;
   onPopOut?: () => void;
+  onHide?: () => void;
+  dragHandleProps?: any;
 }
 
-export function UserRoles({ isPoppedOut = false, onPopOut }: UserRolesProps) {
+export function UserRoles({ isPoppedOut = false, onPopOut, onHide, dragHandleProps }: UserRolesProps) {
   const [users, setUsers] = useState(initialUsers);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -102,16 +104,30 @@ export function UserRoles({ isPoppedOut = false, onPopOut }: UserRolesProps) {
       <Card className="h-full flex flex-col">
         <CardHeader>
            <div className="flex justify-between items-start">
-            <div className="flex-grow">
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-6 w-6 text-accent" />
-                Access Control
-              </CardTitle>
-              <CardDescription>
-                Assign roles and manage permissions for your team members.
-              </CardDescription>
+            <div className="flex items-center gap-2 flex-grow">
+               {dragHandleProps && (
+                <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab">
+                  <GripVertical />
+                </Button>
+              )}
+              <div className="flex-grow">
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-6 w-6 text-accent" />
+                  Access Control
+                </CardTitle>
+                <CardDescription>
+                  Assign roles and manage permissions for your team members.
+                </CardDescription>
+              </div>
             </div>
-             {!isPoppedOut && onPopOut && <PopOutButton onClick={onPopOut} />}
+            <div className="flex items-center">
+              {!isPoppedOut && onHide && (
+                <Button variant="ghost" size="icon" onClick={onHide}>
+                  <EyeOff className="h-4 w-4" />
+                </Button>
+              )}
+              {!isPoppedOut && onPopOut && <PopOutButton onClick={onPopOut} />}
+            </div>
           </div>
         </CardHeader>
         <CardContent className="flex-grow flex flex-col justify-between">

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -6,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Lightbulb, Loader2, Wand2 } from 'lucide-react';
+import { Lightbulb, Loader2, Wand2, GripVertical, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { getIntelligentFallback } from '@/services/ai';
@@ -17,9 +18,11 @@ import { useLogs } from '@/context/LogContext';
 interface FallbackProps {
   onPopOut?: () => void;
   isPoppedOut?: boolean;
+  onHide?: () => void;
+  dragHandleProps?: any;
 }
 
-export function Fallback({ onPopOut, isPoppedOut = false }: FallbackProps) {
+export function Fallback({ onPopOut, isPoppedOut = false, onHide, dragHandleProps }: FallbackProps) {
     const [prompt, setPrompt] = useState('');
     const [goal, setGoal] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -91,16 +94,30 @@ export function Fallback({ onPopOut, isPoppedOut = false }: FallbackProps) {
     <Card className="h-full">
       <CardHeader>
         <div className="flex justify-between items-start">
-            <div className="flex-grow">
-              <CardTitle className="flex items-center gap-2">
-                <Lightbulb className="h-6 w-6 text-accent" />
-                Intelligent Fallback
-              </CardTitle>
-              <CardDescription>
-                Get an AI-powered recommendation for the best provider for your specific task.
-              </CardDescription>
+             <div className="flex items-center gap-2 flex-grow">
+               {dragHandleProps && (
+                <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab">
+                  <GripVertical />
+                </Button>
+              )}
+              <div className="flex-grow">
+                <CardTitle className="flex items-center gap-2">
+                  <Lightbulb className="h-6 w-6 text-accent" />
+                  Intelligent Fallback
+                </CardTitle>
+                <CardDescription>
+                  Get an AI-powered recommendation for the best provider for your specific task.
+                </CardDescription>
+              </div>
             </div>
-            {!isPoppedOut && onPopOut && <PopOutButton onClick={onPopOut} />}
+            <div className="flex items-center">
+              {!isPoppedOut && onHide && (
+                <Button variant="ghost" size="icon" onClick={onHide}>
+                  <EyeOff className="h-4 w-4" />
+                </Button>
+              )}
+              {!isPoppedOut && onPopOut && <PopOutButton onClick={onPopOut} />}
+            </div>
         </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">

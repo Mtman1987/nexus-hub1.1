@@ -1,10 +1,11 @@
+
 "use client";
 
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Shuffle, GripVertical, Save } from 'lucide-react';
+import { Shuffle, GripVertical, Save, EyeOff } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { PopOutButton } from './pop-out-button';
 import { useFallbackStrategy } from '@/hooks/use-fallback-strategy';
@@ -12,25 +13,41 @@ import { useFallbackStrategy } from '@/hooks/use-fallback-strategy';
 interface FallbackStrategyProps {
   onPopOut?: () => void;
   isPoppedOut?: boolean;
+  onHide?: () => void;
+  dragHandleProps?: any;
 }
 
-export function FallbackStrategy({ onPopOut, isPoppedOut = false }: FallbackStrategyProps) {
+export function FallbackStrategy({ onPopOut, isPoppedOut = false, onHide, dragHandleProps }: FallbackStrategyProps) {
   const { providers, handlePriorityChange, saveStrategy, availableProviderCount } = useFallbackStrategy();
   
   return (
     <Card className="h-full flex flex-col">
       <CardHeader>
         <div className="flex justify-between items-start">
-            <div className="flex-grow">
-              <CardTitle className="flex items-center gap-2">
-                <Shuffle className="h-6 w-6 text-accent" />
-                Fallback Strategy
-              </CardTitle>
-              <CardDescription>
-                Set the priority order for AI providers when a call fails. Only configured & enabled providers are shown.
-              </CardDescription>
+            <div className="flex items-center gap-2 flex-grow">
+               {dragHandleProps && (
+                <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab">
+                  <GripVertical />
+                </Button>
+              )}
+              <div className="flex-grow">
+                <CardTitle className="flex items-center gap-2">
+                  <Shuffle className="h-6 w-6 text-accent" />
+                  Fallback Strategy
+                </CardTitle>
+                <CardDescription>
+                  Set the priority order for AI providers when a call fails. Only configured & enabled providers are shown.
+                </CardDescription>
+              </div>
             </div>
-             {!isPoppedOut && onPopOut && <PopOutButton onClick={onPopOut} />}
+            <div className="flex items-center">
+              {!isPoppedOut && onHide && (
+                <Button variant="ghost" size="icon" onClick={onHide}>
+                  <EyeOff className="h-4 w-4" />
+                </Button>
+              )}
+              {!isPoppedOut && onPopOut && <PopOutButton onClick={onPopOut} />}
+            </div>
         </div>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col justify-between">

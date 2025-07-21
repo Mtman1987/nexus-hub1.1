@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, forwardRef, useEffect, useRef, useCallback } from 'react';
@@ -9,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { MessageSquare, Send, Loader2, Bot, User, Radio, Globe, Link, Save } from 'lucide-react';
+import { MessageSquare, Send, Loader2, Bot, User, Radio, Globe, Link, Save, GripVertical, EyeOff } from 'lucide-react';
 import DiscordLogo from '@/components/icons/discord-logo';
 import { Twitch } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
@@ -38,9 +39,11 @@ type Message = {
 interface UnifiedChatProps {
   onPopOut?: () => void;
   isPoppedOut?: boolean;
+  onHide?: () => void;
+  dragHandleProps?: any;
 }
 
-export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onPopOut, isPoppedOut = false }, ref) => {
+export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onPopOut, isPoppedOut = false, onHide, dragHandleProps }, ref) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -263,16 +266,30 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
     <Card className="h-full flex flex-col">
       <CardHeader>
         <div className="flex justify-between items-start">
-            <div className="flex-grow">
-              <CardTitle className="flex items-center gap-2">
-                <MessageSquare className="h-6 w-6 text-accent" />
-                Unified Chat
-              </CardTitle>
-              <CardDescription>
-                Send messages to AI, Discord, Twitch, and other services.
-              </CardDescription>
+             <div className="flex items-center gap-2 flex-grow">
+               {dragHandleProps && (
+                <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab">
+                  <GripVertical />
+                </Button>
+              )}
+              <div className="flex-grow">
+                <CardTitle className="flex items-center gap-2">
+                  <MessageSquare className="h-6 w-6 text-accent" />
+                  Unified Chat
+                </CardTitle>
+                <CardDescription>
+                  Send messages to AI, Discord, Twitch, and other services.
+                </CardDescription>
+              </div>
             </div>
-            {!isPoppedOut && onPopOut && <PopOutButton onClick={onPopOut} />}
+             <div className="flex items-center">
+              {!isPoppedOut && onHide && (
+                <Button variant="ghost" size="icon" onClick={onHide}>
+                  <EyeOff className="h-4 w-4" />
+                </Button>
+              )}
+              {!isPoppedOut && onPopOut && <PopOutButton onClick={onPopOut} />}
+            </div>
         </div>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col overflow-hidden">

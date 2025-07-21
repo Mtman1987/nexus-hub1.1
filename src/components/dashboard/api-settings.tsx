@@ -1,10 +1,11 @@
+
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { ShieldCheck, Save, LifeBuoy, Power, Bot, PlusCircle, Trash2, Link, Copy, Server, KeyRound, RefreshCw, Radio } from 'lucide-react';
+import { ShieldCheck, Save, LifeBuoy, Power, Bot, PlusCircle, Trash2, Link, Copy, Server, KeyRound, RefreshCw, Radio, GripVertical, EyeOff } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { SetupDialog } from './setup-dialog';
 import { useToast } from '@/hooks/use-toast';
@@ -174,9 +175,11 @@ interface ApiSettingsProps {
     onPopOut?: () => void;
     isPoppedOut?: boolean;
     setBotName?: (name: string) => void;
+    onHide?: () => void;
+    dragHandleProps?: any;
 }
 
-export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setContextBotName }: ApiSettingsProps) {
+export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setContextBotName, onHide, dragHandleProps }: ApiSettingsProps) {
   const [showSetup, setShowSetup] = useState(false);
   const { toast } = useToast();
   const [settings, setSettings] = useState<Settings>(defaultSettings);
@@ -427,18 +430,30 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
       <Card className="h-full flex flex-col">
         <CardHeader>
           <div className="flex justify-between items-start">
-            <div className="flex-grow">
-              <CardTitle className="flex items-center gap-2 text-2xl">
-                <ShieldCheck className="h-6 w-6 text-accent" />
-                API Key Vault
-              </CardTitle>
-              <CardDescription>Manage all your secret keys and connection endpoints here.</CardDescription>
+            <div className="flex items-center gap-2 flex-grow">
+               {dragHandleProps && (
+                <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab">
+                  <GripVertical />
+                </Button>
+              )}
+              <div className='flex-grow'>
+                <CardTitle className="flex items-center gap-2 text-2xl">
+                  <ShieldCheck className="h-6 w-6 text-accent" />
+                  API Key Vault
+                </CardTitle>
+                <CardDescription>Manage all your secret keys and connection endpoints here.</CardDescription>
+              </div>
             </div>
             <div className="flex items-center gap-2">
+              {!isPoppedOut && onHide && (
+                 <Button variant="ghost" size="icon" onClick={onHide}>
+                  <EyeOff className="h-4 w-4" />
+                </Button>
+              )}
               {!isPoppedOut && onPopOut && <PopOutButton onClick={onPopOut} />}
               <Button variant="outline" onClick={() => setShowSetup(true)}>
                 <LifeBuoy className="mr-2 h-4 w-4" />
-                Setup Wizard
+                Setup
               </Button>
             </div>
           </div>
