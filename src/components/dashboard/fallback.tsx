@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -10,22 +9,17 @@ import { Textarea } from '@/components/ui/textarea';
 import { Lightbulb, Loader2, Wand2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { useLogs } from '@/context/LogContext';
+import { getIntelligentFallback } from '@/services/ai';
+import type { IntelligentFallbackInput, IntelligentFallbackOutput } from '@/ai/types';
 import { PopOutButton } from './pop-out-button';
-
-// Define a placeholder type as the original was removed.
-type IntelligentFallbackOutput = {
-    recommendation: string;
-    reasoning: string;
-};
-
+import { useLogs } from '@/context/LogContext';
 
 interface FallbackProps {
-  isPoppedOut?: boolean;
   onPopOut?: () => void;
+  isPoppedOut?: boolean;
 }
 
-export function Fallback({ isPoppedOut = false, onPopOut }: FallbackProps) {
+export function Fallback({ onPopOut, isPoppedOut = false }: FallbackProps) {
     const [prompt, setPrompt] = useState('');
     const [goal, setGoal] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -36,13 +30,61 @@ export function Fallback({ isPoppedOut = false, onPopOut }: FallbackProps) {
     const handleGetRecommendation = async () => {
         setIsLoading(true);
         setResult(null);
-        addLog({ service: 'System', level: 'warn', message: "Intelligent Fallback is disabled because Genkit was removed." });
-        toast({
-            title: "Feature Disabled",
-            description: "This AI feature is currently disabled.",
-            variant: "destructive"
-        });
-        setIsLoading(false);
+
+        const logDetails = `Goal: "${goal}", Prompt: "${prompt.substring(0, 100)}..."`;
+        addLog({ service: 'System', level: 'info', message: "User requested an Intelligent Fallback recommendation.", details: logDetails });
+
+        try {
+            const config: { [key: string]: any } = {};
+            const configKeys = ['edenApiKey', 'googleApiKey', 'openaiApiKey', 'groqApiKey', 'providerStatus'];
+            configKeys.forEach(key => {
+                const item = localStorage.getItem(key);
+                if (item) {
+                    try {
+                        config[key] = JSON.parse(item);
+                    } catch {
+                        config[key] = item;
+                    }
+                }
+            });
+
+            if (!config.edenApiKey) {
+                toast({
+                    title: "Missing Primary API Key",
+                    description: "Please enter your Eden AI API key in the API Vault.",
+                    variant: "destructive"
+                });
+                addLog({ service: 'System', level: 'error', message: "Intelligent Fallback failed: Primary Eden AI API key is missing." });
+                setIsLoading(false);
+                return;
+            }
+
+            const input: IntelligentFallbackInput = {
+                prompt,
+                goal,
+                config,
+            };
+
+            const { response, logs } = await getIntelligentFallback(input);
+            setResult(response);
+            logs.forEach(log => addLog(log));
+
+        } catch (error) {
+            console.error(error);
+            const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
+            setResult({
+                recommendation: 'Error',
+                reasoning: `The recommendation could not be generated. ${errorMessage}`,
+            });
+            toast({
+                title: "Recommendation Failed",
+                description: "An unexpected error occurred. Check the Captain's Log for details.",
+                variant: "destructive"
+            });
+            addLog({ service: 'System', level: 'error', message: `Intelligent Fallback failed: ${errorMessage}`, details: error instanceof Error ? error.stack : String(error) });
+        } finally {
+            setIsLoading(false);
+        }
     }
 
   return (

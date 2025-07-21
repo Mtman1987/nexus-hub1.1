@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -7,15 +6,15 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Shuffle, GripVertical, Save } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import { useFallbackStrategy } from '@/hooks/use-fallback-strategy';
 import { PopOutButton } from './pop-out-button';
+import { useFallbackStrategy } from '@/hooks/use-fallback-strategy';
 
 interface FallbackStrategyProps {
-  isPoppedOut?: boolean;
   onPopOut?: () => void;
+  isPoppedOut?: boolean;
 }
 
-export function FallbackStrategy({ isPoppedOut = false, onPopOut }: FallbackStrategyProps) {
+export function FallbackStrategy({ onPopOut, isPoppedOut = false }: FallbackStrategyProps) {
   const { providers, handlePriorityChange, saveStrategy, availableProviderCount } = useFallbackStrategy();
   
   return (

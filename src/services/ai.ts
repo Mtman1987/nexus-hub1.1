@@ -6,7 +6,8 @@ import type { LogEntry } from '@/context/LogContext';
 import type { 
     UnifiedChatInput, UnifiedChatOutput, 
     IntelligentFallbackInput, IntelligentFallbackOutput, 
-    SetupAssistantInput, SetupAssistantOutput 
+    SetupAssistantInput, SetupAssistantOutput,
+    FlowLog
 } from '@/ai/types';
 
 import { intelligentFallbackFlow } from '@/ai/flows/intelligent-fallback';
@@ -18,14 +19,12 @@ import { unifiedChatFlow } from '@/ai/flows/unified-chat-flow';
  * It takes the user's message and targets and routes them accordingly.
  */
 export async function unifiedChat(input: UnifiedChatInput): Promise<UnifiedChatOutput> {
-    const logs: Omit<LogEntry, 'timestamp'>[] = [];
-    let reply = '';
+    const logs: FlowLog[] = [];
     
     try {
         const result = await unifiedChatFlow(input);
         logs.push(...result.logs);
-        reply = result.reply;
-        return { reply, logs, websiteAction: result.websiteAction };
+        return { reply: result.reply, logs, websiteAction: result.websiteAction };
 
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
@@ -42,15 +41,21 @@ export async function unifiedChat(input: UnifiedChatInput): Promise<UnifiedChatO
 /**
  * Function to get an AI-powered recommendation for the best service to use for a given task.
  */
-export async function getIntelligentFallback(input: IntelligentFallbackInput): Promise<IntelligentFallbackOutput> {
-     try {
-        return await intelligentFallbackFlow(input);
+export async function getIntelligentFallback(input: IntelligentFallbackInput): Promise<{response: IntelligentFallbackOutput, logs: FlowLog[]}> {
+    const logs: FlowLog[] = [];
+    try {
+        const response = await intelligentFallbackFlow(input);
+        logs.push({ service: 'System', level: 'info', message: `Intelligent Fallback recommended: ${response.recommendation}.`, details: `Reason: ${response.reasoning}` });
+        return { response, logs };
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-        console.error("Intelligent Fallback error:", error);
+        logs.push({ service: 'System', level: 'error', message: `Intelligent Fallback flow failed: ${errorMessage}`, details: error instanceof Error ? error.stack : JSON.stringify(error) });
         return {
-            recommendation: 'Error',
-            reasoning: `Failed to get a recommendation: ${errorMessage}`,
+            response: {
+                recommendation: 'Error',
+                reasoning: `Failed to get a recommendation: ${errorMessage}`,
+            },
+            logs
         };
     }
 }
