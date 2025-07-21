@@ -179,7 +179,7 @@ export default function DashboardPage() {
       return modules
         .filter(m => visibleModules[m.id] && !poppedOutModules.includes(m.id))
         .map(m => (
-        <div key={m.id} className="h-full relative">
+        <div key={m.id} className="h-[50px] relative">
             {React.createElement(m.component, {
                 isPoppedOut: false,
             })}
@@ -197,13 +197,13 @@ export default function DashboardPage() {
       <Sidebar />
       <main className="flex-1 flex flex-col overflow-auto">
       
-        {allToolModules.map(m => (
+        {allToolModules.map(m =>
             poppedOutModules.includes(m.id) && (
             <PopOutWindow key={`popout-${m.id}`} onClose={() => handlePopIn(m.id)} title={m.title}>
                 {React.createElement(m.component, { isPoppedOut: true })}
             </PopOutWindow>
             )
-        ))}
+        )}
 
         <div className="flex flex-col h-full overflow-hidden p-4 md:p-6 space-y-6">
             <div className="flex items-center justify-between flex-shrink-0">
