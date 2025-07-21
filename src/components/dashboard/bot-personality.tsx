@@ -92,6 +92,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
     const selectedPersonality = personalities.find(p => p.id === id);
     if (selectedPersonality) {
         setBotName(selectedPersonality.name);
+        addLog({ service: 'System', level: 'info', message: `User changed active bot personality to: ${selectedPersonality.name}` });
     }
   };
   
@@ -102,6 +103,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
     setPersonalities(newPersonalities);
     setSelectedPersonalityId(newId);
     setBotName(newPersonality.name);
+    addLog({ service: 'System', level: 'info', message: `User created a new bot personality: ${newPersonality.name}` });
   };
   
   const handleDeletePersonality = () => {
@@ -119,6 +121,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
     const newSelectedId = newPersonalities[0].id;
     setSelectedPersonalityId(newSelectedId);
     setBotName(newPersonalities[0].name);
+    addLog({ service: 'System', level: 'warn', message: `User deleted bot personality: ${personalityToDelete.name}` });
   };
   
   const handleSaveChanges = async (e: React.FormEvent) => {

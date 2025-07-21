@@ -206,13 +206,14 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                 setUnlockTimestamp(null);
                 setPassword('');
                 toast({ title: "Vault Locked", description: "The vault has been automatically locked due to inactivity." });
+                addLog({ service: 'System', level: 'warn', message: 'API Key Vault has been automatically locked.' });
             }
         }, 1000);
     }
     return () => {
         if(countdownRef.current) clearInterval(countdownRef.current);
     }
-  }, [unlockTimestamp, toast]);
+  }, [unlockTimestamp, toast, addLog]);
 
   useEffect(() => {
     return () => { // Cleanup timers on unmount
@@ -227,15 +228,18 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
         const newUnlockTimestamp = Date.now() + UNLOCK_DURATION_MS;
         setUnlockTimestamp(newUnlockTimestamp);
         toast({ title: "Vault Unlocked", description: "You can now edit settings for the next 5 minutes." });
+        addLog({ service: 'System', level: 'info', message: 'API Key Vault unlocked by user.' });
         
         lockTimerRef.current = setTimeout(() => {
             setIsLocked(true);
             setUnlockTimestamp(null);
             setPassword('');
             toast({ title: "Vault Locked", description: "The vault has been automatically locked." });
+            addLog({ service: 'System', level: 'warn', message: 'API Key Vault has been automatically locked.' });
         }, UNLOCK_DURATION_MS);
     } else {
         toast({ title: "Incorrect Password", variant: "destructive" });
+        addLog({ service: 'System', level: 'error', message: 'User entered incorrect vault password.' });
     }
   }
 
@@ -274,6 +278,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     const secret = Array.from(array, dec => ('0' + dec.toString(16)).substr(-2)).join('');
     handleInputChange('remoteAccessSecret', `smos_sec_${secret}`);
     toast({ title: "Secret Key Generated", description: "A new secret key has been generated and placed in the field." });
+    addLog({ service: 'System', level: 'info', message: 'New remote access secret key generated.' });
   };
   
   const handleSaveChanges = async (e: React.FormEvent) => {

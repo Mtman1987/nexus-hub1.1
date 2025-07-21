@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from 'react';
@@ -186,10 +187,14 @@ export default function DashboardPage() {
   };
 
   const handleHideModule = (moduleId: string) => {
+    const module = ALL_MODULES_CONFIG.find(m => m.id === moduleId);
+    addLog({ service: 'System', level: 'info', message: `User hid the '${module?.title}' module.` });
     setHiddenModules(prev => [...prev, moduleId]);
   };
 
   const handleShowModule = (moduleId: string) => {
+    const module = ALL_MODULES_CONFIG.find(m => m.id === moduleId);
+    addLog({ service: 'System', level: 'info', message: `User restored the '${module?.title}' module.` });
     setHiddenModules(prev => prev.filter(id => id !== moduleId));
   };
   
