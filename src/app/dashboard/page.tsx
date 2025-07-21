@@ -86,7 +86,6 @@ export default function DashboardPage() {
   const { addLog } = useLogs();
   
   const [visibleModules, setVisibleModules] = useState<ModuleVisibility>(defaultVisibility);
-  const [showSetup, setShowSetup] = useState(false);
   const [poppedOutModules, setPoppedOutModules] = useState<string[]>([]);
   
   useEffect(() => {
@@ -101,11 +100,6 @@ export default function DashboardPage() {
     } catch (error) {
         console.error("Failed to load settings from localStorage", error);
         addLog({ service: 'System', level: 'error', message: 'Failed to load dashboard settings from local storage.', details: error instanceof Error ? error.stack : String(error) });
-    }
-
-    const key = localStorage.getItem('edenApiKey') || localStorage.getItem('googleApiKey');
-    if (!key) {
-        setShowSetup(true);
     }
   }, [addLog]);
 
@@ -179,7 +173,6 @@ export default function DashboardPage() {
     <div className="flex min-h-screen w-full">
       <Sidebar />
       <main className="flex-1 overflow-auto">
-        <SetupDialog open={showSetup} onOpenChange={setShowSetup} />
       
         {allToolModules.map(m =>
             poppedOutModules.includes(m.id) && (

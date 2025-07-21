@@ -12,8 +12,9 @@ import { WebsiteViewer } from '@/components/dashboard/website-viewer';
 import { UserRoles } from '@/components/dashboard/user-roles';
 import { Fallback } from '@/components/dashboard/fallback';
 import { FallbackStrategy } from '@/components/dashboard/fallback-strategy';
-import { Monitor, X, LayoutGrid, Home } from 'lucide-react';
+import { Monitor, X, LayoutGrid, Home, LifeBuoy } from 'lucide-react';
 import Link from 'next/link';
+import { SetupDialog } from '@/components/dashboard/setup-dialog';
 
 const componentMap: { [key: string]: React.ComponentType<{ isPoppedOut?: boolean }> } = {
   apiSettings: ApiSettings,
@@ -51,6 +52,7 @@ export function LauncherUI() {
   ]);
 
   const [popOuts, setPopOuts] = useState<{ [key: number]: React.ReactNode }>({});
+  const [showSetup, setShowSetup] = useState(false);
 
   const handleSelectChange = (slotId: number, componentKey: string) => {
     setSlots(slots.map(slot => (slot.id === slotId ? { ...slot, componentKey } : slot)));
@@ -116,10 +118,12 @@ export function LauncherUI() {
   }
 
   return (
+    <>
+    <SetupDialog open={showSetup} onOpenChange={setShowSetup} />
     <div className="min-h-screen bg-background text-foreground p-8">
       {Object.values(popOuts)}
       <div className="max-w-4xl mx-auto">
-        <header className="mb-8 flex justify-between items-center">
+        <header className="mb-8 flex justify-between items-start flex-wrap gap-4">
           <div>
             <h1 className="text-4xl font-bold tracking-tight flex items-center gap-3">
               <LayoutGrid className="h-10 w-10 text-accent" />
@@ -129,12 +133,18 @@ export function LauncherUI() {
               Configure and launch modules in a 2x2 grid for your command center.
             </p>
           </div>
-          <Link href="/dashboard" passHref>
-             <Button variant="outline">
-                <Home className="mr-2 h-4 w-4"/>
-                Go to Dashboard
-             </Button>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Button variant="link" onClick={() => setShowSetup(true)}>
+                <LifeBuoy className="mr-2 h-4 w-4"/>
+                New User? Start Here
+            </Button>
+            <Link href="/dashboard" passHref>
+               <Button variant="outline">
+                  <Home className="mr-2 h-4 w-4"/>
+                  Go to Dashboard
+               </Button>
+            </Link>
+          </div>
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -184,5 +194,6 @@ export function LauncherUI() {
         </div>
       </div>
     </div>
+    </>
   );
 }
