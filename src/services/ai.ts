@@ -1,4 +1,5 @@
 
+
 'use server';
 /**
  * @fileOverview This file is the single entry point for all AI service calls.
@@ -10,10 +11,15 @@ import { setupAssistantFlow } from '@/ai/flows/setup-assistant';
 import { unifiedChatFlow } from '@/ai/flows/unified-chat-flow';
 import { loreWeaverFlow } from '@/ai/flows/lore-weaver';
 import { imageGeneratorFlow } from '@/ai/flows/image-generator-flow';
+import { loreEditorFlow } from '@/ai/flows/lore-editor-flow';
+import { loreCuratorFlow } from '@/ai/flows/lore-curator-flow';
+
 
 import type { FlowLog, IntelligentFallbackInput, IntelligentFallbackOutput, SetupAssistantInput, SetupAssistantOutput, UnifiedChatInput, UnifiedChatOutput } from '@/ai/types';
 import type { LoreWeaverInput, LoreWeaverOutput } from '@/ai/types';
 import type { ImageGeneratorInput, ImageGeneratorOutput } from '@/ai/types';
+import type { LoreEditorInput, LoreEditorOutput } from '@/ai/types';
+import type { LoreCuratorInput, LoreCuratorOutput } from '@/ai/types';
 
 /**
  * Main service function to handle unified chat requests.
@@ -48,4 +54,18 @@ export async function getLoreWeaverResponse(input: LoreWeaverInput): Promise<{re
  */
 export async function generateImage(input: ImageGeneratorInput): Promise<ImageGeneratorOutput> {
     return imageGeneratorFlow(input);
+}
+
+/**
+ * Service function to get creative help when editing lore.
+ */
+export async function getLoreEditorSuggestion(input: LoreEditorInput): Promise<LoreEditorOutput> {
+    return loreEditorFlow(input);
+}
+
+/**
+ * Service function to have the AI sort and place a new entry into the timeline.
+ */
+export async function getCuratedTimeline(input: LoreCuratorInput): Promise<LoreCuratorOutput> {
+    return loreCuratorFlow(input);
 }

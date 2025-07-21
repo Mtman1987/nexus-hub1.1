@@ -1,4 +1,5 @@
 
+
 import type { LogEntry } from "@/context/LogContext";
 import { z } from "zod";
 
@@ -96,3 +97,33 @@ export const ImageGeneratorOutputSchema = z.object({
     enhancedPrompt: z.string(),
 });
 export type ImageGeneratorOutput = z.infer<typeof ImageGeneratorOutputSchema>;
+
+// --- Lore Editor ---
+export const LoreEditorInputSchema = z.object({
+  currentDraft: z.string().describe("The user's current version of the lore entry."),
+  userRequest: z.string().describe("The user's specific question or request for help with the draft.")
+});
+export type LoreEditorInput = z.infer<typeof LoreEditorInputSchema>;
+
+export const LoreEditorOutputSchema = z.object({
+  suggestion: z.string().describe("The AI's creative suggestion to help the user improve their draft.")
+});
+export type LoreEditorOutput = z.infer<typeof LoreEditorOutputSchema>;
+
+
+// --- Lore Curator ---
+const LoreEntrySchema = z.object({
+  prompt: z.string(),
+  response: z.string(),
+});
+
+export const LoreCuratorInputSchema = z.object({
+  existingTimeline: z.array(LoreEntrySchema).describe("The current timeline of lore entries, in chronological order."),
+  newLore: LoreEntrySchema.describe("The new lore entry to be added to the timeline.")
+});
+export type LoreCuratorInput = z.infer<typeof LoreCuratorInputSchema>;
+
+export const LoreCuratorOutputSchema = z.object({
+  sortedTimeline: z.array(LoreEntrySchema).describe("The complete, re-sorted timeline including the new entry in its correct chronological position.")
+});
+export type LoreCuratorOutput = z.infer<typeof LoreCuratorOutputSchema>;
