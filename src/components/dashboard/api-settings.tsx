@@ -48,7 +48,7 @@ type ProviderStatus = {
 }
 
 const defaultModels = {
-    edenAiModel: 'gpt-4o',
+    edenAiModel: 'openai/gpt-4o', // Default to a known good provider/model
     googleModelName: 'gemini-1.5-flash-latest',
     openaiModelName: 'gpt-4o',
     groqModelName: 'llama3-8b-8192',
@@ -58,6 +58,13 @@ const popularModels = {
     google: ['gemini-1.5-flash-latest', 'gemini-1.5-pro-latest', 'gemini-1.0-pro'],
     openai: ['gpt-4o', 'gpt-4-turbo', 'gpt-3.5-turbo'],
     groq: ['llama3-8b-8192', 'llama3-70b-8192', 'mixtral-8x7b-32768', 'gemma-7b-it'],
+    eden: {
+        openai: ['gpt-4o', 'gpt-4-turbo', 'gpt-3.5-turbo'],
+        google: ['gemini-1.5-flash-latest', 'gemini-1.5-pro-latest'],
+        anthropic: ['claude-3-opus-20240229', 'claude-3-sonnet-20240229', 'claude-3-haiku-20240307'],
+        cohere: ['command-r', 'command-r-plus'],
+        meta: ['llama3-8b-8192', 'llama3-70b-8192']
+    }
 };
 
 const defaultProviderStatus: ProviderStatus = {
@@ -150,6 +157,8 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
   const lockTimerRef = useRef<NodeJS.Timeout | null>(null);
   const countdownRef = useRef<NodeJS.Timeout | null>(null);
 
+  const [customModels, setCustomModels] = useState<{ [key: string]: string }>({});
+
   useEffect(() => {
     try {
         const loadedSettings: Partial<Settings> = {};
@@ -186,6 +195,23 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
 
         const finalSettings = { ...defaultSettings, ...loadedSettings };
         setSettings(finalSettings);
+
+        // Check for custom models on load
+        const tempCustomModels: { [key: string]: string } = {};
+        Object.keys(defaultModels).forEach(key => {
+            const modelKey = key as keyof typeof defaultModels;
+            const savedModel = finalSettings[modelKey];
+            const allPopularModels = Object.values(popularModels).flat(2);
+            if (savedModel && !allPopularModels.includes(savedModel) && !Object.values(popularModels.eden).flat().some(m => `openai/${m}` === savedModel)) {
+                if(key !== 'edenAiModel') {
+                    tempCustomModels[modelKey] = savedModel;
+                    finalSettings[modelKey] = 'custom';
+                }
+            }
+        });
+        setCustomModels(tempCustomModels);
+
+
         addLog({ service: 'System', level: 'info', message: 'API Key Vault settings loaded from local storage.' });
     } catch (error) {
         console.error("Failed to load settings from local storage", error);
@@ -247,6 +273,24 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     setSettings(prev => ({ ...prev, [key]: value }));
   };
 
+  const handleModelSelect = (key: keyof typeof defaultModels, value: string) => {
+    if (value === 'custom') {
+        handleInputChange(key, 'custom');
+    } else {
+        handleInputChange(key, value);
+        // Clear custom model input if a standard one is chosen
+        setCustomModels(prev => {
+            const newCustoms = { ...prev };
+            delete newCustoms[key];
+            return newCustoms;
+        });
+    }
+  };
+
+  const handleCustomModelChange = (key: keyof typeof defaultModels, value: string) => {
+    setCustomModels(prev => ({ ...prev, [key]: value }));
+  };
+
   const handleStatusChange = (providerId: ProviderId, enabled: boolean) => {
     setProviderStatus(prev => ({ ...prev, [providerId]: enabled ? 'enabled' : 'disabled' }));
   };
@@ -286,8 +330,11 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     try {
       const settingsToSave: Partial<Settings> = { ...settings };
       const modelKeys: (keyof typeof defaultModels)[] = ['googleModelName', 'openaiModelName', 'groqModelName', 'edenAiModel'];
+      
       for (const key of modelKeys) {
-          if (!settingsToSave[key as keyof Settings]) {
+          if (settingsToSave[key as keyof Settings] === 'custom') {
+              settingsToSave[key as keyof Settings] = customModels[key] || defaultModels[key];
+          } else if (!settingsToSave[key as keyof Settings]) {
               settingsToSave[key as keyof Settings] = defaultModels[key];
           }
       }
@@ -333,6 +380,9 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
   };
 
   const timeFormatter = new Intl.DateTimeFormat('en', { minute: '2-digit', second: '2-digit' });
+
+  const edenProvider = settings.edenAiProvider || 'openai';
+  const edenModelsForProvider = popularModels.eden[edenProvider as keyof typeof popularModels.eden] || [];
 
   return (
     <>
@@ -450,78 +500,57 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                                   </SelectContent>
                               </Select>
                           </div>
-                          <div className="space-y-2">
-                              <Label htmlFor="eden-model">Model Name via Eden</Label>
-                              <Input id="eden-model" type="text" placeholder="e.g. gpt-4o, claude-3-opus-20240229" value={settings.edenAiModel || ''} onChange={(e) => handleInputChange('edenAiModel', e.target.value)} disabled={isLocked}/>
-                          </div>
-                      </AccordionContent>
-                  </AccordionItem>
-
-                  <AccordionItem value="google">
-                      <CustomAccordionTrigger icon={<Bot className="h-5 w-5"/>} title="Google AI (Fallback)" />
-                      <AccordionContent className="space-y-4 pt-4">
-                          <ServiceStatusToggle providerId="google" isConfigured={!!settings.googleApiKey} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
-                          <div className="space-y-2">
-                              <Label htmlFor="google-ai-key">Google AI API Key</Label>
-                              <Input id="google-ai-key" type="password" placeholder="Your Google AI API Key" value={settings.googleApiKey || ''} onChange={(e) => handleInputChange('googleApiKey', e.target.value)} disabled={isLocked}/>
-                          </div>
                            <div className="space-y-2">
-                              <Label htmlFor="google-model-name">Google AI Model Name</Label>
-                              <Select value={settings.googleModelName || defaultModels.googleModelName} onValueChange={(value) => handleInputChange('googleModelName', value as string)} disabled={isLocked}>
-                                  <SelectTrigger><SelectValue placeholder="Select a model..." /></SelectTrigger>
-                                  <SelectContent>
-                                      {popularModels.google.map(model => (
-                                          <SelectItem key={model} value={model}>{model}</SelectItem>
-                                      ))}
-                                  </SelectContent>
-                              </Select>
-                          </div>
+                                <Label htmlFor="eden-model">Model Name via Eden</Label>
+                                <Select value={settings.edenAiModel} onValueChange={(value) => handleInputChange('edenAiModel', value)} disabled={isLocked}>
+                                    <SelectTrigger><SelectValue placeholder="Select a model..." /></SelectTrigger>
+                                    <SelectContent>
+                                    {edenModelsForProvider.map(model => (
+                                        <SelectItem key={model} value={`${edenProvider}/${model}`}>{model}</SelectItem>
+                                    ))}
+                                    </SelectContent>
+                                </Select>
+                                <p className="text-xs text-muted-foreground">The full model name (e.g., openai/gpt-4o) will be sent.</p>
+                            </div>
                       </AccordionContent>
                   </AccordionItem>
-
-                  <AccordionItem value="openai">
-                      <CustomAccordionTrigger icon={<Bot className="h-5 w-5"/>} title="OpenAI (Fallback)" />
-                      <AccordionContent className="space-y-4 pt-4">
-                           <ServiceStatusToggle providerId="openai" isConfigured={!!settings.openaiApiKey} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
-                          <div className="space-y-2">
-                              <Label htmlFor="openai-key">OpenAI API Key</Label>
-                              <Input id="openai-key" type="password" placeholder="Your OpenAI API Key" value={settings.openaiApiKey || ''} onChange={(e) => handleInputChange('openaiApiKey', e.target.value)} disabled={isLocked}/>
-                          </div>
-                          <div className="space-y-2">
-                              <Label htmlFor="openai-model-name">OpenAI Model Name</Label>
-                              <Select value={settings.openaiModelName || defaultModels.openaiModelName} onValueChange={(value) => handleInputChange('openaiModelName', value as string)} disabled={isLocked}>
-                                  <SelectTrigger><SelectValue placeholder="Select a model..." /></SelectTrigger>
-                                  <SelectContent>
-                                      {popularModels.openai.map(model => (
-                                          <SelectItem key={model} value={model}>{model}</SelectItem>
-                                      ))}
-                                  </SelectContent>
-                              </Select>
-                          </div>
-                      </AccordionContent>
-                  </AccordionItem>
-
-                  <AccordionItem value="groq">
-                      <CustomAccordionTrigger icon={<Bot className="h-5 w-5"/>} title="Groq (Fallback)" />
-                      <AccordionContent className="space-y-4 pt-4">
-                          <ServiceStatusToggle providerId="groq" isConfigured={!!settings.groqApiKey} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
-                          <div className="space-y-2">
-                              <Label htmlFor="groq-key">Groq API Key</Label>
-                              <Input id="groq-key" type="password" placeholder="Your Groq API Key" value={settings.groqApiKey || ''} onChange={(e) => handleInputChange('groqApiKey', e.target.value)} disabled={isLocked}/>
-                          </div>
-                          <div className="space-y-2">
-                              <Label htmlFor="groq-model-name">Groq Model Name</Label>
-                              <Select value={settings.groqModelName || defaultModels.groqModelName} onValueChange={(value) => handleInputChange('groqModelName', value as string)} disabled={isLocked}>
-                                  <SelectTrigger><SelectValue placeholder="Select a model..." /></SelectTrigger>
-                                  <SelectContent>
-                                      {popularModels.groq.map(model => (
-                                          <SelectItem key={model} value={model}>{model}</SelectItem>
-                                      ))}
-                                  </SelectContent>
-                              </Select>
-                          </div>
-                      </AccordionContent>
-                  </AccordionItem>
+                  
+                  {(['google', 'openai', 'groq'] as const).map((providerId) => (
+                      <AccordionItem key={providerId} value={providerId}>
+                          <CustomAccordionTrigger icon={<Bot className="h-5 w-5"/>} title={`${PROVIDER_CONFIG[providerId].name} (Fallback)`} />
+                          <AccordionContent className="space-y-4 pt-4">
+                              <ServiceStatusToggle providerId={providerId} isConfigured={!!settings[`${providerId}ApiKey`]} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
+                              <div className="space-y-2">
+                                  <Label htmlFor={`${providerId}-ai-key`}>{`${PROVIDER_CONFIG[providerId].name}`} API Key</Label>
+                                  <Input id={`${providerId}-ai-key`} type="password" placeholder={`Your ${PROVIDER_CONFIG[providerId].name} API Key`} value={settings[`${providerId}ApiKey`] || ''} onChange={(e) => handleInputChange(`${providerId}ApiKey`, e.target.value)} disabled={isLocked}/>
+                              </div>
+                              <div className="space-y-2">
+                                  <Label htmlFor={`${providerId}-model-name`}>{`${PROVIDER_CONFIG[providerId].name}`} Model Name</Label>
+                                  <Select value={settings[`${providerId}ModelName`] || defaultModels[`${providerId}ModelName`]} onValueChange={(value) => handleModelSelect(`${providerId}ModelName`, value)} disabled={isLocked}>
+                                      <SelectTrigger><SelectValue placeholder="Select a model..." /></SelectTrigger>
+                                      <SelectContent>
+                                          {popularModels[providerId].map(model => (
+                                              <SelectItem key={model} value={model}>{model}</SelectItem>
+                                          ))}
+                                          <SelectItem value="custom">Custom...</SelectItem>
+                                      </SelectContent>
+                                  </Select>
+                              </div>
+                              {settings[`${providerId}ModelName`] === 'custom' && (
+                                <div className="space-y-2 pl-2 border-l-2 border-primary">
+                                    <Label htmlFor={`${providerId}-custom-model`}>Custom Model ID</Label>
+                                    <Input 
+                                        id={`${providerId}-custom-model`}
+                                        placeholder="Enter your fine-tuned model ID"
+                                        value={customModels[`${providerId}ModelName`] || ''}
+                                        onChange={(e) => handleCustomModelChange(`${providerId}ModelName`, e.target.value)}
+                                        disabled={isLocked}
+                                    />
+                                </div>
+                              )}
+                          </AccordionContent>
+                      </AccordionItem>
+                  ))}
 
                    <AccordionItem value="discord">
                       <CustomAccordionTrigger icon={<Bot className="h-5 w-5"/>} title="Discord Integration" />
@@ -637,5 +666,3 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     </>
   );
 }
-
-    

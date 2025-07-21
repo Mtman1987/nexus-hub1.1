@@ -5,7 +5,7 @@
  *
  * - loreWeaverFlow - The main function to get a lore-based response.
  */
-import { callAIChat } from '@/services/ai';
+import { callAIChat } from '@/ai/utils';
 import { type LoreWeaverInput, LoreWeaverOutputSchema, type LoreWeaverOutput, type FlowLog } from '@/ai/types';
 
 

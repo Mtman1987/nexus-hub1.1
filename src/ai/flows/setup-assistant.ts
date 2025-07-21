@@ -6,7 +6,7 @@
  * - setupAssistant - The main function to get help.
  */
 
-import { callAIChat } from '@/services/ai';
+import { callAIChat } from '@/ai/utils';
 import { type SetupAssistantInput, type SetupAssistantOutput, SetupAssistantOutputSchema } from '@/ai/types';
 
 export async function setupAssistantFlow(input: SetupAssistantInput): Promise<{response: SetupAssistantOutput, logs: any[]}> {

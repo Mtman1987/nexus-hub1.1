@@ -5,7 +5,7 @@
  *
  * - intelligentFallback - The main function to get a recommendation.
  */
-import { callAIChat } from '@/services/ai';
+import { callAIChat } from '@/ai/utils';
 import { IntelligentFallbackOutputSchema, type IntelligentFallbackInput, type IntelligentFallbackOutput } from '@/ai/types';
 
 export async function intelligentFallbackFlow(input: IntelligentFallbackInput): Promise<{response: IntelligentFallbackOutput, logs: any[]}> {

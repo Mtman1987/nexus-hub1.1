@@ -6,7 +6,7 @@
  *
  * - unifiedChat - The main function to handle chat messages.
  */
-import { callAIChat } from '@/services/ai';
+import { callAIChat } from '@/ai/utils';
 import type { LogEntry } from '@/context/LogContext';
 import { type UnifiedChatInput, type UnifiedChatOutput, type FlowLog } from '@/ai/types';
 import { websiteControl } from './website-control-flow';
@@ -55,7 +55,7 @@ async function sendToStreamerBot(config: UnifiedChatInput['config'], message: st
                     request: "DoAction",
                     action: { name: actionName },
                     args: { message: message },
-                    id: `nexus-hub-do-action-${Date.now()}`
+                    id: `apollo-station-do-action-${Date.now()}`
                 };
                 successMessage = `Successfully sent action '${actionName}' to Streamer.bot.`;
                 break;
@@ -64,7 +64,7 @@ async function sendToStreamerBot(config: UnifiedChatInput['config'], message: st
                 payloadBody = {
                     request: "BroadcastMessage",
                     message: message,
-                    id: `nexus-hub-broadcast-${Date.now()}`
+                    id: `apollo-station-broadcast-${Date.now()}`
                 };
                 successMessage = `Successfully broadcasted message via Streamer.bot.`;
                 break;
@@ -75,7 +75,7 @@ async function sendToStreamerBot(config: UnifiedChatInput['config'], message: st
                     request: "SetGlobal",
                     name: variableName,
                     value: message,
-                    id: `nexus-hub-set-global-${Date.now()}`
+                    id: `apollo-station-set-global-${Date.now()}`
                 };
                 successMessage = `Successfully set global variable '${variableName}'.`;
                 break;
@@ -89,7 +89,7 @@ async function sendToStreamerBot(config: UnifiedChatInput['config'], message: st
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
-                'User-Agent': 'NexusHub/1.0' 
+                'User-Agent': 'ApolloStation/1.0' 
             },
             body: JSON.stringify(payloadBody),
         });
@@ -145,7 +145,7 @@ export async function unifiedChatFlow(input: UnifiedChatInput): Promise<UnifiedC
     const providerStatus = config?.providerStatus || {};
     let messageToSendToServices = message;
     
-    const botName = config?.botName || "Nexus";
+    const botName = config?.botName || "Apollo";
     const remoteHubAddress = config?.remoteHubAddress;
     
     // If a remote address is configured, forward the entire request to the local hub.

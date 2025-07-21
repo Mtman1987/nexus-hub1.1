@@ -6,7 +6,7 @@
  *
  * - websiteControl - The main function to process the command.
  */
-import { callAIChat } from '@/services/ai';
+import { callAIChat } from '@/ai/utils';
 import { z } from 'zod';
 import { type WebsiteControlInput, WebsiteControlOutputSchema, type WebsiteControlOutput, FlowLog } from '@/ai/types';
 

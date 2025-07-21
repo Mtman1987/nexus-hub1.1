@@ -15,6 +15,7 @@ import { SavedItems } from '@/components/dashboard/saved-items';
 import { LoreWeaver } from '@/components/dashboard/lore-weaver';
 import { TimeZoneConverter } from '@/components/dashboard/timezone-converter';
 import { BotPersonality } from '@/components/dashboard/bot-personality';
+import { ImageGenerator } from '@/components/dashboard/image-generator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { LogProvider } from '@/context/LogContext';
@@ -33,6 +34,7 @@ const moduleMap: { [key: string]: React.ComponentType<any> } = {
   loreWeaver: LoreWeaver,
   timeZoneConverter: TimeZoneConverter,
   botPersonality: BotPersonality,
+  imageGenerator: ImageGenerator,
 };
 
 function PopoutContent({ slug }: { slug: string }) {

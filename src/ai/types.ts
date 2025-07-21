@@ -84,3 +84,15 @@ export const LoreWeaverOutputSchema = z.object({
     response: z.string(),
 });
 export type LoreWeaverOutput = z.infer<typeof LoreWeaverOutputSchema>;
+
+// --- Image Generator ---
+export const ImageGeneratorInputSchema = z.object({
+    prompt: z.string(),
+});
+export type ImageGeneratorInput = z.infer<typeof ImageGeneratorInputSchema>;
+
+export const ImageGeneratorOutputSchema = z.object({
+    imageUrl: z.string(),
+    enhancedPrompt: z.string(),
+});
+export type ImageGeneratorOutput = z.infer<typeof ImageGeneratorOutputSchema>;

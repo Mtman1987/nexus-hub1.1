@@ -5,8 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Bot, PlusCircle, Trash2, GripVertical, EyeOff, Save, Smile } from 'lucide-react';
-import React, { useState, useEffect } from 'react';
+import { Bot, PlusCircle, Trash2, GripVertical, EyeOff, Save, Smile, Download, Upload } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useLogs } from '@/context/LogContext';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -41,6 +41,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
   const { toast } = useToast();
   const { addLog } = useLogs();
   const { setBotName } = useBotName();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [personalities, setPersonalities] = useState<BotPersonalityType[]>(defaultPersonalities);
   const [selectedPersonalityId, setSelectedPersonalityId] = useState<string | null>(defaultPersonalities[0].id);
@@ -72,7 +73,6 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
 
     setPersonalities(prev => prev.map(p => {
         if (p.id === selectedPersonalityId) {
-            // Prevent editing the default personality
             if (p.isDefault) return p;
             return {...p, [field]: value};
         }
@@ -123,6 +123,67 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
     setBotName(newPersonalities[0].name);
     addLog({ service: 'System', level: 'warn', message: `User deleted bot personality: ${personalityToDelete.name}` });
   };
+
+  const handleExport = () => {
+    const personalityToExport = personalities.find(p => p.id === selectedPersonalityId);
+    if (!personalityToExport || personalityToExport.isDefault) {
+        toast({ title: "Export Failed", description: "You can only export custom personalities.", variant: "destructive" });
+        return;
+    }
+
+    const { id, isDefault, ...exportableData } = personalityToExport;
+    const dataStr = JSON.stringify(exportableData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${exportableData.name.toLowerCase().replace(/\s+/g, '-')}-personality.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    toast({ title: "Personality Exported", description: `${exportableData.name} has been saved.` });
+    addLog({ service: 'System', level: 'info', message: `User exported personality: ${exportableData.name}` });
+  };
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result;
+        if (typeof content !== 'string') throw new Error("File is not readable");
+        const imported = JSON.parse(content);
+        
+        if (!imported.name || !imported.prompt) {
+            throw new Error("Invalid personality file format.");
+        }
+
+        const newPersonality: BotPersonalityType = {
+          id: `imported-${Date.now()}`,
+          name: imported.name,
+          prompt: imported.prompt,
+        };
+
+        setPersonalities(prev => [...prev, newPersonality]);
+        toast({ title: "Import Successful", description: `${newPersonality.name} has been added to your personalities.` });
+        addLog({ service: 'System', level: 'info', message: `User imported personality: ${newPersonality.name}` });
+
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "An unknown error occurred.";
+        toast({ title: "Import Failed", description: message, variant: "destructive" });
+        addLog({ service: 'System', level: 'error', message: `Failed to import personality: ${message}` });
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = ''; // Reset input to allow re-importing the same file
+  };
   
   const handleSaveChanges = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,10 +200,10 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
       }
 
       toast({
-        title: "Personality Saved",
-        description: "Your bot's personality has been updated.",
+        title: "Personalities Saved",
+        description: "Your bot personalities have been updated.",
       });
-      addLog({ service: 'System', level: 'info', message: 'Bot personality saved by user.' });
+      addLog({ service: 'System', level: 'info', message: 'Bot personalities saved by user.' });
       window.dispatchEvent(new Event('storage'));
     } catch (error) {
       console.error("Failed to save personality settings", error);
@@ -201,8 +262,8 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                             ))}
                         </SelectContent>
                     </Select>
-                    <Button type="button" variant="outline" size="icon" onClick={handleAddNewPersonality}><PlusCircle className="h-4 w-4"/></Button>
-                    <Button type="button" variant="destructive" size="icon" onClick={handleDeletePersonality} disabled={isSelectedPersonalityDefault}><Trash2 className="h-4 w-4"/></Button>
+                    <Button type="button" variant="outline" size="icon" onClick={handleAddNewPersonality} title="Add New Personality"><PlusCircle className="h-4 w-4"/></Button>
+                    <Button type="button" variant="destructive" size="icon" onClick={handleDeletePersonality} disabled={isSelectedPersonalityDefault} title="Delete Personality"><Trash2 className="h-4 w-4"/></Button>
                 </div>
             </div>
 
@@ -233,10 +294,19 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                     </div>
                 </>
             )}
-             <div className="flex justify-end pt-4 border-t mt-auto">
+             <div className="flex justify-between items-center pt-4 border-t mt-auto">
+                <div>
+                  <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".json" style={{ display: 'none' }} />
+                  <Button type="button" variant="outline" size="sm" onClick={handleImportClick}>
+                    <Upload className="mr-2 h-4 w-4"/> Import
+                  </Button>
+                  <Button type="button" variant="outline" size="sm" onClick={handleExport} className="ml-2" disabled={isSelectedPersonalityDefault}>
+                    <Download className="mr-2 h-4 w-4"/> Export
+                  </Button>
+                </div>
                 <Button type="submit" form="bot-personality-form">
                   <Save className="mr-2 h-4 w-4" />
-                  Save Personalities
+                  Save All
                 </Button>
             </div>
           </form>
