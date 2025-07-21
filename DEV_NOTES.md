@@ -39,6 +39,17 @@ Here is a simplified tree of the most important files and directories you'll be 
 
 ---
 
+## Future Roadmap (Long-Term Goals)
+
+This section captures the visionary ideas discussed for future development phases.
+
+*   **Firebase-Powered Bot Store:** Transition the "Bot Personality" store from local storage to a cloud-based Firebase database. This will allow users to seamlessly share, discover, and import bot personalities created by the entire community across all their devices.
+*   **The "ZEUS" Lore AI:** Develop a master AI (tentatively named "ZEUS"). Instead of a static prompt, its entire personality and knowledge base will be dynamically sourced from the "Galactic Timeline." The AI will "live" the lore created by the community, providing a deeply immersive and context-aware interaction.
+*   **Unified TTS via Eden AI:** Refactor the Text-to-Speech (TTS) system to route through Eden AI. This aligns with the strategy of simplifying user setup by funneling multiple backend services through a single primary API key, reducing configuration complexity.
+*   **Star-Catching Minigame:** Introduce a gamified element to the UI where users can click on the animated shooting stars. This would trigger a sound effect and increment a global "Star Points" counter, with a community-wide leaderboard. The top user could earn a special "Starlord" title recognized by the bots.
+
+---
+
 ## Architectural Note: Why a Separate Discord Bot?
 
 You might wonder why the Discord message relay isn't built directly into the Next.js application. Here’s the reasoning:
@@ -171,3 +182,5 @@ if TOKEN:
     client.run(TOKEN)
 else:
     print("Error: DISCORD_TOKEN not found. Please add it to your .env file.")
+
+```
