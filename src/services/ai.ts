@@ -20,7 +20,7 @@ type CallAIChatParams = {
 };
 
 const PROVIDER_CONFIG = {
-    eden: { name: 'Eden AI', keyName: 'edenApiKey', url: 'https://api.edenai.run/v2/text/chat' },
+    eden: { name: 'Eden AI', keyName: 'edenApiKey', modelKey: 'edenAiModelName', url: 'https://api.edenai.run/v2/text/chat' },
     google: { name: 'Google AI', keyName: 'googleApiKey', modelKey: 'googleModelName', url: 'https://generativelanguage.googleapis.com/v1beta/models' },
     openai: { name: 'OpenAI', keyName: 'openaiApiKey', modelKey: 'openaiModelName', url: 'https://api.openai.com/v1/chat/completions' },
     groq: { name: 'Groq', keyName: 'groqApiKey', modelKey: 'groqModelName', url: 'https://api.groq.com/openai/v1/chat/completions' },
@@ -30,7 +30,12 @@ function getConfig(overrideConfig?: { [key:string]: any | undefined }) {
     if (overrideConfig && Object.keys(overrideConfig).length > 0) {
         return (key: string) => overrideConfig[key];
     }
-    return (key: string) => localStorage.getItem(key);
+    // Since this runs on the server, we can't use localStorage directly.
+    // The overrideConfig pattern ensures that components pass the necessary settings from the client.
+    return (key: string) => {
+        console.warn(`Attempted to access configuration '${key}' on the server without it being passed in overrideConfig.`);
+        return undefined;
+    };
 }
 
 /**
@@ -45,7 +50,8 @@ export async function callAIChat(params: CallAIChatParams): Promise<{ response: 
     try {
         const statusString = config('providerStatus');
         if (statusString) {
-            providerStatus = JSON.parse(statusString);
+            // It might be a stringified object or the object itself
+            providerStatus = typeof statusString === 'string' ? JSON.parse(statusString) : statusString;
         }
     } catch (e) {
         console.error("Could not parse providerStatus", e);
@@ -55,7 +61,7 @@ export async function callAIChat(params: CallAIChatParams): Promise<{ response: 
      try {
         const strategyString = config('fallbackStrategy');
         if (strategyString) {
-            fallbackStrategy = JSON.parse(strategyString);
+            fallbackStrategy = typeof strategyString === 'string' ? JSON.parse(strategyString) : strategyString;
         }
     } catch (e) {
         console.error("Could not parse fallbackStrategy", e);
@@ -80,15 +86,13 @@ export async function callAIChat(params: CallAIChatParams): Promise<{ response: 
             logs.push({ service: providerInfo.name, level: 'info', message: `Attempting API call.` });
             
             let response;
+            const modelName = config(providerInfo.modelKey);
+
             if (providerId === 'eden') {
-                const edenProvider = config('edenAiProvider');
-                const edenModel = config('edenAiModel');
-                response = await callEdenAI(apiKey, edenProvider, edenModel, systemPrompt, userMessage, jsonMode);
+                response = await callEdenAI(apiKey, modelName, systemPrompt, userMessage, jsonMode);
             } else if (providerId === 'google') {
-                const modelName = config(providerInfo.modelKey);
                 response = await callGoogleAI(apiKey, modelName, systemPrompt, userMessage, jsonMode);
             } else if (providerId === 'openai' || providerId === 'groq') {
-                 const modelName = config(providerInfo.modelKey);
                  response = await callOpenAICompatible(providerInfo.url, apiKey, modelName, systemPrompt, userMessage, jsonMode);
             } else {
                 throw new Error(`Unknown provider: ${providerId}`);
@@ -108,10 +112,16 @@ export async function callAIChat(params: CallAIChatParams): Promise<{ response: 
 
 // --- Provider-Specific Implementations ---
 
-async function callEdenAI(apiKey: string, provider: string | null, model: string | null, system: string, user: string, json: boolean) {
-    if (!provider || !model) {
-        throw new Error("Eden AI provider or model is not configured.");
+async function callEdenAI(apiKey: string, modelIdentifier: string | null, system: string, user: string, json: boolean) {
+    if (!modelIdentifier) {
+        throw new Error("Eden AI model identifier is not configured.");
     }
+    
+    const [provider, model] = modelIdentifier.split('/');
+    if (!provider || !model) {
+        throw new Error(`Invalid Eden AI model format: "${modelIdentifier}". Expected "provider/model_name".`);
+    }
+
     const payload = {
         providers: provider,
         model: model,
@@ -207,3 +217,4 @@ export async function getSetupAssistantResponse(input: SetupAssistantInput): Pro
     return setupAssistantFlow(input);
 }
 
+    
