@@ -51,7 +51,7 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
 
   const handleSaveLog = (log: LogEntry) => {
     try {
-        const savedItems = JSON.parse(localStorage.getItem('nexus-saved-items') || '[]');
+        const savedItems = JSON.parse(localStorage.getItem('apollo-station-saved-items') || '[]');
         const newItem = {
             id: `log-${Date.now()}`,
             type: 'log',
@@ -60,7 +60,7 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
         };
 
         const newItems = [newItem, ...savedItems];
-        localStorage.setItem('nexus-saved-items', JSON.stringify(newItems));
+        localStorage.setItem('apollo-station-saved-items', JSON.stringify(newItems));
         toast({
             title: "Log Saved",
             description: "The log entry has been saved to your Saved Items.",

@@ -1,7 +1,7 @@
 
 'use server';
 /**
- * @fileOverview An AI flow for generating and expanding upon lore for the Nexus Hub community.
+ * @fileOverview An AI flow for generating and expanding upon lore for the Apollo Station community.
  *
  * - loreWeaverFlow - The main function to get a lore-based response.
  */
@@ -11,7 +11,7 @@ import { type LoreWeaverInput, LoreWeaverOutputSchema, type LoreWeaverOutput, ty
 
 export async function loreWeaverFlow(input: LoreWeaverInput): Promise<{response: LoreWeaverOutput, logs: FlowLog[]}> {
     
-    const systemPrompt = `You are COSMO (Central Operating System Management Orbiter), the AI assistant for Nexus Hub, the community's HQ, created by mtman1987. Your purpose is to act as a creative partner and lore master. You are helping a crew member flesh out the rich universe of Nexus Hub.
+    const systemPrompt = `You are COSMO (Central Operating System Management Orbiter), the AI assistant for Apollo Station, the community's HQ, created by mtman1987. Your purpose is to act as a creative partner and lore master. You are helping a crew member flesh out the rich universe of Apollo Station.
 
 The lore is centered around a community traveling through galaxies in their space station, mapping stars, plotting FTL routes, and exploring the digital cosmos. Your tone should be creative, inspiring, and collaborative.
 

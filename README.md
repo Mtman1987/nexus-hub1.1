@@ -1,7 +1,7 @@
 
-# Nexus Hub
+# Apollo Station
 
-Nexus Hub is a centralized, modular system by mtman1987 to manage all your online services, powered by Next.js and Google AI.
+Apollo Station is a centralized, modular system by mtman1987 to manage all your online services, powered by Next.js and Google AI.
 
 ## Features
 
@@ -59,7 +59,7 @@ With the new Genkit integration, you only need to run a single command to start 
 
 ## Hybrid Architecture: Local Hub with Cloud Remote (Optional)
 
-You can run Nexus Hub locally to connect to services like Streamer.bot and simultaneously access it from your phone using a deployed version of the app. This is achieved using a tunneling service.
+You can run Apollo Station locally to connect to services like Streamer.bot and simultaneously access it from your phone using a deployed version of the app. This is achieved using a tunneling service.
 
 1.  **Run Locally**: Start the app on your main computer with `npm run dev`. This is your "engine".
 2.  **Install a Tunnel**: Download and set up a tunneling service like [ngrok](https://ngrok.com/download). This will expose your local server to the internet.
@@ -68,7 +68,7 @@ You can run Nexus Hub locally to connect to services like Streamer.bot and simul
     ngrok http 9002
     ```
 4.  **Get Public URL**: ngrok will give you a public "Forwarding" URL (e.g., `https://random-string.ngrok.io`). Copy this URL.
-5.  **Deploy to Cloud**: Deploy a second instance of Nexus Hub to a service like Vercel or Firebase App Hosting. This will be your "remote control".
+5.  **Deploy to Cloud**: Deploy a second instance of Apollo Station to a service like Vercel or Firebase App Hosting. This will be your "remote control".
 6.  **Configure Remote**: Open your deployed cloud app. Go to `API Key Vault` -> `Remote Access` and paste the ngrok Forwarding URL into the "Remote Hub Address" field and save.
 
 Now, when you use the Unified Chat on your deployed cloud app (e.g., on your phone), it will securely send the commands to your local machine for execution.
@@ -128,8 +128,8 @@ from dotenv import load_dotenv
 # This loads variables from your .env file
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-WEBHOOK_URL = os.getenv('NEXUS_HUB_WEBHOOK_URL', 'http://localhost:9002/api/discord-relay')
-BOT_NAME = os.getenv('BOT_NAME', 'Nexus Hub') # Optional: Set a fallback bot name
+WEBHOOK_URL = os.getenv('APOLLO_STATION_WEBHOOK_URL', 'http://localhost:9002/api/discord-relay')
+BOT_NAME = os.getenv('BOT_NAME', 'Apollo Station') # Optional: Set a fallback bot name
 
 # --- Bot Setup ---
 # You must enable the "Message Content Intent" in the Discord Developer Portal
@@ -177,9 +177,9 @@ async def on_message(message):
         try:
             response = requests.post(WEBHOOK_URL, json=payload, timeout=5)
             response.raise_for_status() # Raises an exception for bad status codes
-            print(f"Successfully relayed message to Nexus Hub. Status: {response.status_code}")
+            print(f"Successfully relayed message to Apollo Station. Status: {response.status_code}")
         except requests.exceptions.RequestException as e:
-            print(f"Error relaying message to Nexus Hub: {e}")
+            print(f"Error relaying message to Apollo Station: {e}")
 
 # --- Run the Bot ---
 if TOKEN:
@@ -217,4 +217,4 @@ To send messages *to* Streamer.bot (e.g., from the Unified Chat), you need to co
 3.  Set the IP to `127.0.0.1`.
 4.  Set the Port to `9003`.
 5.  If you get a "port in use" error, you can change the port, but you must enter the same port number into the API Key Vault.
-6.  Save these settings in both Streamer.bot and Nexus Hub.
+6.  Save these settings in both Streamer.bot and Apollo Station.

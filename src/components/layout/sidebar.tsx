@@ -17,7 +17,7 @@ export function Sidebar() {
     )}>
         <div className="flex h-14 items-center border-b px-4 lg:h-[60px] justify-between">
             <div className="flex items-center gap-2 font-semibold text-primary">
-                {!isCollapsed && <span className="text-xl">Nexus Hub</span>}
+                {!isCollapsed && <span className="text-xl">Apollo Station</span>}
             </div>
             <Button variant="ghost" size="icon" onClick={() => setCollapsed(!isCollapsed)}>
                 {isCollapsed ? <PanelRightClose className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}

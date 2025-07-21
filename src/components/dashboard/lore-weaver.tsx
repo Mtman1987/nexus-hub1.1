@@ -89,7 +89,7 @@ export function LoreWeaver({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
     const handleSaveTransmission = () => {
         if (!result) return;
         try {
-            const savedItems = JSON.parse(localStorage.getItem('nexus-saved-items') || '[]');
+            const savedItems = JSON.parse(localStorage.getItem('apollo-station-saved-items') || '[]');
             const newItem = {
                 id: `lore-${Date.now()}`,
                 type: 'lore',
@@ -101,7 +101,7 @@ export function LoreWeaver({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
             };
 
             const newItems = [newItem, ...savedItems];
-            localStorage.setItem('nexus-saved-items', JSON.stringify(newItems));
+            localStorage.setItem('apollo-station-saved-items', JSON.stringify(newItems));
             toast({
                 title: "Transmission Saved",
                 description: "The lore entry has been saved to your timeline in Saved Items.",

@@ -24,7 +24,7 @@ export function WebsiteViewer({ isPoppedOut = false, onPopOut, onHide, dragHandl
   const { addLog } = useLogs();
 
   useEffect(() => {
-    const channel = new BroadcastChannel('nexus-hub-website-control');
+    const channel = new BroadcastChannel('apollo-station-website-control');
 
     const handleMessage = (event: MessageEvent) => {
       if (event.data && event.data.query) {

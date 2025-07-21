@@ -7,8 +7,8 @@ import { BotNameProvider } from '@/context/BotNameContext';
 import { SidebarProvider } from '@/context/SidebarContext';
 
 export const metadata: Metadata = {
-  title: 'Nexus Hub',
-  description: 'Nexus Hub: Your central command for managing all online services, by mtman1987.',
+  title: 'Apollo Station',
+  description: 'Apollo Station: Your central command for managing all online services, by mtman1987.',
   manifest: '/manifest.json',
 };
 

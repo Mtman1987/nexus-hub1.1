@@ -84,7 +84,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
 
   const handleSaveMessage = (message: Message) => {
     try {
-        const savedItems = JSON.parse(localStorage.getItem('nexus-saved-items') || '[]');
+        const savedItems = JSON.parse(localStorage.getItem('apollo-station-saved-items') || '[]');
         const newItem = {
             id: `chat-${Date.now()}`,
             type: 'chat',
@@ -93,7 +93,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
         };
 
         const newItems = [newItem, ...savedItems];
-        localStorage.setItem('nexus-saved-items', JSON.stringify(newItems));
+        localStorage.setItem('apollo-station-saved-items', JSON.stringify(newItems));
         toast({
             title: "Message Saved",
             description: "The chat message has been saved to your Saved Items.",
@@ -159,7 +159,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
       response.logs.forEach(log => addLog(log as Omit<LogEntry, 'timestamp'>));
       
       if (response.websiteAction && response.websiteAction.type === 'youtube_search') {
-          const webChannel = new BroadcastChannel('nexus-hub-website-control');
+          const webChannel = new BroadcastChannel('apollo-station-website-control');
           webChannel.postMessage({ query: response.websiteAction.query });
           webChannel.close();
       }
@@ -211,7 +211,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
   }, [messages]);
 
   useEffect(() => {
-    const channel = new BroadcastChannel('nexus-hub-chat');
+    const channel = new BroadcastChannel('apollo-station-chat');
 
     const handleMessage = (event: MessageEvent) => {
         const data = event.data;

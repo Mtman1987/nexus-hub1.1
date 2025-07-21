@@ -40,13 +40,13 @@ export async function POST(req: NextRequest) {
     };
 
     // Use BroadcastChannel to send the message to all listening browser contexts
-    const channel = new BroadcastChannel('nexus-hub-chat');
+    const channel = new BroadcastChannel('apollo-station-chat');
     channel.postMessage(relayedMessage);
     channel.close();
 
 
     return NextResponse.json({ success: true, message: 'Message broadcasted via BroadcastChannel.' });
-  } catch (error) {
+  } catch (error)
     console.error('Failed to relay Nexus Connect message:', error);
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     return NextResponse.json({ error: 'Internal Server Error', details: errorMessage }, { status: 500 });

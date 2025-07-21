@@ -22,7 +22,7 @@ export function MobileSidebar() {
          <div className="flex h-14 items-center border-b px-4 lg:h-[60px]">
             <div className="flex items-center gap-2 font-semibold text-primary">
                 <Bot className="h-6 w-6" />
-                <span>Nexus Hub</span>
+                <span>Apollo Station</span>
             </div>
         </div>
         <SidebarNav isMobile={true} />

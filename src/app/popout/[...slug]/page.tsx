@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useEffect, useState, Suspense } from 'react';
@@ -36,7 +37,7 @@ const moduleMap: { [key: string]: React.ComponentType<any> } = {
 
 function PopoutContent({ slug }: { slug: string }) {
     const searchParams = useSearchParams();
-    const title = searchParams.get('title') || 'Nexus Hub Module';
+    const title = searchParams.get('title') || 'Apollo Station Module';
 
     useEffect(() => {
         document.title = title;

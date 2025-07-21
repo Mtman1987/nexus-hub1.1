@@ -12,7 +12,7 @@ export default function SpaceMountainPage() {
                      Website Control Panel
                 </h1>
                 <p className="text-muted-foreground mt-2">
-                   Use the controls below to view and interact with your live websites directly from Nexus Hub. This module is running in a standalone window.
+                   Use the controls below to view and interact with your live websites directly from Apollo Station. This module is running in a standalone window.
                 </p>
             </header>
             <main className="flex-grow">

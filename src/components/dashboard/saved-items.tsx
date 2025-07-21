@@ -29,7 +29,7 @@ interface SavedItemsProps {
   dragHandleProps?: any;
 }
 
-const STORAGE_KEY = 'nexus-saved-items';
+const STORAGE_KEY = 'apollo-station-saved-items';
 
 const SortableLoreItem = ({ item, removeItem, children }: { item: SavedItem, removeItem: (id: string) => void, children: React.ReactNode }) => {
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: item.id });

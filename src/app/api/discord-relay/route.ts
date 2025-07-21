@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     };
 
     // Use BroadcastChannel to send the message to all listening browser contexts
-    const channel = new BroadcastChannel('nexus-hub-chat');
+    const channel = new BroadcastChannel('apollo-station-chat');
     channel.postMessage(relayedMessage);
     channel.close();
 

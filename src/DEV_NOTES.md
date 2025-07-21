@@ -1,5 +1,5 @@
 
-# Nexus Hub: Developer Notes & Testing Checklist
+# Apollo Station: Developer Notes & Testing Checklist
 
 This document provides a quick overview of the project structure, key configuration files, and a checklist for Phase 1 testing.
 
@@ -117,8 +117,8 @@ from dotenv import load_dotenv
 # This loads variables from your .env file
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-WEBHOOK_URL = os.getenv('NEXUS_HUB_WEBHOOK_URL', 'http://localhost:9002/api/discord-relay')
-BOT_NAME = os.getenv('BOT_NAME', 'Nexus Hub') # Optional: Set a fallback bot name
+WEBHOOK_URL = os.getenv('APOLLO_STATION_WEBHOOK_URL', 'http://localhost:9002/api/discord-relay')
+BOT_NAME = os.getenv('BOT_NAME', 'Apollo Station') # Optional: Set a fallback bot name
 
 # --- Bot Setup ---
 # You must enable the "Message Content Intent" in the Discord Developer Portal
@@ -156,19 +156,19 @@ async def on_message(message):
         
         print(f"Received @mention from {message.author.name}: {clean_content}")
 
-        # Prepare the data to send to your Nexus Hub app
+        # Prepare the data to send to your Apollo Station app
         payload = {
             'content': clean_content,
             'author': message.author.name,
         }
 
-        # Send the message to your Nexus Hub webhook
+        # Send the message to your Apollo Station webhook
         try:
             response = requests.post(WEBHOOK_URL, json=payload, timeout=5)
             response.raise_for_status() # Raises an exception for bad status codes
-            print(f"Successfully relayed message to Nexus Hub. Status: {response.status_code}")
+            print(f"Successfully relayed message to Apollo Station. Status: {response.status_code}")
         except requests.exceptions.RequestException as e:
-            print(f"Error relaying message to Nexus Hub: {e}")
+            print(f"Error relaying message to Apollo Station: {e}")
 
 # --- Run the Bot ---
 if TOKEN:

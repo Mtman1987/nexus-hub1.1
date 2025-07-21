@@ -158,7 +158,7 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[525px]" onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle className="text-2xl">Nexus Hub Onboarding</DialogTitle>
+          <DialogTitle className="text-2xl">Apollo Station Onboarding</DialogTitle>
           <DialogDescription>
             Let's get your services configured. Follow the steps below.
           </DialogDescription>
