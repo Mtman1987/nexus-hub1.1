@@ -18,7 +18,17 @@ export type BotPersonalityType = {
   id: string;
   name: string;
   prompt: string;
+  isDefault?: boolean;
 }
+
+const defaultPersonalities: BotPersonalityType[] = [
+    {
+        id: 'default-cosmo', 
+        name: 'COSMO', 
+        prompt: 'You are COSMO (Central Operating System Management Orbiter), the AI assistant for Apollo Station, the Space Mountain community\'s HQ, created by mtman1987. Your purpose is to act as a creative partner and lore master.',
+        isDefault: true,
+    }
+];
 
 interface BotPersonalityProps {
     onPopOut?: () => void;
@@ -32,13 +42,13 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
   const { addLog } = useLogs();
   const { setBotName } = useBotName();
 
-  const [personalities, setPersonalities] = useState<BotPersonalityType[]>([]);
-  const [selectedPersonalityId, setSelectedPersonalityId] = useState<string | null>(null);
+  const [personalities, setPersonalities] = useState<BotPersonalityType[]>(defaultPersonalities);
+  const [selectedPersonalityId, setSelectedPersonalityId] = useState<string | null>(defaultPersonalities[0].id);
 
   useEffect(() => {
     try {
         const savedPersonalities = localStorage.getItem('botPersonalities');
-        const loadedPersonalities = savedPersonalities ? JSON.parse(savedPersonalities) : [{id: 'default-1', name: 'COSMO', prompt: 'You are COSMO (Central Operating System Management Orbiter), the AI assistant for Apollo Station, the Space Mountain community\'s HQ, created by mtman1987. Your purpose is to act as a creative partner and lore master.'}];
+        const loadedPersonalities = savedPersonalities ? JSON.parse(savedPersonalities) : defaultPersonalities;
         setPersonalities(loadedPersonalities);
 
         const savedSelectedId = localStorage.getItem('selectedPersonalityId');
@@ -59,17 +69,20 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
   
   const handlePersonalityChange = (field: 'name' | 'prompt', value: string) => {
     if (!selectedPersonalityId) return;
-    const newPersonalities = personalities.map(p => {
+
+    setPersonalities(prev => prev.map(p => {
         if (p.id === selectedPersonalityId) {
+            // Prevent editing the default personality
+            if (p.isDefault) return p;
             return {...p, [field]: value};
         }
         return p;
-    });
-    setPersonalities(newPersonalities);
+    }));
+
     if (field === 'name') {
-        const selectedPersonality = newPersonalities.find(p => p.id === selectedPersonalityId);
-        if (selectedPersonality) {
-            setBotName(selectedPersonality.name);
+        const selectedPersonality = personalities.find(p => p.id === selectedPersonalityId);
+        if (selectedPersonality && !selectedPersonality.isDefault) {
+            setBotName(value);
         }
     }
   };
@@ -92,7 +105,12 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
   };
   
   const handleDeletePersonality = () => {
-    if (personalities.length <= 1 || !selectedPersonalityId) {
+    const personalityToDelete = personalities.find(p => p.id === selectedPersonalityId);
+    if (!personalityToDelete || personalityToDelete.isDefault) {
+        toast({title: "Cannot Delete", description: "The default COSMO personality cannot be deleted.", variant: "destructive"});
+        return;
+    }
+    if (personalities.length <= 1) {
         toast({title: "Cannot Delete", description: "You must have at least one personality.", variant: "destructive"});
         return;
     }
@@ -135,6 +153,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
   };
   
   const selectedPersonality = personalities.find(p => p.id === selectedPersonalityId);
+  const isSelectedPersonalityDefault = selectedPersonality?.isDefault === true;
 
   return (
       <Card className="h-full flex flex-col">
@@ -180,7 +199,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                         </SelectContent>
                     </Select>
                     <Button type="button" variant="outline" size="icon" onClick={handleAddNewPersonality}><PlusCircle className="h-4 w-4"/></Button>
-                    <Button type="button" variant="destructive" size="icon" onClick={handleDeletePersonality} disabled={personalities.length <= 1}><Trash2 className="h-4 w-4"/></Button>
+                    <Button type="button" variant="destructive" size="icon" onClick={handleDeletePersonality} disabled={isSelectedPersonalityDefault}><Trash2 className="h-4 w-4"/></Button>
                 </div>
             </div>
 
@@ -194,6 +213,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                             placeholder="e.g., Station AI" 
                             value={selectedPersonality?.name || ''} 
                             onChange={(e) => handlePersonalityChange('name', e.target.value)} 
+                            disabled={isSelectedPersonalityDefault}
                         />
                     </div>
                     <div className="space-y-2 flex-grow flex flex-col">
@@ -204,6 +224,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                             value={selectedPersonality?.prompt || ''} 
                             onChange={(e) => handlePersonalityChange('prompt', e.target.value)} 
                             className="flex-grow"
+                            disabled={isSelectedPersonalityDefault}
                         />
                         <p className="text-xs text-muted-foreground">This is the core instruction that defines your bot's behavior.</p>
                     </div>
