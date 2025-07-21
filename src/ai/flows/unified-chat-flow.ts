@@ -193,17 +193,23 @@ export async function unifiedChatFlow(input: UnifiedChatInput): Promise<UnifiedC
     if (targets.includes('Website')) {
         try {
             const webControlResult = await websiteControl({ command: message });
-            websiteAction = {
-                type: 'youtube_search',
-                query: webControlResult.searchQuery,
-            };
-            logs.push({
-                service: 'Website Control',
-                level: 'info',
-                message: `Converted command to YouTube search: "${webControlResult.searchQuery}"`,
-                details: `Original command: "${message}"`,
-            });
-            uiReply = `Website command sent: Searching for "${webControlResult.searchQuery}".`;
+            websiteAction = webControlResult;
+             if (websiteAction.action === 'youtube_search') {
+                logs.push({
+                    service: 'Website Control',
+                    level: 'info',
+                    message: `Converted command to YouTube search: "${websiteAction.payload}"`,
+                    details: `Original command: "${message}"`,
+                });
+                uiReply = `Website command sent: Searching for "${websiteAction.payload}".`;
+             } else if (websiteAction.action === 'add_youtube_song') {
+                logs.push({
+                    service: 'Website Control',
+                    level: 'info',
+                    message: `Extracted YouTube URL to add to playlist: "${websiteAction.payload}"`,
+                });
+                uiReply = `Song added to the music player queue.`;
+             }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
             uiReply = `An error occurred with the website control: ${errorMessage}`;

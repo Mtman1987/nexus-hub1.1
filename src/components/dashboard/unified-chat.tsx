@@ -163,10 +163,16 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
       const response = await unifiedChat(input);
       response.logs.forEach(log => addLog(log as Omit<LogEntry, 'timestamp'>));
       
-      if (response.websiteAction && response.websiteAction.type === 'youtube_search') {
-          const webChannel = new BroadcastChannel('apollo-station-website-control');
-          webChannel.postMessage({ query: response.websiteAction.query });
-          webChannel.close();
+      if (response.websiteAction) {
+          if (response.websiteAction.action === 'youtube_search') {
+            const webChannel = new BroadcastChannel('apollo-station-website-control');
+            webChannel.postMessage({ action: 'youtube_search', query: response.websiteAction.payload });
+            webChannel.close();
+          } else if (response.websiteAction.action === 'add_youtube_song') {
+            const musicChannel = new BroadcastChannel('apollo-station-music-player');
+            musicChannel.postMessage({ action: 'add_youtube_song', payload: response.websiteAction.payload });
+            musicChannel.close();
+          }
       }
 
       if (response.reply) {

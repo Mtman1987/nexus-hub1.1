@@ -27,7 +27,7 @@ export function WebsiteViewer({ isPoppedOut = false, onPopOut, onHide, dragHandl
     const channel = new BroadcastChannel('apollo-station-website-control');
 
     const handleMessage = (event: MessageEvent) => {
-      if (event.data && event.data.query) {
+      if (event.data && event.data.action === 'youtube_search' && event.data.query) {
         addLog({
             service: 'Website Control',
             level: 'info',
@@ -79,7 +79,7 @@ export function WebsiteViewer({ isPoppedOut = false, onPopOut, onHide, dragHandl
                   Live Website Viewer
                 </CardTitle>
                 <CardDescription>
-                  Currently viewing: <a href={currentSite.url} target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">{currentSite.name}</a>
+                  Currently viewing: <a href={currentUrl} target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">{currentSite.name}</a>
                 </CardDescription>
               </div>
             </div>

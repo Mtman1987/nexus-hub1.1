@@ -2,7 +2,7 @@
 'use server';
 /**
  * @fileOverview An AI flow that translates natural language commands into website actions,
- * specifically YouTube search queries for this implementation.
+ * specifically YouTube search queries or song additions for this implementation.
  *
  * - websiteControl - The main function to process the command.
  */
@@ -11,13 +11,17 @@ import { z } from 'zod';
 import { type WebsiteControlInput, WebsiteControlOutputSchema, type WebsiteControlOutput, FlowLog } from '@/ai/types';
 
 export async function websiteControl(input: WebsiteControlInput): Promise<WebsiteControlOutput> {
-  const systemPrompt = `You are a helpful assistant that converts user commands into search queries for YouTube.
-  
-  Take the user's command and turn it into a concise and effective search query. For example, if the user says "play the latest news headlines", the query could be "latest news headlines". If they say "show me how to cook lasagna", the query could be "how to cook lasagna".
+  const systemPrompt = `You are a helpful assistant that converts user commands into structured actions for a website viewer that primarily displays YouTube. You can perform two main actions: searching YouTube, or adding a YouTube song to a playlist.
 
-  User command: "${input.command}"
+Analyze the user's command.
+
+1. If the command is a general request to find or show something (e.g., "show me how to cook lasagna", "find the latest news"), convert it into a concise and effective search query. The action should be 'youtube_search'.
+
+2. If the command explicitly mentions adding a song/video to a playlist AND includes a YouTube URL (e.g., "add this song to my playlist https://www.youtube.com/watch?v=dQw4w9WgXcQ"), your action should be 'add_youtube_song'. Extract the full URL.
+
+User command: "${input.command}"
   
-  Output your response as a JSON object with a single key: "searchQuery".`;
+Output your response as a JSON object with two keys: "action" (which can be "youtube_search" or "add_youtube_song") and "payload" (which will be the search query string for a search, or the full URL for adding a song).`;
   
   const { response, logs } = await callAIChat({
       userMessage: input.command,

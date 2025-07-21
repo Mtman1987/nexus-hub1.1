@@ -29,10 +29,7 @@ export interface UnifiedChatInput {
 export interface UnifiedChatOutput {
     reply: string;
     logs: FlowLog[];
-    websiteAction: {
-        type: 'youtube_search',
-        query: string,
-    } | null;
+    websiteAction: WebsiteControlOutput | null;
 }
 
 // --- Intelligent Fallback ---
@@ -70,7 +67,8 @@ export const WebsiteControlInputSchema = z.object({
 export type WebsiteControlInput = z.infer<typeof WebsiteControlInputSchema>;
 
 export const WebsiteControlOutputSchema = z.object({
-    searchQuery: z.string(),
+    action: z.enum(['youtube_search', 'add_youtube_song']),
+    payload: z.string(),
 });
 export type WebsiteControlOutput = z.infer<typeof WebsiteControlOutputSchema>;
 

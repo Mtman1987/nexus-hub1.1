@@ -7,6 +7,13 @@ import { Button } from '@/components/ui/button';
 import { PopOutButton } from './pop-out-button';
 import { Music, Play, Pause, Rewind, FastForward, GripVertical, EyeOff, Volume2, VolumeX } from 'lucide-react';
 import { Slider } from '../ui/slider';
+import { useLogs } from '@/context/LogContext';
+
+const initialPlaylist = [
+    { title: "Lost in the Cosmos", artist: "Stellardrone", src: "https://www.chosic.com/wp-content/uploads/2021/05/Stellardrone-Lost-In-The-Cosmos.mp3", type: 'audio' },
+    { title: "The Final Mission", artist: "Rozcoli", src: "https://www.chosic.com/wp-content/uploads/2022/08/The-Final-Mission.mp3", type: 'audio' },
+    { title: "Sci-Fi", artist: "Alexander Nakarada", src: "https://www.chosic.com/wp-content/uploads/2021/07/Sci-fi.mp3", type: 'audio' },
+];
 
 interface MusicPlayerProps {
     onPopOut?: () => void;
@@ -15,13 +22,9 @@ interface MusicPlayerProps {
     dragHandleProps?: any;
 }
 
-const playlist = [
-    { title: "Lost in the Cosmos", artist: "Stellardrone", src: "https://www.chosic.com/wp-content/uploads/2021/05/Stellardrone-Lost-In-The-Cosmos.mp3" },
-    { title: "The Final Mission", artist: "Rozcoli", src: "https://www.chosic.com/wp-content/uploads/2022/08/The-Final-Mission.mp3" },
-    { title: "Sci-Fi", artist: "Alexander Nakarada", src: "https://www.chosic.com/wp-content/uploads/2021/07/Sci-fi.mp3" },
-];
-
 export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleProps }: MusicPlayerProps) {
+    const { addLog } = useLogs();
+    const [playlist, setPlaylist] = useState(initialPlaylist);
     const [isPlaying, setIsPlaying] = useState(false);
     const [trackIndex, setTrackIndex] = useState(0);
     const [volume, setVolume] = useState(0.5);
@@ -30,6 +33,37 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     const [currentTime, setCurrentTime] = useState(0);
 
     const audioRef = useRef<HTMLAudioElement>(null);
+
+     useEffect(() => {
+        const channel = new BroadcastChannel('apollo-station-music-player');
+
+        const handleMessage = (event: MessageEvent) => {
+            if (event.data && event.data.action === 'add_youtube_song' && event.data.payload) {
+                const newTrack = {
+                    title: "YouTube Import",
+                    artist: "Via Website Control",
+                    src: event.data.payload,
+                    type: 'youtube'
+                };
+                addLog({
+                    service: 'Music Player',
+                    level: 'info',
+                    message: `Received new YouTube track to add to playlist.`,
+                    details: `URL: ${event.data.payload}`,
+                });
+                setPlaylist(prev => [...prev, newTrack]);
+                // Optional: jump to the new track
+                setTrackIndex(playlist.length);
+                setIsPlaying(false);
+            }
+        };
+
+        channel.addEventListener('message', handleMessage);
+        return () => {
+            channel.removeEventListener('message', handleMessage);
+            channel.close();
+        };
+    }, [addLog, playlist.length]);
 
     useEffect(() => {
         const audio = audioRef.current;
@@ -54,15 +88,21 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     }, [volume, isMuted, trackIndex]);
     
     useEffect(() => {
-        if(isPlaying) {
-            audioRef.current?.play();
+        const currentTrack = playlist[trackIndex];
+        if (currentTrack?.type === 'audio' && isPlaying) {
+            audioRef.current?.play().catch(e => console.error("Audio play failed:", e));
         } else {
             audioRef.current?.pause();
         }
-    }, [isPlaying, trackIndex]);
+    }, [isPlaying, trackIndex, playlist]);
 
     const togglePlayPause = () => {
-        setIsPlaying(prev => !prev);
+        const currentTrack = playlist[trackIndex];
+        if (currentTrack.type === 'youtube') {
+            window.open(currentTrack.src, '_blank');
+        } else {
+            setIsPlaying(prev => !prev);
+        }
     };
 
     const nextTrack = () => {
@@ -91,9 +131,11 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
         return `${minutes}:${seconds.toString().padStart(2, '0')}`;
     };
 
+    const currentTrack = playlist[trackIndex];
+
     return (
         <>
-            <audio ref={audioRef} src={playlist[trackIndex].src} onEnded={nextTrack} />
+            <audio ref={audioRef} src={currentTrack?.type === 'audio' ? currentTrack.src : ''} onEnded={nextTrack} />
             <Card className="h-full flex flex-col">
                 <CardHeader>
                     <div className="flex justify-between items-start">
@@ -126,8 +168,8 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                 <CardContent className="flex-grow flex flex-col items-center justify-center text-center space-y-4">
                    <div className="w-full h-24 bg-cover bg-center rounded-lg flex items-center justify-center" style={{backgroundImage: 'url(https://placehold.co/600x400.png)', backgroundSize: 'cover'}} data-ai-hint="nebula space">
                        <div className="p-4 rounded-lg bg-black/50 backdrop-blur-sm text-white">
-                            <p className="font-bold text-lg">{playlist[trackIndex].title}</p>
-                            <p className="text-sm">{playlist[trackIndex].artist}</p>
+                            <p className="font-bold text-lg">{currentTrack?.title || "No Track"}</p>
+                            <p className="text-sm">{currentTrack?.artist || "Select a song"}</p>
                        </div>
                    </div>
 
@@ -135,12 +177,13 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                         <Slider
                             value={[currentTime]}
                             max={duration || 100}
-                            onValueChange={(value) => { if(audioRef.current) audioRef.current.currentTime = value[0] }}
+                            onValueChange={(value) => { if(audioRef.current && currentTrack?.type === 'audio') audioRef.current.currentTime = value[0] }}
                             className="w-full"
+                            disabled={currentTrack?.type === 'youtube'}
                         />
                         <div className="flex justify-between text-xs text-muted-foreground">
-                            <span>{formatTime(currentTime)}</span>
-                            <span>{formatTime(duration)}</span>
+                            <span>{currentTrack?.type === 'audio' ? formatTime(currentTime) : '0:00'}</span>
+                            <span>{currentTrack?.type === 'audio' ? formatTime(duration) : 'External'}</span>
                         </div>
                     </div>
                    
@@ -149,7 +192,7 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                             <Rewind className="h-6 w-6" />
                         </Button>
                         <Button size="lg" className="rounded-full w-16 h-16" onClick={togglePlayPause}>
-                            {isPlaying ? <Pause className="h-8 w-8"/> : <Play className="h-8 w-8"/>}
+                            {isPlaying && currentTrack?.type === 'audio' ? <Pause className="h-8 w-8"/> : <Play className="h-8 w-8"/>}
                         </Button>
                         <Button variant="ghost" size="icon" onClick={nextTrack}>
                             <FastForward className="h-6 w-6" />
@@ -166,6 +209,7 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                             step={0.01}
                             onValueChange={handleVolumeChange}
                             className="w-full"
+                            disabled={currentTrack?.type === 'youtube'}
                         />
                     </div>
                 </CardContent>
