@@ -195,18 +195,18 @@ export default function DashboardPage() {
     <>
     <div className="flex min-h-screen w-full">
       <Sidebar />
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 flex flex-col overflow-auto">
       
-        {allToolModules.map(m =>
+        {allToolModules.map(m => (
             poppedOutModules.includes(m.id) && (
             <PopOutWindow key={`popout-${m.id}`} onClose={() => handlePopIn(m.id)} title={m.title}>
                 {React.createElement(m.component, { isPoppedOut: true })}
             </PopOutWindow>
             )
-        )}
+        ))}
 
         <div className="flex flex-col h-full overflow-hidden p-4 md:p-6 space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between flex-shrink-0">
             <h1 className="text-xl md:text-3xl font-bold tracking-tight">Dashboard</h1>
             <div className="flex items-center gap-2">
                 <DropdownMenu>
@@ -268,17 +268,17 @@ export default function DashboardPage() {
             </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 flex-shrink-0">
                 {visibleServiceModules.map(m => <div key={m.id}>{m.component}</div>)}
             </div>
             
-            <div className="flex-grow grid grid-cols-1 grid-rows-2 gap-6">
-                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                    {renderModules(topRowModules)}
-                </div>
-                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
-                    {renderModules(bottomRowModules)}
-                </div>
+            <div className="flex-grow flex flex-col gap-6 overflow-hidden">
+              <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {renderModules(topRowModules)}
+              </div>
+              <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
+                  {renderModules(bottomRowModules)}
+              </div>
             </div>
 
         </div>
@@ -287,5 +287,3 @@ export default function DashboardPage() {
     </>
   );
 }
-
-    
