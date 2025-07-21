@@ -174,22 +174,6 @@ export default function DashboardPage() {
   ];
   
   const visibleServiceModules = serviceModules.filter(m => m.visible);
-  
-  const renderModules = (modules: ToolModule[]) => {
-      return modules
-        .filter(m => visibleModules[m.id] && !poppedOutModules.includes(m.id))
-        .map(m => (
-        <div key={m.id} className="h-[50px] relative">
-            {React.createElement(m.component, {
-                isPoppedOut: false,
-            })}
-            <div className="absolute top-3 right-3">
-            <PopOutButton onClick={() => handlePopOut(m.id)} />
-            </div>
-        </div>
-    ));
-  }
-
 
   return (
     <>
@@ -273,12 +257,30 @@ export default function DashboardPage() {
             </div>
             
             <div className="flex-grow flex flex-col gap-6 overflow-hidden">
-              <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {renderModules(topRowModules)}
-              </div>
-              <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
-                  {renderModules(bottomRowModules)}
-              </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 h-[300px]">
+                  {topRowModules
+                    .filter(m => visibleModules[m.id] && !poppedOutModules.includes(m.id))
+                    .map(m => (
+                      <div key={m.id} className="relative h-full">
+                        {React.createElement(m.component, { isPoppedOut: false })}
+                        <div className="absolute top-3 right-3">
+                          <PopOutButton onClick={() => handlePopOut(m.id)} />
+                        </div>
+                      </div>
+                  ))}
+                </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6 h-[300px]">
+                  {bottomRowModules
+                    .filter(m => visibleModules[m.id] && !poppedOutModules.includes(m.id))
+                    .map(m => (
+                      <div key={m.id} className="relative h-full">
+                        {React.createElement(m.component, { isPoppedOut: false })}
+                        <div className="absolute top-3 right-3">
+                          <PopOutButton onClick={() => handlePopOut(m.id)} />
+                        </div>
+                      </div>
+                  ))}
+                </div>
             </div>
 
         </div>
