@@ -6,13 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Wand2, GripVertical, EyeOff, ScrollText } from 'lucide-react';
+import { Loader2, Wand2, GripVertical, EyeOff, ScrollText, Save } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { PopOutButton } from './pop-out-button';
 import { useLogs } from '@/context/LogContext';
 import { loreWeaverFlow } from '@/ai/flows/lore-weaver';
-import type { LoreWeaverInput, LoreWeaverOutput } from '@/ai/flows/lore-weaver';
+import type { LoreWeaverInput, LoreWeaverOutput } from '@/ai/types';
 
 interface LoreWeaverProps {
   onPopOut?: () => void;
@@ -37,7 +37,7 @@ export function LoreWeaver({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
 
         try {
             const config: { [key: string]: any } = {};
-            const configKeys = ['edenApiKey', 'googleApiKey', 'openaiApiKey', 'groqApiKey', 'providerStatus'];
+            const configKeys = ['edenApiKey', 'googleApiKey', 'openaiApiKey', 'groqApiKey', 'providerStatus', 'botPersonalityPrompt'];
             configKeys.forEach(key => {
                 const item = localStorage.getItem(key);
                 if (item) {
@@ -86,6 +86,36 @@ export function LoreWeaver({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
         }
     }
 
+    const handleSaveTransmission = () => {
+        if (!result) return;
+        try {
+            const savedItems = JSON.parse(localStorage.getItem('nexus-saved-items') || '[]');
+            const newItem = {
+                id: `lore-${Date.now()}`,
+                type: 'lore',
+                content: {
+                    prompt: prompt,
+                    response: result.response
+                },
+                savedAt: new Date().toISOString(),
+            };
+
+            const newItems = [newItem, ...savedItems];
+            localStorage.setItem('nexus-saved-items', JSON.stringify(newItems));
+            toast({
+                title: "Transmission Saved",
+                description: "The lore entry has been saved to your timeline in Saved Items.",
+            });
+            window.dispatchEvent(new Event('storage'));
+        } catch(e) {
+            toast({
+                title: "Save Failed",
+                description: "Could not save lore to local storage.",
+                variant: "destructive"
+            });
+        }
+    };
+
   return (
     <Card className="h-full flex flex-col">
       <CardHeader>
@@ -129,15 +159,23 @@ export function LoreWeaver({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
 
         {result && (
             <Alert>
-                <Wand2 className="h-4 w-4" />
-                <AlertTitle>
-                    COSMO's Transmission
-                </AlertTitle>
-                <AlertDescription>
-                    <ScrollArea className="h-32 pr-4">
-                        <p className="whitespace-pre-wrap">{result.response}</p>
-                    </ScrollArea>
-                </AlertDescription>
+                <div className="flex justify-between items-start">
+                    <div className="flex-grow">
+                        <AlertTitle className="flex items-center gap-2">
+                            <Wand2 className="h-4 w-4" />
+                            COSMO's Transmission
+                        </AlertTitle>
+                        <AlertDescription>
+                            <ScrollArea className="h-32 pr-4">
+                                <p className="whitespace-pre-wrap">{result.response}</p>
+                            </ScrollArea>
+                        </AlertDescription>
+                    </div>
+                    <Button variant="outline" size="sm" onClick={handleSaveTransmission}>
+                        <Save className="mr-2 h-4 w-4" />
+                        Save
+                    </Button>
+                </div>
             </Alert>
         )}
 
