@@ -86,7 +86,8 @@ export async function callAIChat(params: CallAIChatParams): Promise<{ response: 
             logs.push({ service: providerInfo.name, level: 'info', message: `Attempting API call.` });
             
             let response;
-            const modelName = config(providerInfo.modelKey);
+            const modelName = config(providerInfo.modelKey) || config(providerId === 'eden' ? 'edenAiModel' : providerInfo.modelKey);
+
 
             if (providerId === 'eden') {
                 response = await callEdenAI(apiKey, modelName, systemPrompt, userMessage, jsonMode);

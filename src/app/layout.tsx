@@ -7,8 +7,8 @@ import { BotNameProvider } from '@/context/BotNameContext';
 import { SidebarProvider } from '@/context/SidebarContext';
 
 export const metadata: Metadata = {
-  title: 'Nexus Hub',
-  description: 'A centralized modular system to manage all your online services.',
+  title: 'Space Mountain OS',
+  description: 'A centralized modular system to manage all your online services, by mtman1987.',
   manifest: '/manifest.json',
 };
 
@@ -38,3 +38,5 @@ export default function RootLayout({
     </html>
   );
 }
+
+    

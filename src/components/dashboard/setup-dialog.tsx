@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -125,9 +126,11 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
     setAiResult(null);
 
     try {
+        const tempConfigForAI = { edenApiKey: apiKeys.edenApiKey };
         const input: SetupAssistantInput = {
             topic: steps[currentStep].topic,
             question: aiQuestion,
+            config: tempConfigForAI
         };
         const { response, logs } = await getSetupAssistantResponse(input);
         setAiResult(response);
@@ -148,14 +151,14 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
     }
 }
 
-
+  const isAssistantDisabled = !apiKeys.edenApiKey;
   const isNextDisabled = steps[currentStep].required && !apiKeys[steps[currentStep].field as string];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[525px]" onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle className="text-2xl">Welcome to Nexus Hub Setup</DialogTitle>
+          <DialogTitle className="text-2xl">Welcome to Space Mountain OS Setup</DialogTitle>
           <DialogDescription>
             Let's get your services configured. Follow the steps below.
           </DialogDescription>
@@ -178,6 +181,14 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
                 />
             ) : (
                 <>
+                {currentStep === 1 && (
+                     <Input
+                        type="password"
+                        placeholder={`Enter your ${steps[currentStep].title}...`}
+                        value={apiKeys[steps[currentStep].field as string] || ''}
+                        onChange={(e) => handleInputChange(steps[currentStep].field as string, e.target.value)}
+                    />
+                )}
                 {currentStep === 2 && (
                     <div className="space-y-4">
                         <div className="space-y-2">
@@ -215,10 +226,10 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
             
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem value="item-1">
-                <AccordionTrigger>
+                <AccordionTrigger disabled={isAssistantDisabled}>
                     <div className="flex items-center gap-2 text-sm">
                         <Wand2 className="h-4 w-4" />
-                        Need help with this step?
+                        {isAssistantDisabled ? "Enter Eden AI key to enable assistant" : "Need help with this step?"}
                     </div>
                 </AccordionTrigger>
                 <AccordionContent>
@@ -260,3 +271,5 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
     </Dialog>
   );
 }
+
+    

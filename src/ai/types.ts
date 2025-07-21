@@ -53,6 +53,7 @@ export type IntelligentFallbackOutput = z.infer<typeof IntelligentFallbackOutput
 export const SetupAssistantInputSchema = z.object({
     topic: z.string(),
     question: z.string(),
+    config: z.any(), // Pass config for the AI call
 });
 export type SetupAssistantInput = z.infer<typeof SetupAssistantInputSchema>;
 
@@ -71,3 +72,5 @@ export const WebsiteControlOutputSchema = z.object({
     searchQuery: z.string(),
 });
 export type WebsiteControlOutput = z.infer<typeof WebsiteControlOutputSchema>;
+
+    

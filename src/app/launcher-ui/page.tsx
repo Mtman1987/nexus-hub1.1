@@ -14,12 +14,12 @@ const OPEN_POPOUTS_KEY = 'nexus-open-popouts';
 
 export default function LauncherUIPage() {
   const dashboardRef = useRef<Window | null>(null);
-  const [buttonText, setButtonText] = useState('Launch Nexus Hub');
+  const [buttonText, setButtonText] = useState('Launch Space Mountain OS');
   const [showSetup, setShowSetup] = useState(false);
 
   useEffect(() => {
     // Check if essential API key is missing to trigger the setup
-    const key = localStorage.getItem('edenApiKey') || localStorage.getItem('googleApiKey');
+    const key = localStorage.getItem('edenApiKey');
     if (!key) {
       setShowSetup(true);
     }
@@ -82,7 +82,7 @@ export default function LauncherUIPage() {
     const checkDashboardClosed = setInterval(() => {
         if (dashboardRef.current && dashboardRef.current.closed) {
             dashboardRef.current = null;
-            setButtonText('Launch Nexus Hub');
+            setButtonText('Launch Space Mountain OS');
         }
     }, 1000);
 
@@ -102,7 +102,7 @@ export default function LauncherUIPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-3 text-2xl">
             <Rocket className="h-7 w-7 text-primary" />
-            Nexus Hub Launcher
+            Space Mountain OS Launcher
           </CardTitle>
           <CardDescription>
             Your command center awaits. Keep this window open.
@@ -121,3 +121,5 @@ export default function LauncherUIPage() {
     </div>
   );
 }
+
+    

@@ -11,7 +11,7 @@ type BotNameContextType = {
 const BotNameContext = createContext<BotNameContextType | undefined>(undefined);
 
 export const BotNameProvider = ({ children }: { children: ReactNode }) => {
-  const [botName, setBotName] = useState('Nexus');
+  const [botName, setBotName] = useState('SPCMTN Bot');
 
   useEffect(() => {
     // Load the bot name from local storage on initial client-side render
@@ -54,3 +54,5 @@ export const useBotName = () => {
   }
   return context;
 };
+
+    

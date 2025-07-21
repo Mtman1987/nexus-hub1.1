@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -21,7 +22,7 @@ export function MobileSidebar() {
          <div className="flex h-14 items-center border-b px-4 lg:h-[60px]">
             <div className="flex items-center gap-2 font-semibold text-primary">
                 <Bot className="h-6 w-6" />
-                <span>Nexus Hub</span>
+                <span>Space Mountain OS</span>
             </div>
         </div>
         <SidebarNav isMobile={true} />
@@ -29,3 +30,5 @@ export function MobileSidebar() {
     </Sheet>
   )
 }
+
+    

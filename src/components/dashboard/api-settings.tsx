@@ -117,8 +117,8 @@ const defaultSettings: Partial<Settings> = {
   streamerbotServerAddress: '127.0.0.1',
   streamerbotServerPort: '9003',
   streamerbotRequestType: 'DoAction',
-  streamerbotActionName: 'Nexus Hub Message',
-  streamerbotVariableName: 'nexusHubMessage',
+  streamerbotActionName: 'Space Mountain OS Message',
+  streamerbotVariableName: 'spcmtnMessage',
   streamerbotWebhookUrl: typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.host}/api/streamerbot-relay` : '',
   nexusConnectWebhookUrl: typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.host}/api/nexus-connect` : '',
   nexusConnectConnections: [],
@@ -243,7 +243,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
         setSettings(finalSettings);
 
         const savedPersonalities = localStorage.getItem('botPersonalities');
-        const loadedPersonalities = savedPersonalities ? JSON.parse(savedPersonalities) : [{id: 'default-1', name: 'NexusBot', prompt: ''}];
+        const loadedPersonalities = savedPersonalities ? JSON.parse(savedPersonalities) : [{id: 'default-1', name: 'SPCMTN Bot', prompt: 'You are a helpful assistant for the Space Mountain community.'}];
         setPersonalities(loadedPersonalities);
 
         const savedSelectedId = localStorage.getItem('selectedPersonalityId');
@@ -355,7 +355,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
     const array = new Uint32Array(8);
     window.crypto.getRandomValues(array);
     const secret = Array.from(array, dec => ('0' + dec.toString(16)).substr(-2)).join('');
-    handleInputChange('remoteAccessSecret', `nh_sec_${secret}`);
+    handleInputChange('remoteAccessSecret', `smos_sec_${secret}`);
     toast({ title: "Secret Key Generated", description: "A new secret key has been generated and placed in the field." });
   };
   
@@ -490,7 +490,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
                               <Input 
                                   id="bot-name" 
                                   type="text" 
-                                  placeholder="e.g., NexusBot" 
+                                  placeholder="e.g., SCMTN Bot" 
                                   value={selectedPersonality?.name || ''} 
                                   onChange={(e) => handlePersonalityChange('name', e.target.value)} 
                               />
@@ -685,13 +685,13 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
                           {settings.streamerbotRequestType === 'DoAction' && (
                               <div className="space-y-2">
                                   <Label htmlFor="streamerbot-action-name">Action Name</Label>
-                                  <Input id="streamerbot-action-name" type="text" placeholder="e.g., Nexus Hub Message" value={settings.streamerbotActionName || ''} onChange={(e) => handleInputChange('streamerbotActionName', e.target.value)} />
+                                  <Input id="streamerbot-action-name" type="text" placeholder="e.g., Space Mountain OS Message" value={settings.streamerbotActionName || ''} onChange={(e) => handleInputChange('streamerbotActionName', e.target.value)} />
                               </div>
                           )}
                           {settings.streamerbotRequestType === 'SetGlobalVariable' && (
                               <div className="space-y-2">
                                   <Label htmlFor="streamerbot-variable-name">Variable Name</Label>
-                                  <Input id="streamerbot-variable-name" type="text" placeholder="e.g., nexusMessage" value={settings.streamerbotVariableName || ''} onChange={(e) => handleInputChange('streamerbotVariableName', e.target.value)} />
+                                  <Input id="streamerbot-variable-name" type="text" placeholder="e.g., spcmtnMessage" value={settings.streamerbotVariableName || ''} onChange={(e) => handleInputChange('streamerbotVariableName', e.target.value)} />
                                   <p className="text-xs text-muted-foreground">The message from Unified Chat will be set as the value for this variable.</p>
                               </div>
                           )}
@@ -746,3 +746,5 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
     </>
   );
 }
+
+    
