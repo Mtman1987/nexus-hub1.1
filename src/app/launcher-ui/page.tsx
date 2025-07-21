@@ -1,198 +1,110 @@
 
 "use client";
-import React, { useState, useEffect } from 'react';
+
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { PopOutWindow } from '@/components/layout/pop-out-window';
-import { ApiSettings } from '@/components/dashboard/api-settings';
-import { UnifiedChat } from '@/components/dashboard/unified-chat';
-import { LogViewer } from '@/components/dashboard/log-viewer';
-import { WebsiteViewer } from '@/components/dashboard/website-viewer';
-import { UserRoles } from '@/components/dashboard/user-roles';
-import { Fallback } from '@/components/dashboard/fallback';
-import { FallbackStrategy } from '@/components/dashboard/fallback-strategy';
-import { Monitor, X, LayoutGrid, Home, LifeBuoy } from 'lucide-react';
-import Link from 'next/link';
-import { SetupDialog } from '@/components/dashboard/setup-dialog';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Rocket } from 'lucide-react';
 
-const componentMap: { [key: string]: React.ComponentType<{ isPoppedOut?: boolean }> } = {
-  apiSettings: ApiSettings,
-  unifiedChat: UnifiedChat,
-  logViewer: LogViewer,
-  websiteViewer: WebsiteViewer,
-  userRoles: UserRoles,
-  fallback: Fallback,
-  fallbackStrategy: FallbackStrategy,
-};
+const RELAUNCH_KEY = 'nexus-relaunch-trigger';
+const RELAUNCH_IN_PROGRESS_KEY = 'nexus-relaunch-in-progress';
+const OPEN_POPOUTS_KEY = 'nexus-open-popouts';
 
-const componentOptions = [
-  { value: 'dashboard', label: 'Dashboard' },
-  { value: 'unifiedChat', label: 'Unified Chat' },
-  { value: 'logViewer', label: 'Captain\'s Log' },
-  { value: 'apiSettings', label: 'API Key Vault' },
-  { value: 'websiteViewer', label: 'Website Viewer' },
-  { value: 'userRoles', label: 'Access Control' },
-  { value: 'fallback', label: 'Intelligent Fallback' },
-  { value: 'fallbackStrategy', label: 'Fallback Strategy' },
-];
 
-type WindowSlot = {
-  id: number;
-  componentKey: string | null;
-  windowInstance: Window | null;
-};
+export default function LauncherUIPage() {
+  const dashboardRef = useRef<Window | null>(null);
+  const [buttonText, setButtonText] = useState('Launch Nexus Hub');
 
-export default function LauncherUI() {
-  const [slots, setSlots] = useState<WindowSlot[]>([
-    { id: 1, componentKey: null, windowInstance: null },
-    { id: 2, componentKey: null, windowInstance: null },
-    { id: 3, componentKey: null, windowInstance: null },
-    { id: 4, componentKey: null, windowInstance: null },
-  ]);
+  const launchDashboard = useCallback((isRelaunch: boolean) => {
+    if (dashboardRef.current && !dashboardRef.current.closed) {
+      dashboardRef.current.focus();
+      return;
+    }
 
-  const [popOuts, setPopOuts] = useState<{ [key: number]: React.ReactNode }>({});
-  const [showSetup, setShowSetup] = useState(false);
+    const { availLeft, availTop, availWidth, availHeight } = window.screen;
+    let features: string;
 
-  const handleSelectChange = (slotId: number, componentKey: string) => {
-    setSlots(slots.map(slot => (slot.id === slotId ? { ...slot, componentKey } : slot)));
+    if (isRelaunch) {
+        // Relaunch: bottom-right quadrant
+        const dashboardWidth = Math.floor(availWidth / 2);
+        // This calculation must match the popout height calculation precisely
+        const dashboardHeight = Math.floor(availHeight / 2) - 60; 
+        const leftPos = availLeft + dashboardWidth;
+        const topPos = availTop + Math.floor(availHeight / 2);
+        features = `width=${dashboardWidth},height=${dashboardHeight},left=${leftPos},top=${topPos},resizable,scrollbars`;
+    } else {
+        // Initial launch: right half of the screen
+        const halfWidth = Math.floor(availWidth / 2);
+        const leftPos = availLeft + halfWidth;
+        features = `width=${halfWidth},height=${availHeight},left=${leftPos},top=${availTop},resizable,scrollbars`;
+        setButtonText('Relaunch Dashboard');
+    }
+
+    const newDashboard = window.open('/dashboard', 'dashboard-b', features);
+    if (newDashboard) {
+      if (isRelaunch) {
+          try {
+            // This flag is crucial for Dashboard B to know it's part of the sequence.
+            localStorage.setItem(RELAUNCH_IN_PROGRESS_KEY, 'true');
+          } catch (e) {
+            console.warn("Could not set relaunch flag on new dashboard window. It may have been blocked.", e);
+          }
+      }
+      dashboardRef.current = newDashboard;
+    }
+  }, []);
+
+  const handleManualLaunch = () => {
+    localStorage.removeItem(OPEN_POPOUTS_KEY);
+    launchDashboard(false);
   };
 
-  const handleLaunch = (slotId: number) => {
-    const slot = slots.find(s => s.id === slotId);
-    if (!slot || !slot.componentKey) return;
-    
-    if (slot.componentKey === 'dashboard') {
-        const screenWidth = window.screen.width;
-        const screenHeight = window.screen.height;
-        const popoutWidth = Math.floor(screenWidth / 2);
-        const popoutHeight = Math.floor(screenHeight / 2);
-
-        let top = 0, left = 0;
-        switch (slot.id) {
-            case 1: top = 0; left = 0; break;
-            case 2: top = 0; left = popoutWidth; break;
-            case 3: top = popoutHeight; left = 0; break;
-            case 4: top = popoutHeight; left = popoutWidth; break;
+  useEffect(() => {
+    // This is the new, more reliable polling mechanism.
+    const relaunchCheckInterval = setInterval(() => {
+        if (localStorage.getItem(RELAUNCH_KEY) === 'true') {
+            localStorage.removeItem(RELAUNCH_KEY); // Consume the trigger
+            launchDashboard(true);
         }
-        
-        const newWindow = window.open('/dashboard', `_blank`, `width=${popoutWidth},height=${popoutHeight},left=${left},top=${top},resizable,scrollbars`);
-        setSlots(prev => prev.map(s => s.id === slotId ? {...s, windowInstance: newWindow} : s));
-        return;
-    }
+    }, 250); // Check every quarter second
 
-    const Component = componentMap[slot.componentKey];
-    const componentName = componentOptions.find(c => c.value === slot.componentKey)?.label || "Module";
+    // Monitors the main dashboard window and resets the button text if it's closed manually.
+    const checkDashboardClosed = setInterval(() => {
+        if (dashboardRef.current && dashboardRef.current.closed) {
+            dashboardRef.current = null;
+            setButtonText('Launch Nexus Hub');
+        }
+    }, 1000);
 
-    setPopOuts(prev => ({
-      ...prev,
-      [slotId]: (
-        <PopOutWindow
-          onClose={() => handleClose(slotId)}
-          title={componentName}
-          screenPosition={slotId}
-        >
-          <Component isPoppedOut={true} />
-        </PopOutWindow>
-      ),
-    }));
-  };
+    return () => {
+      clearInterval(relaunchCheckInterval);
+      clearInterval(checkDashboardClosed);
+    };
+  }, [launchDashboard]);
 
-  const handleClose = (slotId: number) => {
-    const slot = slots.find(s => s.id === slotId);
-    if (slot?.windowInstance) {
-        slot.windowInstance.close();
-    }
-
-    setPopOuts(prev => {
-      const newPopOuts = { ...prev };
-      delete newPopOuts[slotId];
-      return newPopOuts;
-    });
-
-    setSlots(prev => prev.map(s => s.id === slotId ? {...s, windowInstance: null} : s));
-  };
-  
-  const isLaunched = (slotId: number) => {
-      return !!popOuts[slotId] || !!slots.find(s => s.id === slotId)?.windowInstance;
-  }
 
   return (
-    <>
-    <SetupDialog open={showSetup} onOpenChange={setShowSetup} />
-    <div className="min-h-screen bg-background text-foreground p-6">
-      {Object.values(popOuts)}
-      <div className="max-w-5xl mx-auto">
-        <header className="mb-8 flex justify-between items-center flex-wrap gap-4">
-          <div className="flex-grow">
-            <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
-              <LayoutGrid className="h-8 w-8 text-accent" />
-              Creator Station Launcher
-            </h1>
-            <p className="text-muted-foreground mt-1">
-              Configure and launch modules in a 2x2 grid for your command center.
-            </p>
-          </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <Button variant="outline" size="sm" onClick={() => setShowSetup(true)}>
-                <LifeBuoy className="mr-2 h-4 w-4"/>
-                Setup Wizard
-            </Button>
-            <Link href="/dashboard" passHref>
-               <Button size="sm">
-                  <Home className="mr-2 h-4 w-4"/>
-                  Go to Dashboard
-               </Button>
-            </Link>
-          </div>
-        </header>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {slots.map(slot => (
-            <Card key={slot.id} className="flex flex-col">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>Monitor Slot {slot.id}</span>
-                  {isLaunched(slot.id) && (
-                     <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => handleClose(slot.id)}>
-                        <X className="h-5 w-5" />
-                     </Button>
-                  )}
-                </CardTitle>
-                <CardDescription>
-                  Select a module to display in this quadrant.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="flex-grow flex flex-col justify-end gap-4">
-                <Select
-                  value={slot.componentKey || ''}
-                  onValueChange={(value) => handleSelectChange(slot.id, value)}
-                  disabled={isLaunched(slot.id)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a module..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {componentOptions.map(opt => (
-                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                
-                <Button
-                  className="w-full"
-                  onClick={() => handleLaunch(slot.id)}
-                  disabled={!slot.componentKey || isLaunched(slot.id)}
-                >
-                  <Monitor className="mr-2 h-4 w-4" />
-                  {isLaunched(slot.id) ? 'Launched' : 'Launch in Slot ' + slot.id}
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
+    <div className="flex min-h-screen w-full items-center justify-center bg-background p-4">
+      <Card className="w-full max-w-md shadow-2xl border-0">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-3 text-2xl">
+            <Rocket className="h-7 w-7 text-primary" />
+            Nexus Hub Launcher
+          </CardTitle>
+          <CardDescription>
+            Your command center awaits. Keep this window open.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="mb-4 text-sm text-muted-foreground">
+            Click to launch your dashboard. The app will auto-relaunch into a 2x2 grid when you open a third pop-out module.
+          </p>
+          <Button onClick={handleManualLaunch} className="w-full text-md py-5">
+            <Rocket className="mr-2 h-5 w-5" />
+            {buttonText}
+          </Button>
+        </CardContent>
+      </Card>
     </div>
-    </>
   );
 }
