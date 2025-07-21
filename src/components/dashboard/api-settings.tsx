@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -21,7 +22,7 @@ const VAULT_PASSWORD = 'spcmtn';
 const UNLOCK_DURATION_MS = 5 * 60 * 1000; // 5 minutes
 
 export const settingKeys = [
-  'botPersonalities', 'selectedPersonalityId', 'edenApiKey', 'edenAiProvider', 'edenAiModel', 'googleApiKey', 'googleModelName',
+  'edenApiKey', 'edenAiProvider', 'edenAiModel', 'googleApiKey', 'googleModelName',
   'openaiApiKey', 'openaiModelName', 'groqApiKey', 'groqModelName',
   'discordToken', 'discordWebhook', 'twitchToken', 'providerStatus',
   'streamerbotServerAddress', 'streamerbotServerPort', 'streamerbotRequestType', 'streamerbotActionName', 'streamerbotVariableName', 'streamerbotWebhookUrl',
@@ -30,7 +31,7 @@ export const settingKeys = [
 
 export type SettingKey = typeof settingKeys[number];
 
-type SettingsObjectKey = Exclude<SettingKey, 'providerStatus' | 'botPersonalities' | 'selectedPersonalityId' | 'nexusConnectConnections'>;
+type SettingsObjectKey = Exclude<SettingKey, 'providerStatus' | 'nexusConnectConnections'>;
 
 export type Settings = {
     [key in SettingsObjectKey]?: string;
@@ -44,12 +45,6 @@ export type ProviderId = AiProviderId | ServiceProviderId;
 
 type ProviderStatus = {
     [key in ProviderId]: 'enabled' | 'disabled';
-}
-
-export type BotPersonality = {
-  id: string;
-  name: string;
-  prompt: string;
 }
 
 const edenProviderModels: Record<string, {value: string, label: string}[]> = {
@@ -197,7 +192,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
   useEffect(() => {
     try {
         const loadedSettings: Partial<Settings> = {};
-        const keysToLoad: SettingsObjectKey[] = settingKeys.filter((k): k is SettingsObjectKey => !['providerStatus', 'botPersonalities', 'selectedPersonalityId', 'nexusConnectConnections'].includes(k));
+        const keysToLoad: SettingsObjectKey[] = settingKeys.filter((k): k is SettingsObjectKey => !['providerStatus', 'nexusConnectConnections'].includes(k));
 
         for (const key of keysToLoad) {
             const value = localStorage.getItem(key);

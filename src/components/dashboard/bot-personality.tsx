@@ -38,11 +38,11 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
   useEffect(() => {
     try {
         const savedPersonalities = localStorage.getItem('botPersonalities');
-        const loadedPersonalities = savedPersonalities ? JSON.parse(savedPersonalities) : [{id: 'default-1', name: 'Station AI', prompt: 'You are the AI for Apollo Station, the Space Mountain community\'s central command hub.'}];
+        const loadedPersonalities = savedPersonalities ? JSON.parse(savedPersonalities) : [{id: 'default-1', name: 'COSMO', prompt: 'You are COSMO (Central Operating System Management Orbiter), the AI assistant for Apollo Station, the Space Mountain community\'s HQ, created by mtman1987. Your purpose is to act as a creative partner and lore master.'}];
         setPersonalities(loadedPersonalities);
 
         const savedSelectedId = localStorage.getItem('selectedPersonalityId');
-        const selectedId = savedSelectedId && loadedPersonalities.some((p: BotPersonalityType) => p.id === savedSelectedId) ? savedSelectedId : loadedPersonalities[0].id;
+        const selectedId = savedSelectedId && loadedPersonalities.some((p: BotPersonalityType) => p.id === savedSelectedId) ? savedSelectedId : loadedPersonalities[0]?.id;
         setSelectedPersonalityId(selectedId);
         
         const selectedPersonality = loadedPersonalities.find((p: BotPersonalityType) => p.id === selectedId);
@@ -84,7 +84,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
   
   const handleAddNewPersonality = () => {
     const newId = `personality-${Date.now()}`;
-    const newPersonality: BotPersonalityType = { id: newId, name: 'New Bot', prompt: ''};
+    const newPersonality: BotPersonalityType = { id: newId, name: 'New Bot', prompt: 'You are a helpful assistant.'};
     const newPersonalities = [...personalities, newPersonality];
     setPersonalities(newPersonalities);
     setSelectedPersonalityId(newId);
@@ -184,31 +184,35 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                 </div>
             </div>
 
-            <div className="space-y-2">
-                <Label htmlFor="bot-name">Bot Name</Label>
-                <Input 
-                    id="bot-name" 
-                    type="text" 
-                    placeholder="e.g., Station AI" 
-                    value={selectedPersonality?.name || ''} 
-                    onChange={(e) => handlePersonalityChange('name', e.target.value)} 
-                />
-            </div>
-            <div className="space-y-2 flex-grow flex flex-col">
-                <Label htmlFor="bot-prompt">System Prompt</Label>
-                <Textarea 
-                    id="bot-prompt" 
-                    placeholder="You are a helpful assistant." 
-                    value={selectedPersonality?.prompt || ''} 
-                    onChange={(e) => handlePersonalityChange('prompt', e.target.value)} 
-                    className="flex-grow"
-                />
-                <p className="text-xs text-muted-foreground">If this is empty, it will default to "You are a helpful assistant."</p>
-            </div>
+            {selectedPersonality && (
+                <>
+                    <div className="space-y-2">
+                        <Label htmlFor="bot-name">Bot Name</Label>
+                        <Input 
+                            id="bot-name" 
+                            type="text" 
+                            placeholder="e.g., Station AI" 
+                            value={selectedPersonality?.name || ''} 
+                            onChange={(e) => handlePersonalityChange('name', e.target.value)} 
+                        />
+                    </div>
+                    <div className="space-y-2 flex-grow flex flex-col">
+                        <Label htmlFor="bot-prompt">System Prompt</Label>
+                        <Textarea 
+                            id="bot-prompt" 
+                            placeholder="You are a helpful assistant." 
+                            value={selectedPersonality?.prompt || ''} 
+                            onChange={(e) => handlePersonalityChange('prompt', e.target.value)} 
+                            className="flex-grow"
+                        />
+                        <p className="text-xs text-muted-foreground">This is the core instruction that defines your bot's behavior.</p>
+                    </div>
+                </>
+            )}
              <div className="flex justify-end pt-4 border-t mt-auto">
                 <Button type="submit" form="bot-personality-form">
                   <Save className="mr-2 h-4 w-4" />
-                  Save Personality
+                  Save Personalities
                 </Button>
             </div>
           </form>
