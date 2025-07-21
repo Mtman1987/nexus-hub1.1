@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from 'react';
@@ -69,7 +68,6 @@ type ToolModule = {
   component: React.ComponentType<{ isPoppedOut?: boolean }>;
 };
 
-// Explicitly define rows for the grid
 const topRowModules: ToolModule[] = [
     { id: 'unifiedChat', title: 'Unified Chat', component: UnifiedChat},
     { id: 'apiSettings', title: 'API Key Vault', component: ApiSettings },
@@ -257,7 +255,7 @@ export default function DashboardPage() {
             </div>
             
             <div className="flex-grow flex flex-col gap-6 overflow-hidden">
-                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 h-[300px]">
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 h-full">
                   {topRowModules
                     .filter(m => visibleModules[m.id] && !poppedOutModules.includes(m.id))
                     .map(m => (
@@ -269,7 +267,7 @@ export default function DashboardPage() {
                       </div>
                   ))}
                 </div>
-                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6 h-[300px]">
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6 h-full">
                   {bottomRowModules
                     .filter(m => visibleModules[m.id] && !poppedOutModules.includes(m.id))
                     .map(m => (
