@@ -26,6 +26,11 @@ export default function RootLayout({
         <meta name="theme-color" content="#1A1A1A" />
       </head>
       <body className="font-body antialiased bg-background text-foreground">
+        <div className="fixed top-0 left-0 w-full h-full starfield -z-10">
+           <div className="shooting-star" style={{ top: '10vh', left: '40vw', animationDelay: '-1s' }}></div>
+           <div className="shooting-star" style={{ top: '50vh', left: '60vw', animationDelay: '-3.4s' }}></div>
+           <div className="shooting-star" style={{ top: '80vh', left: '90vw', animationDelay: '-5.8s' }}></div>
+        </div>
         <LogProvider>
           <BotNameProvider>
             <SidebarProvider>
