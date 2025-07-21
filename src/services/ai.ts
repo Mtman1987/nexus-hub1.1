@@ -8,7 +8,9 @@
 import { intelligentFallbackFlow } from '@/ai/flows/intelligent-fallback';
 import { setupAssistantFlow } from '@/ai/flows/setup-assistant';
 import { unifiedChatFlow } from '@/ai/flows/unified-chat-flow';
+import { loreWeaverFlow } from '@/ai/flows/lore-weaver';
 import type { FlowLog, IntelligentFallbackInput, IntelligentFallbackOutput, SetupAssistantInput, SetupAssistantOutput, UnifiedChatInput, UnifiedChatOutput } from '@/ai/types';
+import type { LoreWeaverInput, LoreWeaverOutput } from '@/ai/flows/lore-weaver';
 
 type AiProviderId = 'eden' | 'google' | 'openai' | 'groq';
 
@@ -218,4 +220,6 @@ export async function getSetupAssistantResponse(input: SetupAssistantInput): Pro
     return setupAssistantFlow(input);
 }
 
-    
+export async function getLoreWeaverResponse(input: LoreWeaverInput): Promise<{response: LoreWeaverOutput, logs: FlowLog[]}> {
+    return loreWeaverFlow(input);
+}

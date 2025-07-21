@@ -73,4 +73,14 @@ export const WebsiteControlOutputSchema = z.object({
 });
 export type WebsiteControlOutput = z.infer<typeof WebsiteControlOutputSchema>;
 
-    
+// --- Lore Weaver ---
+export const LoreWeaverInputSchema = z.object({
+    prompt: z.string(),
+    config: z.any(), // Pass config for the AI call
+});
+export type LoreWeaverInput = z.infer<typeof LoreWeaverInputSchema>;
+
+export const LoreWeaverOutputSchema = z.object({
+    response: z.string(),
+});
+export type LoreWeaverOutput = z.infer<typeof LoreWeaverOutputSchema>;

@@ -12,7 +12,7 @@ import { LogViewer } from '@/components/dashboard/log-viewer';
 import { Fallback } from '@/components/dashboard/fallback';
 import { ApiSettings } from '@/components/dashboard/api-settings';
 import { UnifiedChat } from '@/components/dashboard/unified-chat';
-import { Bot, Twitch, Globe, Radio, Settings, Puzzle, Save, Trash2, Bookmark, Eye, LayoutGrid, EyeOff } from 'lucide-react';
+import { Bot, Twitch, Globe, Radio, Settings, Puzzle, Save, Trash2, Bookmark, Eye, LayoutGrid, EyeOff, ScrollText } from 'lucide-react';
 import DiscordLogo from '@/components/icons/discord-logo';
 import { SITES } from '@/lib/sites';
 import { Button } from '@/components/ui/button';
@@ -27,13 +27,14 @@ import { Sidebar } from '@/components/layout/sidebar';
 import { MobileSidebar } from '@/components/layout/mobile-sidebar';
 import { SavedItems } from '@/components/dashboard/saved-items';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { LoreWeaver } from '@/components/dashboard/lore-weaver';
 
 type WindowRecord = {
   id: string;
   window: Window | null;
 };
 
-const OPEN_POPOUTS_KEY = 'nexus-open-popouts';
+const OPEN_POPOUTS_KEY = 'apollo-open-popouts';
 
 // Define all modules with their components
 const ALL_MODULES_CONFIG = [
@@ -45,6 +46,7 @@ const ALL_MODULES_CONFIG = [
     { id: 'userRoles', title: 'Access Control', component: UserRoles },
     { id: 'websiteViewer', title: 'Website Viewer', component: WebsiteViewer },
     { id: 'savedItems', title: 'Saved Items', component: SavedItems },
+    { id: 'loreWeaver', title: 'Lore Weaver', component: LoreWeaver },
 ];
 const defaultModuleOrder = ALL_MODULES_CONFIG.map(m => m.id);
 

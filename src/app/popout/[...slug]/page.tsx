@@ -11,6 +11,7 @@ import { UserRoles } from '@/components/dashboard/user-roles';
 import { WebsiteViewer } from '@/components/dashboard/website-viewer';
 import { FallbackStrategy } from '@/components/dashboard/fallback-strategy';
 import { SavedItems } from '@/components/dashboard/saved-items';
+import { LoreWeaver } from '@/components/dashboard/lore-weaver';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { LogProvider } from '@/context/LogContext';
@@ -26,11 +27,12 @@ const moduleMap: { [key: string]: React.ComponentType<any> } = {
   websiteViewer: WebsiteViewer,
   fallbackStrategy: FallbackStrategy,
   savedItems: SavedItems,
+  loreWeaver: LoreWeaver,
 };
 
 function PopoutContent({ slug }: { slug: string }) {
     const searchParams = useSearchParams();
-    const title = searchParams.get('title') || 'Nexus Hub Module';
+    const title = searchParams.get('title') || 'Apollo Station Module';
 
     useEffect(() => {
         document.title = title;
