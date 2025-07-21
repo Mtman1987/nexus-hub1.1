@@ -43,7 +43,7 @@ type WindowSlot = {
   windowInstance: Window | null;
 };
 
-export function LauncherUI() {
+export default function LauncherUI() {
   const [slots, setSlots] = useState<WindowSlot[]>([
     { id: 1, componentKey: null, windowInstance: null },
     { id: 2, componentKey: null, windowInstance: null },
@@ -120,26 +120,26 @@ export function LauncherUI() {
   return (
     <>
     <SetupDialog open={showSetup} onOpenChange={setShowSetup} />
-    <div className="min-h-screen bg-background text-foreground p-8">
+    <div className="min-h-screen bg-background text-foreground p-6">
       {Object.values(popOuts)}
-      <div className="max-w-4xl mx-auto">
-        <header className="mb-8 flex justify-between items-start flex-wrap gap-4">
-          <div>
-            <h1 className="text-4xl font-bold tracking-tight flex items-center gap-3">
-              <LayoutGrid className="h-10 w-10 text-accent" />
+      <div className="max-w-5xl mx-auto">
+        <header className="mb-8 flex justify-between items-center flex-wrap gap-4">
+          <div className="flex-grow">
+            <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
+              <LayoutGrid className="h-8 w-8 text-accent" />
               Creator Station Launcher
             </h1>
-            <p className="text-muted-foreground mt-2">
+            <p className="text-muted-foreground mt-1">
               Configure and launch modules in a 2x2 grid for your command center.
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="link" onClick={() => setShowSetup(true)}>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <Button variant="outline" size="sm" onClick={() => setShowSetup(true)}>
                 <LifeBuoy className="mr-2 h-4 w-4"/>
-                New User? Start Here
+                Setup Wizard
             </Button>
             <Link href="/dashboard" passHref>
-               <Button variant="outline">
+               <Button size="sm">
                   <Home className="mr-2 h-4 w-4"/>
                   Go to Dashboard
                </Button>
@@ -163,7 +163,7 @@ export function LauncherUI() {
                   Select a module to display in this quadrant.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="flex-grow flex flex-col justify-between">
+              <CardContent className="flex-grow flex flex-col justify-end gap-4">
                 <Select
                   value={slot.componentKey || ''}
                   onValueChange={(value) => handleSelectChange(slot.id, value)}
@@ -178,16 +178,15 @@ export function LauncherUI() {
                     ))}
                   </SelectContent>
                 </Select>
-                <div className="mt-4">
-                  <Button
-                    className="w-full"
-                    onClick={() => handleLaunch(slot.id)}
-                    disabled={!slot.componentKey || isLaunched(slot.id)}
-                  >
-                    <Monitor className="mr-2 h-4 w-4" />
-                    {isLaunched(slot.id) ? 'Launched' : 'Launch in Slot ' + slot.id}
-                  </Button>
-                </div>
+                
+                <Button
+                  className="w-full"
+                  onClick={() => handleLaunch(slot.id)}
+                  disabled={!slot.componentKey || isLaunched(slot.id)}
+                >
+                  <Monitor className="mr-2 h-4 w-4" />
+                  {isLaunched(slot.id) ? 'Launched' : 'Launch in Slot ' + slot.id}
+                </Button>
               </CardContent>
             </Card>
           ))}
