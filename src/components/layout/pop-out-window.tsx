@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useEffect, useRef, useState } from 'react';
@@ -7,60 +6,45 @@ import { createPortal } from 'react-dom';
 interface PopOutWindowProps {
   children: React.ReactNode;
   onClose: () => void;
-  title?: string;
-  screenPosition?: number; // 1: TL, 2: TR, 3: BL, 4: BR
+  setWindowInstance: (window: Window) => void; // Callback to pass window instance to parent
+  size?: 'half' | 'quarter';
 }
 
-export function PopOutWindow({ children, onClose, title = "Nexus Hub Module", screenPosition }: PopOutWindowProps) {
+export function PopOutWindow({ children, onClose, setWindowInstance, size = 'quarter' }: PopOutWindowProps) {
   const windowRef = useRef<Window | null>(null);
   const [container, setContainer] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
-    // Define the dimensions for each quadrant
-    const screenWidth = window.screen.width;
-    const screenHeight = window.screen.height;
-    const popoutWidth = Math.floor(screenWidth / 2);
-    const popoutHeight = Math.floor(screenHeight / 2);
+    // Calculate window size based on the prop
+    let popoutWidth, popoutHeight;
+    const { width, height, availLeft, availTop } = window.screen;
 
-    let top = 0, left = 0;
-    switch (screenPosition) {
-        case 1: // Top-Left
-            top = 0;
-            left = 0;
-            break;
-        case 2: // Top-Right
-            top = 0;
-            left = popoutWidth;
-            break;
-        case 3: // Bottom-Left
-            top = popoutHeight;
-            left = 0;
-            break;
-        case 4: // Bottom-Right
-            top = popoutHeight;
-            left = popoutWidth;
-            break;
-        default: // Default to center if unspecified
-            top = Math.floor((screenHeight - popoutHeight) / 2);
-            left = Math.floor((screenWidth - popoutWidth) / 2);
-            break;
+    if (size === 'half') {
+      popoutWidth = width / 2;
+      popoutHeight = height;
+    } else { // quarter
+      popoutWidth = width / 2;
+      popoutHeight = height / 2;
     }
-
-    const windowFeatures = `width=${popoutWidth},height=${popoutHeight},left=${left},top=${top},resizable,scrollbars`;
     
-    const newWindow = window.open("", "", windowFeatures);
+    const newWindow = window.open(
+      "", 
+      "", // Giving a name can cause all popouts to share a window, blank opens new ones
+      `width=${popoutWidth},height=${popoutHeight},left=${width / 2},top=${availTop},resizable,scrollbars`
+    );
     
     if (newWindow) {
       windowRef.current = newWindow;
+      setWindowInstance(newWindow); // Pass instance to parent
       const div = newWindow.document.createElement('div');
       newWindow.document.body.appendChild(div);
       newWindow.document.body.style.margin = '0';
       newWindow.document.documentElement.style.height = '100%';
       newWindow.document.body.style.height = '100%';
       div.style.height = '100%';
-      newWindow.document.title = title;
+      newWindow.document.title = "Nexus Hub Module";
 
-      // Copy stylesheets
+      // Copy stylesheets from main window to pop-out
       const styleSheets = Array.from(document.styleSheets);
       styleSheets.forEach(styleSheet => {
         try {
@@ -81,11 +65,11 @@ export function PopOutWindow({ children, onClose, title = "Nexus Hub Module", sc
         }
       });
       
-      // Copy the dark/light mode class
+      // Copy the class names from the html element to apply dark/light mode
       newWindow.document.documentElement.className = document.documentElement.className;
       
       newWindow.addEventListener('beforeunload', onClose);
-      setContainer(div);
+      setContainer(div); // Trigger re-render with the container
     }
 
     return () => {
@@ -97,9 +81,6 @@ export function PopOutWindow({ children, onClose, title = "Nexus Hub Module", sc
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!container) {
-    return null;
-  }
-  
-  return createPortal(<div className="h-full bg-background text-foreground p-4">{children}</div>, container);
+  // We need to render the children into the container once it's available
+  return container ? createPortal(<div className="h-full bg-background text-foreground p-4">{children}</div>, container) : null;
 }
