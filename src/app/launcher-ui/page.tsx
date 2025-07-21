@@ -7,17 +7,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Rocket } from 'lucide-react';
 import { SetupDialog } from '@/components/dashboard/setup-dialog';
 
-const RELAUNCH_KEY = 'nexus-relaunch-trigger';
-const RELAUNCH_IN_PROGRESS_KEY = 'nexus-relaunch-in-progress';
-const OPEN_POPOUTS_KEY = 'nexus-open-popouts';
+const OPEN_POPOUTS_KEY = 'apollo-open-popouts';
 
 
 export default function LauncherUIPage() {
   const dashboardRef = useRef<Window | null>(null);
   const [buttonText, setButtonText] = useState('Launch Apollo Station');
   const [showSetup, setShowSetup] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
     // Check if essential API key is missing to trigger the setup
     const key = localStorage.getItem('edenApiKey');
     if (!key) {
@@ -25,72 +25,47 @@ export default function LauncherUIPage() {
     }
   }, []);
 
-  const launchDashboard = useCallback((isRelaunch: boolean) => {
+  const launchDashboard = useCallback(() => {
     if (dashboardRef.current && !dashboardRef.current.closed) {
       dashboardRef.current.focus();
       return;
     }
 
     const { availLeft, availTop, availWidth, availHeight } = window.screen;
-    let features: string;
+    const halfWidth = Math.floor(availWidth / 2);
+    const features = `width=${halfWidth},height=${availHeight},left=${leftPos},top=${availTop},resizable,scrollbars`;
+    
+    // Position the dashboard on the right half of the screen
+    const leftPos = availLeft + halfWidth;
 
-    if (isRelaunch) {
-        // Relaunch: bottom-right quadrant
-        const dashboardWidth = Math.floor(availWidth / 2);
-        // This calculation must match the popout height calculation precisely
-        const dashboardHeight = Math.floor(availHeight / 2) - 60; 
-        const leftPos = availLeft + dashboardWidth;
-        const topPos = availTop + Math.floor(availHeight / 2);
-        features = `width=${dashboardWidth},height=${dashboardHeight},left=${leftPos},top=${topPos},resizable,scrollbars`;
-    } else {
-        // Initial launch: right half of the screen
-        const halfWidth = Math.floor(availWidth / 2);
-        const leftPos = availLeft + halfWidth;
-        features = `width=${halfWidth},height=${availHeight},left=${leftPos},top=${availTop},resizable,scrollbars`;
-        setButtonText('Relaunch Dashboard');
-    }
-
-    const newDashboard = window.open('/dashboard', 'dashboard-b', features);
+    const newDashboard = window.open('/dashboard', 'apollo_dashboard', features);
     if (newDashboard) {
-      if (isRelaunch) {
-          try {
-            // This flag is crucial for Dashboard B to know it's part of the sequence.
-            localStorage.setItem(RELAUNCH_IN_PROGRESS_KEY, 'true');
-          } catch (e) {
-            console.warn("Could not set relaunch flag on new dashboard window. It may have been blocked.", e);
-          }
-      }
       dashboardRef.current = newDashboard;
     }
   }, []);
 
   const handleManualLaunch = () => {
+    // Clear any previously saved popout locations when doing a fresh launch.
     localStorage.removeItem(OPEN_POPOUTS_KEY);
-    launchDashboard(false);
+    launchDashboard();
   };
 
   useEffect(() => {
-    // This is the new, more reliable polling mechanism.
-    const relaunchCheckInterval = setInterval(() => {
-        if (localStorage.getItem(RELAUNCH_KEY) === 'true') {
-            localStorage.removeItem(RELAUNCH_KEY); // Consume the trigger
-            launchDashboard(true);
-        }
-    }, 250); // Check every quarter second
-
-    // Monitors the main dashboard window and resets the button text if it's closed manually.
     const checkDashboardClosed = setInterval(() => {
         if (dashboardRef.current && dashboardRef.current.closed) {
             dashboardRef.current = null;
-            setButtonText('Launch Apollo Station');
         }
     }, 1000);
 
     return () => {
-      clearInterval(relaunchCheckInterval);
       clearInterval(checkDashboardClosed);
     };
-  }, [launchDashboard]);
+  }, []);
+
+  // Render nothing on the server, wait for client-side check
+  if (!isClient) {
+    return null; 
+  }
 
   if (showSetup) {
     return <SetupDialog open={showSetup} onOpenChange={setShowSetup} />;
@@ -105,16 +80,16 @@ export default function LauncherUIPage() {
             Apollo Station Launcher
           </CardTitle>
           <CardDescription>
-            Your command center awaits. Keep this window open.
+            Your command center awaits. Keep this window open to manage pop-out windows.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <p className="mb-4 text-sm text-muted-foreground">
-            Click to launch your dashboard. The app will auto-relaunch into a 2x2 grid when you open a third pop-out module.
+            Click to launch your main dashboard.
           </p>
           <Button onClick={handleManualLaunch} className="w-full text-md py-5">
             <Rocket className="mr-2 h-5 w-5" />
-            {buttonText}
+            Launch Apollo Station
           </Button>
         </CardContent>
       </Card>
