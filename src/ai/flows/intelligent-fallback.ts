@@ -1,40 +1,36 @@
-import type { IntelligentFallbackInput, IntelligentFallbackOutput } from '@/ai/types';
 
-// This is a placeholder for the actual Genkit flow.
-// It demonstrates how the logic would work without a live AI call.
+'use server';
+/**
+ * @fileOverview An AI flow for recommending the best provider for a given task.
+ *
+ * - intelligentFallback - The main function to get a recommendation.
+ */
+import { callAIChat } from '@/services/ai';
+import { IntelligentFallbackOutputSchema, type IntelligentFallbackInput, type IntelligentFallbackOutput } from '@/ai/types';
 
-export async function intelligentFallbackFlow(input: IntelligentFallbackInput): Promise<IntelligentFallbackOutput> {
-    const { goal, prompt, config } = input;
-
-    // In a real scenario, you'd make an AI call here.
-    // We'll simulate it with some basic logic.
+export async function intelligentFallbackFlow(input: IntelligentFallbackInput): Promise<{response: IntelligentFallbackOutput, logs: any[]}> {
     
-    const lowerCasePrompt = prompt.toLowerCase();
-    
-    if (lowerCasePrompt.includes('code') || lowerCasePrompt.includes('programming') || goal.toLowerCase().includes('code')) {
-        return {
-            recommendation: "Google AI (Gemini)",
-            reasoning: "Gemini models are often excellent for code generation and technical tasks."
-        };
-    }
+    const systemPrompt = `You are an expert AI routing system. Your job is to recommend the best AI provider for a specific task based on the user's prompt and goal.
 
-    if (goal.toLowerCase().includes('fast') || goal.toLowerCase().includes('quick')) {
-        return {
-            recommendation: "Groq (Llama)",
-            reasoning: "Groq provides the fastest inference speeds, making it ideal for real-time chat applications."
-        };
-    }
+You have been configured with the following providers: ${Object.entries(input.config.providerStatus || {}).filter(([, status]) => status === 'enabled').map(([key]) => key).join(', ')}.
 
-    if (goal.toLowerCase().includes('creative writing') || lowerCasePrompt.length > 500) {
-        return {
-            recommendation: "Eden AI (Claude/GPT-4)",
-            reasoning: "High-end models available through Eden AI, like Claude 3 or GPT-4, are well-suited for creative tasks and long prompts."
-        };
-    }
+User's Goal: "${input.goal}"
+User's Prompt: "${input.prompt}"
+
+Analyze the prompt and goal. Based on the available providers, recommend the single best one for this task. Your recommendation should be based on the general strengths of the providers (e.g., Google Gemini for general knowledge and speed, Groq for fastest response, EdenAI for access to high-end models like Claude/GPT-4 for creative and complex writing). Output your response as a JSON object with two keys: "recommendation" and "reasoning".`;
     
-    // Default recommendation
-    return {
-        recommendation: "Eden AI (Primary)",
-        reasoning: "Eden AI is the primary configured provider and is a good general-purpose choice. It offers access to a wide variety of models."
-    };
+    const { response, logs } = await callAIChat({
+        userMessage: systemPrompt,
+        jsonMode: true,
+        overrideConfig: input.config as { [key: string]: string | undefined }
+    });
+    
+    try {
+        const parsedResponse = IntelligentFallbackOutputSchema.parse(response);
+        return { response: parsedResponse, logs };
+    } catch (error) {
+        console.error("Failed to parse intelligent fallback response:", error);
+        logs.push({ service: 'System', level: 'error', message: 'The AI returned an invalid JSON format for the fallback recommendation.', details: JSON.stringify(response) });
+        throw new Error("The AI returned an invalid JSON format for the fallback recommendation.");
+    }
 }

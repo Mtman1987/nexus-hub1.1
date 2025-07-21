@@ -1,4 +1,6 @@
+
 import type { LogEntry } from "@/context/LogContext";
+import { z } from "zod";
 
 export type AiProviderId = 'eden' | 'google' | 'openai' | 'groq';
 
@@ -14,15 +16,15 @@ export type AppConfig = {
 // Represents a log entry without the timestamp, as it's added by the logging context.
 export type FlowLog = Omit<LogEntry, 'timestamp'>;
 
-// Input for the main chat flow
+// --- Unified Chat ---
 export interface UnifiedChatInput {
     message: string;
     targets: string[];
     config: AppConfig;
     nexusConnectTargets?: string[];
+    isLocalExecution?: boolean; // Used to prevent remote forwarding loops
 }
 
-// Output from the main chat flow
 export interface UnifiedChatOutput {
     reply: string;
     logs: FlowLog[];
@@ -32,26 +34,40 @@ export interface UnifiedChatOutput {
     } | null;
 }
 
-// Input for the intelligent fallback flow
-export interface IntelligentFallbackInput {
-    goal: string;
-    prompt: string;
-    config: AppConfig;
-}
+// --- Intelligent Fallback ---
+export const IntelligentFallbackInputSchema = z.object({
+    goal: z.string(),
+    prompt: z.string(),
+    config: z.any(),
+});
+export type IntelligentFallbackInput = z.infer<typeof IntelligentFallbackInputSchema>;
 
-// Output from the intelligent fallback flow
-export interface IntelligentFallbackOutput {
-    recommendation: string;
-    reasoning: string;
-}
+export const IntelligentFallbackOutputSchema = z.object({
+    recommendation: z.string(),
+    reasoning: z.string(),
+});
+export type IntelligentFallbackOutput = z.infer<typeof IntelligentFallbackOutputSchema>;
 
-// Input for the setup assistant flow
-export interface SetupAssistantInput {
-    topic: string;
-    question: string;
-}
 
-// Output from the setup assistant flow
-export interface SetupAssistantOutput {
-    answer: string;
-}
+// --- Setup Assistant ---
+export const SetupAssistantInputSchema = z.object({
+    topic: z.string(),
+    question: z.string(),
+});
+export type SetupAssistantInput = z.infer<typeof SetupAssistantInputSchema>;
+
+export const SetupAssistantOutputSchema = z.object({
+    answer: z.string(),
+});
+export type SetupAssistantOutput = z.infer<typeof SetupAssistantOutputSchema>;
+
+// --- Website Control ---
+export const WebsiteControlInputSchema = z.object({
+    command: z.string(),
+});
+export type WebsiteControlInput = z.infer<typeof WebsiteControlInputSchema>;
+
+export const WebsiteControlOutputSchema = z.object({
+    searchQuery: z.string(),
+});
+export type WebsiteControlOutput = z.infer<typeof WebsiteControlOutputSchema>;
