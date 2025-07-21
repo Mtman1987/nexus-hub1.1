@@ -17,6 +17,7 @@ import { cn } from '@/lib/utils';
 import { PopOutButton } from './pop-out-button';
 import { useBotName } from '@/context/BotNameContext';
 import { Textarea } from '../ui/textarea';
+import { SetupDialog } from './setup-dialog';
 
 export const settingKeys = [
   'botPersonalities', 'selectedPersonalityId', 'edenApiKey', 'edenAiProvider', 'edenAiModel', 'googleApiKey', 'googleModelName',
@@ -184,6 +185,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
   const [providerStatus, setProviderStatus] = useState<ProviderStatus>(defaultProviderStatus);
   const { addLog } = useLogs();
   const [openAccordions, setOpenAccordions] = useState<string[]>(['bot-personality', 'eden', 'discord']);
+  const [showSetup, setShowSetup] = useState(false);
   
   const { setBotName: contextSetBotName } = useBotName();
   const setBotName = setContextBotName || contextSetBotName;
@@ -424,6 +426,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
 
   return (
     <>
+      <SetupDialog open={showSetup} onOpenChange={setShowSetup} />
       <Card className="h-full flex flex-col">
         <CardHeader>
           <div className="flex justify-between items-start">
@@ -442,6 +445,10 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={() => setShowSetup(true)}>
+                  <LifeBuoy className="mr-2 h-4 w-4" />
+                  Onboarding
+              </Button>
               {!isPoppedOut && onHide && (
                  <Button variant="ghost" size="icon" onClick={onHide}>
                   <EyeOff className="h-4 w-4" />
@@ -636,7 +643,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
                           </div>
                           <div className="space-y-2">
                               <Label htmlFor="discord-webhook">Discord Webhook URL (For App to Send)</Label>
-                              <Input id="discord-webhook" type="text" placeholder="For sending messages from this app to Discord" value={settings.discordWebhook || ''} onChange={(e) => handleInputChange('discordWebhook', e.target.value)} />
+                              <Input id="discord-webhook" type="password" placeholder="For sending messages from this app to Discord" value={settings.discordWebhook || ''} onChange={(e) => handleInputChange('discordWebhook', e.target.value)} />
                           </div>
                       </AccordionContent>
                   </AccordionItem>
