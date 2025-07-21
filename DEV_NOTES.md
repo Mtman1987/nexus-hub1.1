@@ -1,5 +1,5 @@
 
-# Space Mountain OS: Developer Notes & Testing Checklist
+# Apollo Station: Developer Notes & Testing Checklist
 
 This document provides a quick overview of the project structure, key configuration files, and a checklist for Phase 1 testing.
 
@@ -14,32 +14,26 @@ Here is a simplified tree of the most important files and directories you'll be 
 ├── public/
 │   └── manifest.json       # PWA (Progressive Web App) configuration
 ├── src/
-│   ├── ai/
-│   │   └── flows/          # AI logic functions (the core AI logic)
-│   │       ├── intelligent-fallback.ts
-│   │       ├── setup-assistant.ts
-│   │       └── unified-chat-flow.ts
 │   ├── app/
-│   │   ├── access-control/ # "Access Control" page components
-│   │   ├── spacemountain/  # "Website Viewer" page components
+│   │   ├── dashboard/      # The main dashboard page component
+│   │   ├── access-control/ # Standalone "Access Control" page
+│   │   ├── spacemountain/  # Standalone "Website Viewer" page
+│   │   ├── popout/         # Logic for pop-out module windows
 │   │   ├── globals.css     # Main stylesheet (theming and colors)
 │   │   ├── layout.tsx      # Root layout of the application
-│   │   └── page.tsx        # The main dashboard page
+│   │   └── page.tsx        # The entry-point / launcher page
 │   ├── components/
 │   │   ├── dashboard/      # All dashboard widget components
 │   │   ├── icons/          # Custom SVG icons
 │   │   ├── layout/         # Reusable layout components (Header, Sidebar)
 │   │   └── ui/             # ShadCN UI components (Button, Card, etc.)
-│   ├── hooks/
-│   │   └── use-toast.ts    # Custom hook for showing notifications
-│   ├── services/
-│   │   └── ai.ts           # Centralized service for all AI API calls
-│   └── lib/
-│       ├── sites.ts        # Website module configuration
-│       └── utils.ts        # Utility functions
-├── .env                    # Local environment variables for Python bot
+│   ├── hooks/              # Custom React hooks
+│   ├── services/           # AI service call abstractions
+│   ├── ai/
+│   │   └── flows/          # AI logic for specific features
+│   └── lib/                # Utility functions and configs
+├── .env                    # Local environment variables (API keys)
 ├── DEV_NOTES.md            # This file
-├── package.json            # Project dependencies and scripts
 └── README.md               # Project setup and user guide
 ```
 
@@ -60,13 +54,13 @@ The `bot.py` script provided in the `README.md` is designed to be a simple, stan
 ## Configuration Cheat Sheet
 
 -   **Theming & Colors**: `src/app/globals.css` - Edit CSS variables like `--primary` and `--accent`.
--   **Dashboard Modules**: `src/app/page.tsx` - Add, remove, or reorder `ModuleCard` components.
--   **Website Module**: `src/lib/sites.ts` - Configure website names and URLs.
--   **User Roles**: `src/components/dashboard/user-roles.tsx` - Edit the `initialUsers` array for placeholder data.
--   **API Keys & Bot Name**: `src/components/dashboard/api-settings.tsx` - This is the main configuration hub. Use the accordions to open sections for each service. You can set API keys, select models, and enable/disable fallback providers here.
+-   **Dashboard Modules**: `src/app/dashboard/page.tsx` - Add, remove, or reorder dashboard modules in `ALL_MODULES_CONFIG`.
+-   **Website Module URLs**: `src/lib/sites.ts` - Configure website names and URLs for the Website Viewer.
+-   **User Roles (Placeholder Data)**: `src/components/dashboard/user-roles.tsx` - Edit the `initialUsers` array.
+-   **API Keys & Security**: `src/components/dashboard/api-settings.tsx` - The main configuration hub. Use the vault to manage all secret keys and service connections.
+-   **Bot Personalities**: `src/components/dashboard/bot-personality.tsx` - Create, edit, and switch between different AI personas.
 -   **Setup Wizard UI**: `src/components/dashboard/setup-dialog.tsx` - This is the multi-step UI for first-time setup.
--   **AI Logic**: All AI calls are routed through `src/services/ai.ts`. You can modify the provider URLs, default prompts, and fallback logic there.
--   **Setup Wizard AI Logic**: `src/ai/flows/setup-assistant.ts` - This function builds the prompt for the AI helper in the setup wizard.
+-   **AI Logic**: All AI calls are routed through `src/services/ai.ts`. This is where the core logic for provider fallback lives.
 -   **Streamer.bot Port**: The recommended port is `9003`. This is configured in the API Key Vault. Ensure Streamer.bot's WebSocket Server is set to the same port.
 
 ---
@@ -74,29 +68,31 @@ The `bot.py` script provided in the `README.md` is designed to be a simple, stan
 ## Phase 1 Testing Checklist
 
 ### General UI & Responsiveness
-- [ ] **First-Time Setup**: Clear browser local storage. On startup, verify the Setup Wizard dialog appears automatically.
-- [ ] **AI Help in Wizard**: In the setup wizard, test the "Need help?" accordion. Ask a question and verify the AI responds.
-- [ ] **Dashboard**: After setup, verify all default modules load correctly on the main page.
-- [ ] **Module Visibility**: Use the settings (gear) icon to hide and show different modules.
-- [ ] **Dynamic Bot Name**: Change the "Chat Bot Name" in the API Key Vault and verify the name updates on the corresponding module card.
-- [ ] **Mobile View**: Resize the browser or use a real device. Does the sidebar collapse into a hamburger menu?
+- [ ] **First-Time Setup**: Clear all browser local storage. On startup, verify the Setup Wizard dialog appears automatically.
+- [ ] **AI Help in Wizard**: In the setup wizard, test the "Need help?" accordion. Ensure the AI responds helpfully.
+- [ ] **Dashboard**: After setup, verify the dashboard loads correctly.
+- [ ] **Module Drag & Drop**: Rearrange modules on the dashboard and verify the new layout is saved after clicking "Save Layout".
+- [ ] **Module Visibility**: Use the "Hide" button on a module. Verify it moves to the "Hidden Modules" section at the bottom.
+- [ ] **Restore Module**: Click a hidden module in the bottom section and verify it reappears on the dashboard.
+- [ ] **Mobile View**: Resize the browser or use a real device. Does the sidebar collapse into a hamburger menu? Does the dashboard grid reflow correctly?
 - [ ] **PWA Install**: Check for the "Install App" icon in the browser's address bar and test the installation.
 
 ### Core Features
+- [ ] **API Key Vault**: Test the lock/unlock functionality. Does it lock after 5 minutes?
+- [ ] **Bot Personality**: Create a new personality (e.g., "Pluto"). Save it. Switch back to COSMO. Switch back to Pluto. Does the correct prompt load each time?
 - [ ] **Access Control**: Navigate to the "Access Control" page. Change a user's role in the dropdown.
 - [ ] **Website Viewer**: Navigate to the "Website" page. Verify the iframe loads the configured website.
 - [ ] **Unified Chat**: Send a message to "AI Bot". Does the chat history update correctly?
 - [ ] **Intelligent Fallback**: Enter text into the fields and get a recommendation from the AI.
-- [ ] **Log Viewer**: Check that the placeholder logs are displayed correctly.
+- [ ] **Log Viewer**: Check that logs from various actions appear correctly. Click a log to see details.
 - [ ] **Discord Relay**: Run the `bot.py` script. Send a message in your Discord server that `@mentions` the bot. Does it appear in the Unified Chat? Send a message *from* the Unified Chat with "Discord" selected. Does it appear in your Discord channel?
 - [ ] **Streamer.bot Integration**: Configure Streamer.bot's WebSocket Server to use port `9003`. Send a message from the Unified Chat with "Streamer.bot" selected. Does the action trigger in Streamer.bot?
 
 ### Configuration & Setup
-- [ ] **Manual Setup Wizard**: Click the "Setup Wizard" button in the API Key Vault. Does the dialog open correctly?
+- [ ] **Manual Setup Wizard**: From the "Intelligent Fallback" module, click the "Setup Wizard" button. Does the dialog open correctly?
 - [ ] **API Vault Accordions**: Verify all sections in the API Key Vault are collapsible.
-- [ ] **Provider Toggles**: In the API Vault, add a key for Google/OpenAI/Groq and verify you can enable and disable them with the toggle switch.
+- [ ] **Provider Toggles**: In the API Vault, add a key for a fallback provider (e.g., Google) and verify you can enable and disable it with the toggle switch.
 - [ ] **README**: Read through the `README.md`. Are the setup instructions clear for a new user?
-- [ ] **Custom Module**: Enable the "Custom Service" module from the settings menu. Does it appear on the dashboard?
 
 ---
 ## Python Bot Code (`bot.py`)
@@ -117,8 +113,8 @@ from dotenv import load_dotenv
 # This loads variables from your .env file
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-WEBHOOK_URL = os.getenv('NEXUS_HUB_WEBHOOK_URL', 'http://localhost:9002/api/discord-relay')
-BOT_NAME = os.getenv('BOT_NAME', 'Space Mountain OS') # Optional: Set a fallback bot name
+WEBHOOK_URL = os.getenv('APOLLO_STATION_WEBHOOK_URL', 'http://localhost:9002/api/discord-relay')
+BOT_NAME = os.getenv('BOT_NAME', 'Apollo Station') # Optional: Set a fallback bot name
 
 # --- Bot Setup ---
 # You must enable the "Message Content Intent" in the Discord Developer Portal
@@ -156,26 +152,22 @@ async def on_message(message):
         
         print(f"Received @mention from {message.author.name}: {clean_content}")
 
-        # Prepare the data to send to your Space Mountain OS app
+        # Prepare the data to send to your Apollo Station app
         payload = {
             'content': clean_content,
             'author': message.author.name,
         }
 
-        # Send the message to your Space Mountain OS webhook
+        # Send the message to your Apollo Station webhook
         try:
             response = requests.post(WEBHOOK_URL, json=payload, timeout=5)
             response.raise_for_status() # Raises an exception for bad status codes
-            print(f"Successfully relayed message to Space Mountain OS. Status: {response.status_code}")
+            print(f"Successfully relayed message to Apollo Station. Status: {response.status_code}")
         except requests.exceptions.RequestException as e:
-            print(f"Error relaying message to Space Mountain OS: {e}")
+            print(f"Error relaying message to Apollo Station: {e}")
 
 # --- Run the Bot ---
 if TOKEN:
     client.run(TOKEN)
 else:
     print("Error: DISCORD_TOKEN not found. Please add it to your .env file.")
-
-```
-
-    
