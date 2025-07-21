@@ -12,7 +12,6 @@ import { LogViewer } from '@/components/dashboard/log-viewer';
 import { Fallback } from '@/components/dashboard/fallback';
 import { ApiSettings } from '@/components/dashboard/api-settings';
 import { UnifiedChat } from '@/components/dashboard/unified-chat';
-import { SetupDialog } from '@/components/dashboard/setup-dialog';
 import { Bot, Twitch, Globe, Radio, Settings, Puzzle, Save, Trash2, Bookmark, Eye, LayoutGrid, EyeOff } from 'lucide-react';
 import DiscordLogo from '@/components/icons/discord-logo';
 import { SITES } from '@/lib/sites';
@@ -73,7 +72,6 @@ export default function DashboardPage() {
   const [moduleOrder, setModuleOrder] = useState<string[]>(defaultModuleOrder);
   const [hiddenModules, setHiddenModules] = useState<string[]>([]);
   
-  const [showSetup, setShowSetup] = useState(false);
   const openPopoutsRef = useRef<Map<string, WindowRecord>>(new Map());
 
   const sensors = useSensors(
@@ -138,11 +136,6 @@ export default function DashboardPage() {
     } catch (error) {
         console.error("Failed to load layout from localStorage", error);
         addLog({ service: 'System', level: 'error', message: 'Failed to load dashboard layout.', details: error instanceof Error ? error.stack : String(error) });
-    }
-
-    const key = localStorage.getItem('edenApiKey') || localStorage.getItem('googleApiKey');
-    if (!key) {
-        setShowSetup(true);
     }
   }, [addLog]);
 
@@ -214,7 +207,6 @@ export default function DashboardPage() {
 
   return (
     <>
-      <SetupDialog open={showSetup} onOpenChange={setShowSetup} />
       <div className="flex min-h-screen w-full">
         <Sidebar />
         <main className="flex-1 flex flex-col overflow-auto">

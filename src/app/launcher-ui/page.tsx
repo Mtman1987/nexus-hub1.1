@@ -5,6 +5,7 @@ import { useEffect, useRef, useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Rocket } from 'lucide-react';
+import { SetupDialog } from '@/components/dashboard/setup-dialog';
 
 const RELAUNCH_KEY = 'nexus-relaunch-trigger';
 const RELAUNCH_IN_PROGRESS_KEY = 'nexus-relaunch-in-progress';
@@ -14,6 +15,15 @@ const OPEN_POPOUTS_KEY = 'nexus-open-popouts';
 export default function LauncherUIPage() {
   const dashboardRef = useRef<Window | null>(null);
   const [buttonText, setButtonText] = useState('Launch Nexus Hub');
+  const [showSetup, setShowSetup] = useState(false);
+
+  useEffect(() => {
+    // Check if essential API key is missing to trigger the setup
+    const key = localStorage.getItem('edenApiKey') || localStorage.getItem('googleApiKey');
+    if (!key) {
+      setShowSetup(true);
+    }
+  }, []);
 
   const launchDashboard = useCallback((isRelaunch: boolean) => {
     if (dashboardRef.current && !dashboardRef.current.closed) {
@@ -82,6 +92,9 @@ export default function LauncherUIPage() {
     };
   }, [launchDashboard]);
 
+  if (showSetup) {
+    return <SetupDialog open={showSetup} onOpenChange={setShowSetup} />;
+  }
 
   return (
     <div className="flex min-h-screen w-full items-center justify-center bg-background p-4">
