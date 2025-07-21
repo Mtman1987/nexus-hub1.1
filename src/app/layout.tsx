@@ -7,8 +7,8 @@ import { BotNameProvider } from '@/context/BotNameContext';
 import { SidebarProvider } from '@/context/SidebarContext';
 
 export const metadata: Metadata = {
-  title: 'Space Mountain OS',
-  description: 'A centralized modular system to manage all your online services, by mtman1987.',
+  title: 'Apollo Station',
+  description: 'Apollo Station: Your Space Mountain HQ for managing all online services, by mtman1987.',
   manifest: '/manifest.json',
 };
 

@@ -14,7 +14,7 @@ const OPEN_POPOUTS_KEY = 'nexus-open-popouts';
 
 export default function LauncherUIPage() {
   const dashboardRef = useRef<Window | null>(null);
-  const [buttonText, setButtonText] = useState('Launch Space Mountain OS');
+  const [buttonText, setButtonText] = useState('Launch Apollo Station');
   const [showSetup, setShowSetup] = useState(false);
 
   useEffect(() => {
@@ -82,7 +82,7 @@ export default function LauncherUIPage() {
     const checkDashboardClosed = setInterval(() => {
         if (dashboardRef.current && dashboardRef.current.closed) {
             dashboardRef.current = null;
-            setButtonText('Launch Space Mountain OS');
+            setButtonText('Launch Apollo Station');
         }
     }, 1000);
 
@@ -102,7 +102,7 @@ export default function LauncherUIPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-3 text-2xl">
             <Rocket className="h-7 w-7 text-primary" />
-            Space Mountain OS Launcher
+            Apollo Station Launcher
           </CardTitle>
           <CardDescription>
             Your command center awaits. Keep this window open.
@@ -121,5 +121,3 @@ export default function LauncherUIPage() {
     </div>
   );
 }
-
-    

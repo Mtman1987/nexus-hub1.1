@@ -117,7 +117,7 @@ const defaultSettings: Partial<Settings> = {
   streamerbotServerAddress: '127.0.0.1',
   streamerbotServerPort: '9003',
   streamerbotRequestType: 'DoAction',
-  streamerbotActionName: 'Space Mountain OS Message',
+  streamerbotActionName: 'Apollo Station Message',
   streamerbotVariableName: 'spcmtnMessage',
   streamerbotWebhookUrl: typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.host}/api/streamerbot-relay` : '',
   nexusConnectWebhookUrl: typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.host}/api/nexus-connect` : '',
@@ -243,7 +243,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
         setSettings(finalSettings);
 
         const savedPersonalities = localStorage.getItem('botPersonalities');
-        const loadedPersonalities = savedPersonalities ? JSON.parse(savedPersonalities) : [{id: 'default-1', name: 'SPCMTN Bot', prompt: 'You are a helpful assistant for the Space Mountain community.'}];
+        const loadedPersonalities = savedPersonalities ? JSON.parse(savedPersonalities) : [{id: 'default-1', name: 'Station AI', prompt: 'You are the AI for Apollo Station, the Space Mountain community\'s central command hub.'}];
         setPersonalities(loadedPersonalities);
 
         const savedSelectedId = localStorage.getItem('selectedPersonalityId');
@@ -453,7 +453,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
               {!isPoppedOut && onPopOut && <PopOutButton onClick={onPopOut} />}
               <Button variant="outline" onClick={() => setShowSetup(true)}>
                 <LifeBuoy className="mr-2 h-4 w-4" />
-                Setup
+                Onboarding
               </Button>
             </div>
           </div>
@@ -490,7 +490,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
                               <Input 
                                   id="bot-name" 
                                   type="text" 
-                                  placeholder="e.g., SCMTN Bot" 
+                                  placeholder="e.g., Station AI" 
                                   value={selectedPersonality?.name || ''} 
                                   onChange={(e) => handlePersonalityChange('name', e.target.value)} 
                               />
@@ -685,7 +685,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
                           {settings.streamerbotRequestType === 'DoAction' && (
                               <div className="space-y-2">
                                   <Label htmlFor="streamerbot-action-name">Action Name</Label>
-                                  <Input id="streamerbot-action-name" type="text" placeholder="e.g., Space Mountain OS Message" value={settings.streamerbotActionName || ''} onChange={(e) => handleInputChange('streamerbotActionName', e.target.value)} />
+                                  <Input id="streamerbot-action-name" type="text" placeholder="e.g., Apollo Station Message" value={settings.streamerbotActionName || ''} onChange={(e) => handleInputChange('streamerbotActionName', e.target.value)} />
                               </div>
                           )}
                           {settings.streamerbotRequestType === 'SetGlobalVariable' && (
@@ -746,5 +746,3 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
     </>
   );
 }
-
-    

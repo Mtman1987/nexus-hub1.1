@@ -158,7 +158,7 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[525px]" onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle className="text-2xl">Welcome to Space Mountain OS Setup</DialogTitle>
+          <DialogTitle className="text-2xl">Apollo Station Onboarding</DialogTitle>
           <DialogDescription>
             Let's get your services configured. Follow the steps below.
           </DialogDescription>
@@ -229,7 +229,7 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
                 <AccordionTrigger disabled={isAssistantDisabled}>
                     <div className="flex items-center gap-2 text-sm">
                         <Wand2 className="h-4 w-4" />
-                        {isAssistantDisabled ? "Enter Eden AI key to enable assistant" : "Need help with this step?"}
+                        {isAssistantDisabled ? "Enter Eden AI key to enable assistant" : "Need help from the Station AI?"}
                     </div>
                 </AccordionTrigger>
                 <AccordionContent>
@@ -246,7 +246,7 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
                        {aiResult && (
                            <Alert variant="default">
                                <Terminal className="h-4 w-4" />
-                               <AlertTitle>AI Assistant Says:</AlertTitle>
+                               <AlertTitle>Station AI Says:</AlertTitle>
                                <AlertDescription>
                                    {aiResult.answer}
                                </AlertDescription>
@@ -271,5 +271,3 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
     </Dialog>
   );
 }
-
-    
