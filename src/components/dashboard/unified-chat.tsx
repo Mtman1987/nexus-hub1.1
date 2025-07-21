@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, forwardRef, useEffect, useRef, useCallback } from 'react';
@@ -14,12 +13,14 @@ import { MessageSquare, Send, Loader2, Bot, User, Radio, Globe, Link } from 'luc
 import DiscordLogo from '@/components/icons/discord-logo';
 import { Twitch } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
+import { unifiedChat } from '@/services/ai';
+import type { UnifiedChatInput } from '@/ai/types';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useLogs, type LogEntry } from '@/context/LogContext';
+import { PopOutButton } from './pop-out-button';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
-import { PopOutButton } from './pop-out-button';
 
 
 const formSchema = z.object({
@@ -35,11 +36,11 @@ type Message = {
 };
 
 interface UnifiedChatProps {
-  isPoppedOut?: boolean;
   onPopOut?: () => void;
+  isPoppedOut?: boolean;
 }
 
-export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ isPoppedOut = false, onPopOut }, ref) => {
+export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onPopOut, isPoppedOut = false }, ref) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -98,20 +99,75 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ isP
     setMessages((prev) => [...prev, userMessage]);
     form.reset({ message: '', targets: values.targets });
 
-    setLoading(false);
-    addLog({ service: 'System', level: 'warn', message: 'Chat is disabled because Genkit was removed.' });
-    toast({
-        title: "Feature Disabled",
-        description: "This AI feature is currently disabled.",
+    try {
+      const allConfig: { [key: string]: any | null } = {};
+      const configKeys = [
+        'discordWebhook', 'streamerbotServerAddress', 'streamerbotServerPort', 
+        'streamerbotRequestType', 'streamerbotActionName', 'streamerbotVariableName',
+        'edenApiKey', 'googleApiKey', 'openaiApiKey', 'groqApiKey',
+        'edenAiModelName', 'googleModelName', 'openaiModelName', 'groqModelName',
+        'providerStatus', 'fallbackStrategy', 'botPersonalityPrompt', 'botName',
+        'remoteHubAddress', 'remoteAccessSecret'
+      ];
+      configKeys.forEach(key => {
+        const item = localStorage.getItem(key);
+        if (key === 'providerStatus' || key === 'fallbackStrategy') {
+            allConfig[key] = item ? JSON.parse(item) : null;
+        } else {
+            allConfig[key] = item;
+        }
+      });
+
+      const input: UnifiedChatInput = {
+        message: values.message,
+        targets: values.targets,
+        config: allConfig,
+        nexusConnectTargets: selectedNexusTargets
+      };
+
+      const response = await unifiedChat(input);
+      response.logs.forEach(log => addLog(log as Omit<LogEntry, 'timestamp'>));
+      
+      if (response.websiteAction && response.websiteAction.type === 'youtube_search') {
+          const webChannel = new BroadcastChannel('nexus-hub-website-control');
+          webChannel.postMessage({ query: response.websiteAction.query });
+          webChannel.close();
+      }
+
+      if (response.reply) {
+        const aiMessage: Message = {
+            sender: 'ai',
+            text: response.reply,
+        };
+        setMessages((prev) => [...prev, aiMessage]);
+      }
+      
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+      const errorDetails = error instanceof Error ? error.stack : JSON.stringify(error);
+      
+      addLog({ 
+        service: 'System', 
+        level: 'error', 
+        message: `Unified Chat submission failed: ${errorMessage}`,
+        details: errorDetails
+      });
+      
+      toast({
+        title: "Message Failed",
+        description: "An error occurred while sending the message. Check logs for details.",
         variant: "destructive",
-    });
+      });
 
-    const aiErrorResponse: Message = {
-        sender: 'ai',
-        text: `I'm sorry, I couldn't process your request. The AI features are currently disabled.`
+      const aiErrorResponse: Message = {
+          sender: 'ai',
+          text: `I'm sorry, I couldn't process your request. The following error occurred: ${errorMessage}`
+      }
+      setMessages(prev => [...prev, aiErrorResponse]);
+
+    } finally {
+      setLoading(false);
     }
-    setMessages(prev => [...prev, aiErrorResponse]);
-
   }, [addLog, form, toast, selectedNexusTargets]);
 
 
