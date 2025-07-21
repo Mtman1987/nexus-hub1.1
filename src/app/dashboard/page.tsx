@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from 'react';
@@ -182,13 +181,15 @@ export default function DashboardPage() {
       <Sidebar />
       <main className="flex-1 flex flex-col overflow-auto">
       
-        {allToolModules.map(m =>
-            poppedOutModules.includes(m.id) && (
-            <PopOutWindow key={`popout-${m.id}`} onClose={() => handlePopIn(m.id)} title={m.title}>
-                {React.createElement(m.component, { isPoppedOut: true })}
-            </PopOutWindow>
-            )
-        )}
+        {allToolModules.map(m => (
+            <React.Fragment key={`popout-wrapper-${m.id}`}>
+                {poppedOutModules.includes(m.id) && (
+                    <PopOutWindow onClose={() => handlePopIn(m.id)} title={m.title}>
+                        {React.createElement(m.component, { isPoppedOut: true })}
+                    </PopOutWindow>
+                )}
+            </React.Fragment>
+        ))}
 
         <div className="flex flex-col h-full overflow-hidden p-4 md:p-6 space-y-6">
             <div className="flex items-center justify-between flex-shrink-0">
@@ -259,7 +260,7 @@ export default function DashboardPage() {
             
              <div className="flex-grow flex flex-col gap-6 overflow-hidden">
                 {/* Top Row */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 h-full">
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 h-[350px]">
                   {topRowModules
                     .filter(m => visibleModules[m.id] && !poppedOutModules.includes(m.id))
                     .map(m => (
@@ -272,7 +273,7 @@ export default function DashboardPage() {
                   ))}
                 </div>
                 {/* Bottom Row */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6 h-full">
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6 h-[350px]">
                   {bottomRowModules
                     .filter(m => visibleModules[m.id] && !poppedOutModules.includes(m.id))
                     .map(m => (
