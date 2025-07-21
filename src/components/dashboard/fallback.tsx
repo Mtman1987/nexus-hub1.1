@@ -11,6 +11,7 @@ import { Lightbulb, Loader2, Wand2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useLogs } from '@/context/LogContext';
+import { PopOutButton } from './pop-out-button';
 
 // Define a placeholder type as the original was removed.
 type IntelligentFallbackOutput = {
@@ -21,9 +22,10 @@ type IntelligentFallbackOutput = {
 
 interface FallbackProps {
   isPoppedOut?: boolean;
+  onPopOut?: () => void;
 }
 
-export function Fallback({ isPoppedOut = false }: FallbackProps) {
+export function Fallback({ isPoppedOut = false, onPopOut }: FallbackProps) {
     const [prompt, setPrompt] = useState('');
     const [goal, setGoal] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -56,6 +58,7 @@ export function Fallback({ isPoppedOut = false }: FallbackProps) {
                 Get an AI-powered recommendation for the best provider for your specific task.
               </CardDescription>
             </div>
+            {!isPoppedOut && onPopOut && <PopOutButton onClick={onPopOut} />}
         </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">

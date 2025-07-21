@@ -17,6 +17,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { PopOutButton } from './pop-out-button';
 
 type User = {
   id: string;
@@ -51,9 +52,10 @@ async function manageUserRoles(users: { id: string, name: string, role: string }
 
 interface UserRolesProps {
   isPoppedOut?: boolean;
+  onPopOut?: () => void;
 }
 
-export function UserRoles({ isPoppedOut = false }: UserRolesProps) {
+export function UserRoles({ isPoppedOut = false, onPopOut }: UserRolesProps) {
   const [users, setUsers] = useState(initialUsers);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -109,6 +111,7 @@ export function UserRoles({ isPoppedOut = false }: UserRolesProps) {
                 Assign roles and manage permissions for your team members.
               </CardDescription>
             </div>
+             {!isPoppedOut && onPopOut && <PopOutButton onClick={onPopOut} />}
           </div>
         </CardHeader>
         <CardContent className="flex-grow flex flex-col justify-between">

@@ -17,6 +17,7 @@ import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { useBotName } from '@/context/BotNameContext';
 import { Textarea } from '../ui/textarea';
+import { PopOutButton } from './pop-out-button';
 
 export const settingKeys = [
   'botPersonalities', 'selectedPersonalityId', 'edenApiKey', 'edenAiModelName', 'googleApiKey', 'googleModelName',
@@ -153,9 +154,10 @@ const ServiceStatusToggle: React.FC<{
 
 interface ApiSettingsProps {
     isPoppedOut?: boolean;
+    onPopOut?: () => void;
 }
 
-export function ApiSettings({ isPoppedOut = false }: ApiSettingsProps) {
+export function ApiSettings({ isPoppedOut = false, onPopOut }: ApiSettingsProps) {
   const [showSetup, setShowSetup] = useState(false);
   const { toast } = useToast();
   const [settings, setSettings] = useState<Settings>(defaultSettings);
@@ -392,7 +394,7 @@ export function ApiSettings({ isPoppedOut = false }: ApiSettingsProps) {
   return (
     <>
       <SetupDialog open={showSetup} onOpenChange={setShowSetup} />
-      <Card className="h-full flex flex-col">
+      <Card className="h-full flex flex-col relative">
         <CardHeader>
           <div className="flex justify-between items-start">
             <div className="flex-grow">
@@ -403,6 +405,7 @@ export function ApiSettings({ isPoppedOut = false }: ApiSettingsProps) {
               <CardDescription>Manage all your secret keys and connection endpoints here.</CardDescription>
             </div>
             <div className="flex items-center gap-2">
+               {!isPoppedOut && onPopOut && <PopOutButton onClick={onPopOut} />}
               <Button variant="outline" onClick={() => setShowSetup(true)}>
                 <LifeBuoy className="mr-2 h-4 w-4" />
                 Setup Wizard
@@ -689,5 +692,3 @@ export function ApiSettings({ isPoppedOut = false }: ApiSettingsProps) {
     </>
   );
 }
-
-    

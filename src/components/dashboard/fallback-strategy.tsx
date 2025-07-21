@@ -8,12 +8,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Shuffle, GripVertical, Save } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { useFallbackStrategy } from '@/hooks/use-fallback-strategy';
+import { PopOutButton } from './pop-out-button';
 
 interface FallbackStrategyProps {
   isPoppedOut?: boolean;
+  onPopOut?: () => void;
 }
 
-export function FallbackStrategy({ isPoppedOut = false }: FallbackStrategyProps) {
+export function FallbackStrategy({ isPoppedOut = false, onPopOut }: FallbackStrategyProps) {
   const { providers, handlePriorityChange, saveStrategy, availableProviderCount } = useFallbackStrategy();
   
   return (
@@ -29,6 +31,7 @@ export function FallbackStrategy({ isPoppedOut = false }: FallbackStrategyProps)
                 Set the priority order for AI providers when a call fails. Only configured & enabled providers are shown.
               </CardDescription>
             </div>
+             {!isPoppedOut && onPopOut && <PopOutButton onClick={onPopOut} />}
         </div>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col justify-between">

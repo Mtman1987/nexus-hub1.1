@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from 'react';
@@ -101,6 +100,7 @@ export default function DashboardPage() {
       if (win.closed) {
         clearInterval(checkWindow);
         openPopoutsRef.current.delete(id);
+        setVisibleModules(prev => ({ ...prev, [id]: true }));
         addLog({ service: 'System', level: 'info', message: `Pop-out window for module '${title}' was closed.` });
       }
     }, 500);
@@ -139,6 +139,7 @@ export default function DashboardPage() {
     }
 
     addLog({ service: 'System', level: 'info', message: `User initiated pop-out for module: ${title}.` });
+    setVisibleModules(prev => ({ ...prev, [componentId]: false }));
 
     const openCount = openPopoutsRef.current.size;
 
@@ -148,6 +149,8 @@ export default function DashboardPage() {
             const newRecord: WindowRecord = { id: componentId, window: newWindow };
             openPopoutsRef.current.set(componentId, newRecord);
             setupWindowCloseWatcher(newWindow, componentId, title);
+        } else {
+            setVisibleModules(prev => ({ ...prev, [componentId]: true }));
         }
     } else if (openCount === 2) {
         const thirdNewWindow = openPopoutWindow(componentId, title, { positionIndex: 2 });
@@ -157,6 +160,7 @@ export default function DashboardPage() {
             setupWindowCloseWatcher(thirdNewWindow, componentId, title);
         } else {
             toast({ title: "Pop-up blocked", description: "Couldn't open the third window. Please allow pop-ups." });
+            setVisibleModules(prev => ({ ...prev, [componentId]: true }));
             return;
         }
 
@@ -181,6 +185,7 @@ export default function DashboardPage() {
             popoutIds.forEach((id, index) => {
                 const moduleInfo = allModules.find(m => m.id === id);
                 if (moduleInfo) {
+                    setVisibleModules(prev => ({ ...prev, [id]: false }));
                     const newWindow = openPopoutWindow(id, moduleInfo.title, { positionIndex: index });
                     if (newWindow) {
                         const newRecord: WindowRecord = { id: id, window: newWindow };
@@ -374,10 +379,10 @@ export default function DashboardPage() {
                         const ModuleComponent = m.component;
                         return (
                           <div key={m.id} className="relative h-full">
-                            <ModuleComponent isPoppedOut={false} />
-                            <div className="absolute top-3 right-3">
-                              <PopOutButton onClick={() => handlePopOut(m.id, m.title)} />
-                            </div>
+                            <ModuleComponent 
+                              isPoppedOut={false} 
+                              onPopOut={() => handlePopOut(m.id, m.title)} 
+                            />
                           </div>
                         );
                     })}
@@ -390,10 +395,10 @@ export default function DashboardPage() {
                        const ModuleComponent = m.component;
                        return (
                           <div key={m.id} className="relative h-full">
-                            <ModuleComponent isPoppedOut={false} />
-                            <div className="absolute top-3 right-3">
-                              <PopOutButton onClick={() => handlePopOut(m.id, m.title)} />
-                            </div>
+                            <ModuleComponent 
+                              isPoppedOut={false}
+                              onPopOut={() => handlePopOut(m.id, m.title)} 
+                            />
                           </div>
                        );
                     })}

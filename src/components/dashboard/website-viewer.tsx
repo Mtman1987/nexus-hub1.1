@@ -8,12 +8,14 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Monitor, RefreshCw } from 'lucide-react';
 import { SITES } from '@/lib/sites';
 import { useLogs } from '@/context/LogContext';
+import { PopOutButton } from './pop-out-button';
 
 interface WebsiteViewerProps {
   isPoppedOut?: boolean;
+  onPopOut?: () => void;
 }
 
-export function WebsiteViewer({ isPoppedOut = false }: WebsiteViewerProps) {
+export function WebsiteViewer({ isPoppedOut = false, onPopOut }: WebsiteViewerProps) {
   const [activeTab, setActiveTab] = useState(Object.keys(SITES)[0]);
   const [iframeKey, setIframeKey] = useState(Date.now());
   const [currentUrl, setCurrentUrl] = useState(SITES[activeTab as keyof typeof SITES].url);
@@ -72,6 +74,7 @@ export function WebsiteViewer({ isPoppedOut = false }: WebsiteViewerProps) {
                   Currently viewing: <a href={currentSite.url} target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">{currentSite.name}</a>
                 </CardDescription>
               </div>
+              {!isPoppedOut && onPopOut && <PopOutButton onClick={onPopOut} />}
           </div>
           <div className="flex items-center gap-2 pt-4">
               <TabsList>

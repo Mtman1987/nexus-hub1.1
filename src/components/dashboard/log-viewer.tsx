@@ -11,9 +11,11 @@ import DiscordLogo from '@/components/icons/discord-logo';
 import { useLogs, type LogEntry } from '@/context/LogContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { PopOutButton } from './pop-out-button';
 
 interface LogViewerProps {
   isPoppedOut?: boolean;
+  onPopOut?: () => void;
 }
 
 const serviceIcons: { [key: string]: React.ReactNode } = {
@@ -31,7 +33,7 @@ const levelColors = {
   error: 'destructive',
 } as const;
 
-export function LogViewer({ isPoppedOut = false }: LogViewerProps) {
+export function LogViewer({ isPoppedOut = false, onPopOut }: LogViewerProps) {
   const { logs } = useLogs();
   const [selectedLog, setSelectedLog] = useState<LogEntry | null>(null);
 
@@ -55,6 +57,7 @@ export function LogViewer({ isPoppedOut = false }: LogViewerProps) {
               </CardTitle>
               <CardDescription>Live feed of all service activities. Click a row for more details.</CardDescription>
             </div>
+            {!isPoppedOut && onPopOut && <PopOutButton onClick={onPopOut} />}
           </div>
         </CardHeader>
         <CardContent className="flex-grow overflow-hidden">

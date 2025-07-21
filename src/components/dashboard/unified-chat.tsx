@@ -19,6 +19,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useLogs, type LogEntry } from '@/context/LogContext';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
+import { PopOutButton } from './pop-out-button';
 
 
 const formSchema = z.object({
@@ -35,9 +36,10 @@ type Message = {
 
 interface UnifiedChatProps {
   isPoppedOut?: boolean;
+  onPopOut?: () => void;
 }
 
-export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ isPoppedOut = false }, ref) => {
+export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ isPoppedOut = false, onPopOut }, ref) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -187,6 +189,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ isP
                 Send messages to AI, Discord, Twitch, and other services.
               </CardDescription>
             </div>
+            {!isPoppedOut && onPopOut && <PopOutButton onClick={onPopOut} />}
         </div>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col overflow-hidden">
