@@ -253,7 +253,7 @@ export default function DashboardPage() {
                 {allToolModules
                     .filter(m => visibleModules[m.id] && !poppedOutModules.includes(m.id))
                     .map(m => (
-                    <div key={m.id} className="h-[470px] relative">
+                    <div key={m.id} className="h-full relative">
                         {React.createElement(m.component, {
                             isPoppedOut: false,
                         })}

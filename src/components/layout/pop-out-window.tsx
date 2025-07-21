@@ -40,9 +40,9 @@ export function PopOutWindow({ children, onClose, title = "Nexus Hub Module", sc
             top = popoutHeight;
             left = popoutWidth;
             break;
-        default: // Default to top-left if unspecified
-            top = 0;
-            left = 0;
+        default: // Default to center if unspecified
+            top = Math.floor((screenHeight - popoutHeight) / 2);
+            left = Math.floor((screenWidth - popoutWidth) / 2);
             break;
     }
 
@@ -103,5 +103,3 @@ export function PopOutWindow({ children, onClose, title = "Nexus Hub Module", sc
   
   return createPortal(<div className="h-full bg-background text-foreground p-4">{children}</div>, container);
 }
-
-    
