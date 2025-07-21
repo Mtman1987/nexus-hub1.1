@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from 'react';
@@ -181,15 +182,18 @@ export default function DashboardPage() {
       <Sidebar />
       <main className="flex-1 flex flex-col overflow-auto">
       
-        {allToolModules.map(m => (
-            <React.Fragment key={`popout-wrapper-${m.id}`}>
-                {poppedOutModules.includes(m.id) && (
-                    <PopOutWindow onClose={() => handlePopIn(m.id)} title={m.title}>
-                        {React.createElement(m.component, { isPoppedOut: true })}
-                    </PopOutWindow>
-                )}
-            </React.Fragment>
-        ))}
+        {allToolModules
+            .filter(m => poppedOutModules.includes(m.id))
+            .map(m => {
+                const ModuleComponent = m.component;
+                return (
+                    <div key={`popout-wrapper-${m.id}`}>
+                        <PopOutWindow onClose={() => handlePopIn(m.id)} title={m.title}>
+                           <ModuleComponent isPoppedOut={true} />
+                        </PopOutWindow>
+                    </div>
+                );
+        })}
 
         <div className="flex flex-col h-full overflow-hidden p-4 md:p-6 space-y-6">
             <div className="flex items-center justify-between flex-shrink-0">
