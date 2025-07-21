@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { ShieldCheck, Save, LifeBuoy, Power, Bot, PlusCircle, Trash2, Link, Copy, Server, KeyRound, RefreshCw, Radio, GripVertical, EyeOff } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
-import { SetupDialog } from './setup-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { useLogs } from '@/context/LogContext';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -180,7 +179,6 @@ interface ApiSettingsProps {
 }
 
 export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setContextBotName, onHide, dragHandleProps }: ApiSettingsProps) {
-  const [showSetup, setShowSetup] = useState(false);
   const { toast } = useToast();
   const [settings, setSettings] = useState<Settings>(defaultSettings);
   const [providerStatus, setProviderStatus] = useState<ProviderStatus>(defaultProviderStatus);
@@ -426,7 +424,6 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
 
   return (
     <>
-      <SetupDialog open={showSetup} onOpenChange={setShowSetup} />
       <Card className="h-full flex flex-col">
         <CardHeader>
           <div className="flex justify-between items-start">
@@ -451,10 +448,6 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
                 </Button>
               )}
               {!isPoppedOut && onPopOut && <PopOutButton onClick={onPopOut} />}
-              <Button variant="outline" onClick={() => setShowSetup(true)}>
-                <LifeBuoy className="mr-2 h-4 w-4" />
-                Onboarding
-              </Button>
             </div>
           </div>
         </CardHeader>

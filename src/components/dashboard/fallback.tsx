@@ -7,13 +7,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Lightbulb, Loader2, Wand2, GripVertical, EyeOff } from 'lucide-react';
+import { Lightbulb, Loader2, Wand2, GripVertical, EyeOff, LifeBuoy } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { getIntelligentFallback } from '@/services/ai';
 import type { IntelligentFallbackInput, IntelligentFallbackOutput } from '@/ai/types';
 import { PopOutButton } from './pop-out-button';
 import { useLogs } from '@/context/LogContext';
+import { SetupDialog } from './setup-dialog';
 
 interface FallbackProps {
   onPopOut?: () => void;
@@ -27,6 +28,7 @@ export function Fallback({ onPopOut, isPoppedOut = false, onHide, dragHandleProp
     const [goal, setGoal] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [result, setResult] = useState<IntelligentFallbackOutput | null>(null);
+    const [showSetup, setShowSetup] = useState(false);
     const { toast } = useToast();
     const { addLog } = useLogs();
 
@@ -91,6 +93,8 @@ export function Fallback({ onPopOut, isPoppedOut = false, onHide, dragHandleProp
     }
 
   return (
+    <>
+    <SetupDialog open={showSetup} onOpenChange={setShowSetup} />
     <Card className="h-full">
       <CardHeader>
         <div className="flex justify-between items-start">
@@ -106,7 +110,7 @@ export function Fallback({ onPopOut, isPoppedOut = false, onHide, dragHandleProp
                   Intelligent Fallback
                 </CardTitle>
                 <CardDescription>
-                  Get an AI-powered recommendation for the best provider for your specific task.
+                  Get an AI recommendation for the best provider for your specific task.
                 </CardDescription>
               </div>
             </div>
@@ -142,7 +146,11 @@ export function Fallback({ onPopOut, isPoppedOut = false, onHide, dragHandleProp
             </Alert>
         )}
 
-        <div className="flex justify-end">
+        <div className="flex justify-between items-center mt-4">
+            <Button variant="outline" onClick={() => setShowSetup(true)}>
+                <LifeBuoy className="mr-2 h-4 w-4" />
+                Setup Wizard
+            </Button>
             <Button onClick={handleGetRecommendation} disabled={isLoading || !prompt || !goal}>
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
                 Get Recommendation
@@ -150,5 +158,6 @@ export function Fallback({ onPopOut, isPoppedOut = false, onHide, dragHandleProp
         </div>
       </CardContent>
     </Card>
+    </>
   );
 }
