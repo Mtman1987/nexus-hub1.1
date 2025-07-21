@@ -47,55 +47,11 @@ type ProviderStatus = {
     [key in ProviderId]: 'enabled' | 'disabled';
 }
 
-const edenProviderModels: Record<string, {value: string, label: string}[]> = {
-    openai: [
-        { value: "gpt-4-turbo", label: "GPT-4 Turbo" },
-        { value: "gpt-4o", label: "GPT-4o" },
-        { value: "gpt-3.5-turbo", label: "GPT-3.5 Turbo" },
-    ],
-    google: [
-        { value: "gemini-1.5-pro-latest", label: "Gemini 1.5 Pro" },
-        { value: "gemini-1.5-flash-latest", label: "Gemini 1.5 Flash" },
-    ],
-    anthropic: [
-        { value: "claude-3-haiku-20240307", label: "Claude 3 Haiku" },
-        { value: "claude-3-sonnet-20240229", label: "Claude 3 Sonnet" },
-        { value: "claude-3-opus-20240229", label: "Claude 3 Opus" },
-    ],
-    cohere: [
-        { value: "command-r-plus", label: "Command R+" },
-        { value: "command-r", label: "Command R" },
-    ],
-    meta: [
-        { value: "llama-3-70b-instruct", label: "Llama 3 70b" },
-        { value: "llama-3-8b-instruct", label: "Llama 3 8b" },
-    ]
-};
-
-
-const modelOptions = {
-    google: [
-        { value: "gemini-1.5-flash-latest", label: "gemini-1.5-flash-latest (Default)" },
-        { value: "gemini-1.5-pro-latest", label: "gemini-1.5-pro-latest" },
-        { value: "gemini-1.0-pro", label: "gemini-1.0-pro" },
-    ],
-    openai: [
-        { value: "gpt-4-turbo", label: "gpt-4-turbo (Default)" },
-        { value: "gpt-4o", label: "gpt-4o" },
-        { value: "gpt-3.5-turbo", label: "gpt-3.5-turbo" },
-    ],
-    groq: [
-        { value: "llama3-8b-8192", label: "llama3-8b-8192 (Default)" },
-        { value: "llama3-70b-8192", label: "llama3-70b-8192" },
-        { value: "mixtral-8x7b-32768", label: "mixtral-8x7b-32768" },
-    ]
-}
-
 const defaultModels: { [key in 'googleModelName' | 'openaiModelName' | 'groqModelName' | 'edenAiProvider' | 'edenAiModel']: string } = {
     edenAiProvider: 'openai',
     edenAiModel: 'gpt-4-turbo',
     googleModelName: 'gemini-1.5-flash-latest',
-    openaiModelName: 'gpt-4-turbo',
+    openaiModelName: 'gpt-4o',
     groqModelName: 'llama3-8b-8192',
 };
 
@@ -282,14 +238,8 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     setSettings(prev => ({ ...prev, [key]: value }));
   };
   
-  const handleModelChange = (key: keyof Settings, value: string | undefined) => {
-    handleInputChange(key as SettingsObjectKey, value || '');
-  };
-
   const handleEdenProviderChange = (value: string) => {
       handleInputChange('edenAiProvider', value);
-      const defaultModelForProvider = edenProviderModels[value]?.[0]?.value;
-      handleInputChange('edenAiModel', defaultModelForProvider || '');
   }
 
   const handleStatusChange = (providerId: ProviderId, enabled: boolean) => {
@@ -376,7 +326,6 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     });
   };
 
-  const currentEdenModels = edenProviderModels[settings.edenAiProvider || ''] || [];
   const timeFormatter = new Intl.DateTimeFormat('en', { minute: '2-digit', second: '2-digit' });
 
   return (
@@ -483,22 +432,21 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                               <Input id="eden-key" type="password" placeholder="Your primary key from Eden AI" value={settings.edenApiKey || ''} onChange={(e) => handleInputChange('edenApiKey', e.target.value)} disabled={isLocked}/>
                           </div>
                           <div className="space-y-2">
-                              <Label htmlFor="eden-provider">Provider</Label>
+                              <Label htmlFor="eden-provider">Provider via Eden</Label>
                               <Select value={settings.edenAiProvider || defaultModels.edenAiProvider} onValueChange={handleEdenProviderChange} disabled={isLocked}>
                                   <SelectTrigger><SelectValue placeholder="Select a provider..." /></SelectTrigger>
                                   <SelectContent>
-                                      {Object.keys(edenProviderModels).map(provider => <SelectItem key={provider} value={provider}>{provider.charAt(0).toUpperCase() + provider.slice(1)}</SelectItem>)}
+                                      <SelectItem value="openai">OpenAI</SelectItem>
+                                      <SelectItem value="google">Google</SelectItem>
+                                      <SelectItem value="anthropic">Anthropic</SelectItem>
+                                      <SelectItem value="cohere">Cohere</SelectItem>
+                                      <SelectItem value="meta">Meta</SelectItem>
                                   </SelectContent>
                               </Select>
                           </div>
                           <div className="space-y-2">
-                              <Label htmlFor="eden-model">Model</Label>
-                              <Select value={settings.edenAiModel || ''} onValueChange={(value) => handleModelChange('edenAiModel', value)} disabled={!settings.edenAiProvider || isLocked}>
-                                  <SelectTrigger><SelectValue placeholder="Select a model..." /></SelectTrigger>
-                                  <SelectContent>
-                                      {currentEdenModels.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
-                                  </SelectContent>
-                              </Select>
+                              <Label htmlFor="eden-model">Model Name via Eden</Label>
+                              <Input id="eden-model" type="text" placeholder="e.g., gpt-4o or a fine-tuned model ID" value={settings.edenAiModel || ''} onChange={(e) => handleInputChange('edenAiModel', e.target.value)} disabled={isLocked}/>
                           </div>
                       </AccordionContent>
                   </AccordionItem>
@@ -511,14 +459,9 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                               <Label htmlFor="google-ai-key">Google AI API Key</Label>
                               <Input id="google-ai-key" type="password" placeholder="Your Google AI API Key" value={settings.googleApiKey || ''} onChange={(e) => handleInputChange('googleApiKey', e.target.value)} disabled={isLocked}/>
                           </div>
-                          <div className="space-y-2">
-                              <Label htmlFor="google-model-name">Google AI Model</Label>
-                              <Select value={settings.googleModelName || defaultModels.googleModelName} onValueChange={(value) => handleModelChange('googleModelName', value)} disabled={isLocked}>
-                                  <SelectTrigger><SelectValue placeholder="Select a model..." /></SelectTrigger>
-                                  <SelectContent>
-                                      {modelOptions.google.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
-                                  </SelectContent>
-                              </Select>
+                           <div className="space-y-2">
+                              <Label htmlFor="google-model-name">Google AI Model Name</Label>
+                              <Input id="google-model-name" type="text" placeholder="e.g., gemini-1.5-pro-latest or a fine-tuned model ID" value={settings.googleModelName || defaultModels.googleModelName} onChange={(e) => handleInputChange('googleModelName', e.target.value)} disabled={isLocked}/>
                           </div>
                       </AccordionContent>
                   </AccordionItem>
@@ -532,13 +475,8 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                               <Input id="openai-key" type="password" placeholder="Your OpenAI API Key" value={settings.openaiApiKey || ''} onChange={(e) => handleInputChange('openaiApiKey', e.target.value)} disabled={isLocked}/>
                           </div>
                           <div className="space-y-2">
-                              <Label htmlFor="openai-model-name">OpenAI Model</Label>
-                               <Select value={settings.openaiModelName || defaultModels.openaiModelName} onValueChange={(value) => handleModelChange('openaiModelName', value)} disabled={isLocked}>
-                                  <SelectTrigger><SelectValue placeholder="Select a model..." /></SelectTrigger>
-                                  <SelectContent>
-                                      {modelOptions.openai.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
-                                  </SelectContent>
-                              </Select>
+                              <Label htmlFor="openai-model-name">OpenAI Model Name</Label>
+                               <Input id="openai-model-name" type="text" placeholder="e.g., gpt-4o or ft:gpt-3.5-turbo:..." value={settings.openaiModelName || defaultModels.openaiModelName} onChange={(e) => handleInputChange('openaiModelName', e.target.value)} disabled={isLocked}/>
                           </div>
                       </AccordionContent>
                   </AccordionItem>
@@ -552,13 +490,8 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                               <Input id="groq-key" type="password" placeholder="Your Groq API Key" value={settings.groqApiKey || ''} onChange={(e) => handleInputChange('groqApiKey', e.target.value)} disabled={isLocked}/>
                           </div>
                           <div className="space-y-2">
-                              <Label htmlFor="groq-model-name">Groq Model</Label>
-                              <Select value={settings.groqModelName || defaultModels.groqModelName} onValueChange={(value) => handleModelChange('groqModelName', value)} disabled={isLocked}>
-                                  <SelectTrigger><SelectValue placeholder="Select a model..." /></SelectTrigger>
-                                  <SelectContent>
-                                      {modelOptions.groq.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
-                                  </SelectContent>
-                              </Select>
+                              <Label htmlFor="groq-model-name">Groq Model Name</Label>
+                              <Input id="groq-model-name" type="text" placeholder="e.g., llama3-70b-8192" value={settings.groqModelName || defaultModels.groqModelName} onChange={(e) => handleInputChange('groqModelName', e.target.value)} disabled={isLocked}/>
                           </div>
                       </AccordionContent>
                   </AccordionItem>
@@ -677,3 +610,5 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     </>
   );
 }
+
+    
