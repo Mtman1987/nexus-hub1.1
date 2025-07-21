@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { MessageSquare, Send, Loader2, Bot, User, Radio, Globe, Link } from 'lucide-react';
+import { MessageSquare, Send, Loader2, Bot, User, Radio, Globe, Link, Save } from 'lucide-react';
 import DiscordLogo from '@/components/icons/discord-logo';
 import { Twitch } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
@@ -78,6 +78,33 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
   }, [])
 
   const getFormTargets = useCallback(() => form.getValues('targets'), [form]);
+
+  const handleSaveMessage = (message: Message) => {
+    try {
+        const savedItems = JSON.parse(localStorage.getItem('nexus-saved-items') || '[]');
+        const newItem = {
+            id: `chat-${Date.now()}`,
+            type: 'chat',
+            content: message,
+            savedAt: new Date().toISOString(),
+        };
+
+        const newItems = [newItem, ...savedItems];
+        localStorage.setItem('nexus-saved-items', JSON.stringify(newItems));
+        toast({
+            title: "Message Saved",
+            description: "The chat message has been saved to your Saved Items.",
+        });
+        window.dispatchEvent(new Event('storage')); // Notify other components
+    } catch(e) {
+        toast({
+            title: "Save Failed",
+            description: "Could not save message to local storage.",
+            variant: "destructive"
+        });
+    }
+  };
+
 
   const performSubmit = useCallback(async (values: z.infer<typeof formSchema>) => {
     if (!values.message.trim() || values.targets.length === 0) return;
@@ -255,9 +282,12 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
               <p className="text-sm text-muted-foreground">Chat history will be displayed here.</p>
             ) : (
               messages.map((msg, index) => (
-                <div key={index} className={`flex items-start gap-3 ${msg.sender === 'user' ? 'justify-end' : ''}`}>
+                <div key={index} className={`group flex items-start gap-3 ${msg.sender === 'user' ? 'justify-end' : ''}`}>
                   {msg.sender === 'ai' && <Bot className="h-6 w-6 text-accent" />}
-                  <div className={`rounded-lg p-3 text-sm ${msg.sender === 'user' ? 'bg-primary text-primary-foreground' : 'bg-secondary'}`}>
+                  <div className={`relative rounded-lg p-3 text-sm ${msg.sender === 'user' ? 'bg-primary text-primary-foreground' : 'bg-secondary'}`}>
+                    <Button variant="ghost" size="icon" className="absolute -top-2 -left-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity bg-background/50 hover:bg-background" onClick={() => handleSaveMessage(msg)}>
+                       <Save className="h-3 w-3" />
+                    </Button>
                     <p>{msg.text}</p>
                     {msg.sender === 'user' && msg.targets && (
                       <div className="flex items-center flex-wrap gap-x-2 mt-2 text-xs text-primary-foreground/80">

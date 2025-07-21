@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useEffect, useState, Suspense } from 'react';
@@ -11,10 +10,11 @@ import { UnifiedChat } from '@/components/dashboard/unified-chat';
 import { UserRoles } from '@/components/dashboard/user-roles';
 import { WebsiteViewer } from '@/components/dashboard/website-viewer';
 import { FallbackStrategy } from '@/components/dashboard/fallback-strategy';
+import { SavedItems } from '@/components/dashboard/saved-items';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { LogProvider } from '@/context/LogContext';
-import { BotNameProvider from '@/context/BotNameContext';
+import { BotNameProvider } from '@/context/BotNameContext';
 import { SidebarProvider } from '@/context/SidebarContext';
 
 const moduleMap: { [key: string]: React.ComponentType<any> } = {
@@ -25,6 +25,7 @@ const moduleMap: { [key: string]: React.ComponentType<any> } = {
   userRoles: UserRoles,
   websiteViewer: WebsiteViewer,
   fallbackStrategy: FallbackStrategy,
+  savedItems: SavedItems,
 };
 
 function PopoutContent({ slug }: { slug: string }) {

@@ -8,7 +8,7 @@ import { Fallback } from '@/components/dashboard/fallback';
 import { ApiSettings } from '@/components/dashboard/api-settings';
 import { UnifiedChat } from '@/components/dashboard/unified-chat';
 import { SetupDialog } from '@/components/dashboard/setup-dialog';
-import { Bot, Twitch, Globe, Radio, Settings, Puzzle, Save, Trash2 } from 'lucide-react';
+import { Bot, Twitch, Globe, Radio, Settings, Puzzle, Save, Trash2, Bookmark } from 'lucide-react';
 import DiscordLogo from '@/components/icons/discord-logo';
 import { SITES } from '@/lib/sites';
 import { Button } from '@/components/ui/button';
@@ -40,6 +40,7 @@ import { useLogs } from '@/context/LogContext';
 import { useBotName } from '@/context/BotNameContext';
 import { Sidebar } from '@/components/layout/sidebar';
 import { MobileSidebar } from '@/components/layout/mobile-sidebar';
+import { SavedItems } from '@/components/dashboard/saved-items';
 
 type ModuleVisibility = {
   [key: string]: boolean;
@@ -59,6 +60,7 @@ const defaultVisibility: ModuleVisibility = {
   userRoles: true,
   websiteViewer: true,
   fallback: true,
+  savedItems: true,
 };
 
 type WindowRecord = {
@@ -79,6 +81,7 @@ const allModules = [
     { id: 'fallbackStrategy', title: 'Fallback Strategy', component: FallbackStrategy},
     { id: 'userRoles', title: 'Access Control', component: UserRoles },
     { id: 'websiteViewer', title: 'Website Viewer', component: WebsiteViewer },
+    { id: 'savedItems', title: 'Saved Items', component: SavedItems },
 ];
 
 const topRowModules = allModules.slice(0, 3);

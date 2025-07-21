@@ -5,12 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { Bot, Twitch, BookText, Radio, Info } from 'lucide-react';
+import { Bot, Twitch, BookText, Radio, Info, Save } from 'lucide-react';
 import DiscordLogo from '@/components/icons/discord-logo';
 import { useLogs, type LogEntry } from '@/context/LogContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { PopOutButton } from './pop-out-button';
+import { useToast } from '@/hooks/use-toast';
 
 interface LogViewerProps {
   onPopOut?: () => void;
@@ -35,6 +36,7 @@ const levelColors = {
 export function LogViewer({ onPopOut, isPoppedOut = false }: LogViewerProps) {
   const { logs } = useLogs();
   const [selectedLog, setSelectedLog] = useState<LogEntry | null>(null);
+  const { toast } = useToast();
 
   const handleRowClick = (log: LogEntry) => {
     setSelectedLog(log);
@@ -43,6 +45,33 @@ export function LogViewer({ onPopOut, isPoppedOut = false }: LogViewerProps) {
   const handleCloseDialog = () => {
     setSelectedLog(null);
   };
+
+  const handleSaveLog = (log: LogEntry) => {
+    try {
+        const savedItems = JSON.parse(localStorage.getItem('nexus-saved-items') || '[]');
+        const newItem = {
+            id: `log-${Date.now()}`,
+            type: 'log',
+            content: log,
+            savedAt: new Date().toISOString(),
+        };
+
+        const newItems = [newItem, ...savedItems];
+        localStorage.setItem('nexus-saved-items', JSON.stringify(newItems));
+        toast({
+            title: "Log Saved",
+            description: "The log entry has been saved to your Saved Items.",
+        });
+        window.dispatchEvent(new Event('storage')); // Notify other components
+    } catch(e) {
+        toast({
+            title: "Save Failed",
+            description: "Could not save log to local storage.",
+            variant: "destructive"
+        });
+    }
+  };
+
 
   return (
     <>
@@ -134,6 +163,10 @@ export function LogViewer({ onPopOut, isPoppedOut = false }: LogViewerProps) {
                 )}
             </div>
             <DialogFooter>
+              <Button variant="outline" onClick={() => handleSaveLog(selectedLog)}>
+                <Save className="mr-2 h-4 w-4" />
+                Save Log
+              </Button>
               <Button onClick={handleCloseDialog}>Close</Button>
             </DialogFooter>
           </DialogContent>
