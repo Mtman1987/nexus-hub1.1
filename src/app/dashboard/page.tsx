@@ -12,7 +12,7 @@ import { LogViewer } from '@/components/dashboard/log-viewer';
 import { Fallback } from '@/components/dashboard/fallback';
 import { ApiSettings } from '@/components/dashboard/api-settings';
 import { UnifiedChat } from '@/components/dashboard/unified-chat';
-import { Bot, Twitch, Globe, Radio, Settings, Puzzle, Save, Trash2, Bookmark, Eye, LayoutGrid, EyeOff, ScrollText } from 'lucide-react';
+import { Bot, Twitch, Globe, Radio, Settings, Puzzle, Save, Trash2, Bookmark, Eye, LayoutGrid, EyeOff, ScrollText, Clock } from 'lucide-react';
 import DiscordLogo from '@/components/icons/discord-logo';
 import { SITES } from '@/lib/sites';
 import { Button } from '@/components/ui/button';
@@ -28,6 +28,7 @@ import { MobileSidebar } from '@/components/layout/mobile-sidebar';
 import { SavedItems } from '@/components/dashboard/saved-items';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LoreWeaver } from '@/components/dashboard/lore-weaver';
+import { TimeZoneConverter } from '@/components/dashboard/timezone-converter';
 
 type WindowRecord = {
   id: string;
@@ -41,6 +42,7 @@ const ALL_MODULES_CONFIG = [
     { id: 'unifiedChat', title: 'Unified Chat', component: UnifiedChat},
     { id: 'apiSettings', title: 'API Key Vault', component: ApiSettings },
     { id: 'logViewer', title: 'Captain\'s Log', component: LogViewer },
+    { id: 'timeZoneConverter', title: 'Time Zone Converter', component: TimeZoneConverter },
     { id: 'fallback', title: 'Intelligent Fallback', component: Fallback },
     { id: 'fallbackStrategy', title: 'Fallback Strategy', component: FallbackStrategy},
     { id: 'userRoles', title: 'Access Control', component: UserRoles },

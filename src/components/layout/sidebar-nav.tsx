@@ -1,7 +1,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Bot, Twitch, BookText, Settings, Users, Globe, Radio, Shuffle, Menu, LayoutGrid, ScrollText } from 'lucide-react';
+import { Home, Bot, Twitch, BookText, Settings, Users, Globe, Radio, Shuffle, Menu, LayoutGrid, ScrollText, Clock } from 'lucide-react';
 import DiscordLogo from '@/components/icons/discord-logo';
 import { cn } from '@/lib/utils';
 import type { ComponentProps } from 'react';
@@ -23,6 +23,7 @@ export function SidebarNav({ isCollapsed = false, isMobile = false, className }:
     { href: "/launcher-ui", icon: <LayoutGrid className="h-5 w-5" />, label: "Creator Station" },
     { href: "/access-control", icon: <Users className="h-5 w-5" />, label: "Access Control" },
     { href: "/spacemountain", icon: <Globe className="h-5 w-5" />, label: "Website" },
+    { href: "#", icon: <Clock className="h-5 w-5" />, label: "Time Converter" },
     { href: "#", icon: <ScrollText className="h-5 w-5" />, label: "Lore Weaver" },
     { href: "#", icon: <div className="h-5 w-5 flex items-center justify-center"><DiscordLogo className="h-5 w-5" /></div>, label: "Discord" },
     { href: "#", icon: <Bot className="h-5 w-5" />, label: "Chat Bot" },

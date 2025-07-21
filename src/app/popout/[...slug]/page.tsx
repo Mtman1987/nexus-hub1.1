@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useEffect, useState, Suspense } from 'react';
@@ -12,6 +13,7 @@ import { WebsiteViewer } from '@/components/dashboard/website-viewer';
 import { FallbackStrategy } from '@/components/dashboard/fallback-strategy';
 import { SavedItems } from '@/components/dashboard/saved-items';
 import { LoreWeaver } from '@/components/dashboard/lore-weaver';
+import { TimeZoneConverter } from '@/components/dashboard/timezone-converter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { LogProvider } from '@/context/LogContext';
@@ -28,6 +30,7 @@ const moduleMap: { [key: string]: React.ComponentType<any> } = {
   fallbackStrategy: FallbackStrategy,
   savedItems: SavedItems,
   loreWeaver: LoreWeaver,
+  timeZoneConverter: TimeZoneConverter,
 };
 
 function PopoutContent({ slug }: { slug: string }) {
