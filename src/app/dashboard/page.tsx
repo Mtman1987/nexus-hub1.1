@@ -27,6 +27,7 @@ import { TimeZoneConverter } from '@/components/dashboard/timezone-converter';
 import { BotPersonality } from '@/components/dashboard/bot-personality';
 import { Fallback } from '@/components/dashboard/fallback';
 import { ImageGenerator } from '@/components/dashboard/image-generator';
+import { MusicPlayer } from '@/components/dashboard/music-player';
 
 // Define all modules with their components
 const ALL_MODULES_CONFIG = [
@@ -34,6 +35,7 @@ const ALL_MODULES_CONFIG = [
     { id: 'botPersonality', title: 'Bot Personality', component: BotPersonality },
     { id: 'apiSettings', title: 'API Key Vault', component: ApiSettings },
     { id: 'logViewer', title: 'Captain\'s Log', component: LogViewer },
+    { id: 'musicPlayer', title: 'Subspace Comms & Music', component: MusicPlayer },
     { id: 'imageGenerator', title: 'Stargate Imagery', component: ImageGenerator },
     { id: 'timeZoneConverter', title: 'Time Zone Converter', component: TimeZoneConverter },
     { id: 'fallback', title: 'Intelligent Fallback', component: Fallback },

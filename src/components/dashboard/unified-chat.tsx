@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { MessageSquare, Send, Loader2, Bot, User, Radio, Globe, Link, Save, GripVertical, EyeOff } from 'lucide-react';
+import { MessageSquare, Send, Loader2, Bot, User, Radio, Globe, Link, Save, GripVertical, EyeOff, Volume2, Play } from 'lucide-react';
 import DiscordLogo from '@/components/icons/discord-logo';
 import { Twitch } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
@@ -22,6 +22,7 @@ import { useLogs, type LogEntry } from '@/context/LogContext';
 import { PopOutButton } from './pop-out-button';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
+import { getTTSAudio } from '@/services/ai';
 
 
 const formSchema = z.object({
@@ -30,10 +31,12 @@ const formSchema = z.object({
 });
 
 type Message = {
+  id: string;
   sender: 'user' | 'ai';
   text: string;
   targets?: string[];
   nexusConnectTargets?: string[];
+  audioData?: string;
 };
 
 interface UnifiedChatProps {
@@ -46,6 +49,7 @@ interface UnifiedChatProps {
 export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onPopOut, isPoppedOut = false, onHide, dragHandleProps }, ref) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadingAudio, setLoadingAudio] = useState<string | null>(null);
   const { toast } = useToast();
   const { addLog } = useLogs();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -88,7 +92,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
         const newItem = {
             id: `chat-${Date.now()}`,
             type: 'chat',
-            content: message,
+            content: { sender: message.sender, text: message.text },
             savedAt: new Date().toISOString(),
         };
 
@@ -121,6 +125,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
     });
 
     const userMessage: Message = {
+      id: `msg-${Date.now()}`,
       sender: 'user',
       text: values.message,
       targets: values.targets,
@@ -166,6 +171,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
 
       if (response.reply) {
         const aiMessage: Message = {
+            id: `msg-${Date.now() + 1}`,
             sender: 'ai',
             text: response.reply,
         };
@@ -190,6 +196,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
       });
 
       const aiErrorResponse: Message = {
+          id: `msg-${Date.now() + 1}`,
           sender: 'ai',
           text: `I'm sorry, I couldn't process your request. The following error occurred: ${errorMessage}`
       }
@@ -199,6 +206,27 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
       setLoading(false);
     }
   }, [addLog, form, toast, selectedNexusTargets]);
+
+  const handlePlayAudio = async (messageId: string, text: string) => {
+      setLoadingAudio(messageId);
+      try {
+        const { media } = await getTTSAudio(text);
+        
+        setMessages(prev => prev.map(msg => 
+            msg.id === messageId ? {...msg, audioData: media} : msg
+        ));
+        
+        const audio = new Audio(media);
+        audio.play();
+
+      } catch (e) {
+        const err = e as Error;
+        toast({ title: "Audio Error", description: err.message, variant: 'destructive' });
+        addLog({ service: 'TTS', level: 'error', message: 'Failed to generate or play audio.', details: err.stack });
+      } finally {
+        setLoadingAudio(null);
+      }
+  };
 
 
   useEffect(() => {
@@ -217,6 +245,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
         const data = event.data;
         if (['discord-message', 'streamerbot-message', 'nexus-connect-message'].includes(data.type)) {
             const relayedMessage: Message = {
+              id: `msg-${Date.now()}`,
               sender: 'user',
               text: data.text,
               targets: data.targets
@@ -298,9 +327,20 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
             {messages.length === 0 ? (
               <p className="text-sm text-muted-foreground">Chat history will be displayed here.</p>
             ) : (
-              messages.map((msg, index) => (
-                <div key={index} className={`group flex items-start gap-3 ${msg.sender === 'user' ? 'justify-end' : ''}`}>
-                  {msg.sender === 'ai' && <Bot className="h-6 w-6 text-accent" />}
+              messages.map((msg) => (
+                <div key={msg.id} className={`group flex items-start gap-3 ${msg.sender === 'user' ? 'justify-end' : ''}`}>
+                  {msg.sender === 'ai' && (
+                    <div className="flex flex-col gap-1 items-center">
+                        <Bot className="h-6 w-6 text-accent flex-shrink-0" />
+                        {loadingAudio === msg.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                           <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handlePlayAudio(msg.id, msg.text)}>
+                             <Play className="h-4 w-4"/>
+                           </Button>
+                        )}
+                    </div>
+                  )}
                   <div className={`relative rounded-lg p-3 text-sm ${msg.sender === 'user' ? 'bg-primary text-primary-foreground' : 'bg-secondary'}`}>
                     <Button variant="ghost" size="icon" className="absolute -top-2 -left-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity bg-background/50 hover:bg-background" onClick={() => handleSaveMessage(msg)}>
                        <Save className="h-3 w-3" />

@@ -127,3 +127,12 @@ export const LoreCuratorOutputSchema = z.object({
   sortedTimeline: z.array(LoreEntrySchema).describe("The complete, re-sorted timeline including the new entry in its correct chronological position.")
 });
 export type LoreCuratorOutput = z.infer<typeof LoreCuratorOutputSchema>;
+
+// --- Text to Speech (TTS) ---
+export const TtsInputSchema = z.string();
+export type TtsInput = z.infer<typeof TtsInputSchema>;
+
+export const TtsOutputSchema = z.object({
+    media: z.string().describe("A data URI of the generated audio file (e.g., data:audio/wav;base64,...).")
+});
+export type TtsOutput = z.infer<typeof TtsOutputSchema>;

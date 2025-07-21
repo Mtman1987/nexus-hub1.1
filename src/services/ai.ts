@@ -13,6 +13,7 @@ import { loreWeaverFlow } from '@/ai/flows/lore-weaver';
 import { imageGeneratorFlow } from '@/ai/flows/image-generator-flow';
 import { loreEditorFlow } from '@/ai/flows/lore-editor-flow';
 import { loreCuratorFlow } from '@/ai/flows/lore-curator-flow';
+import { ttsFlow } from '@/ai/flows/tts-flow';
 
 
 import type { FlowLog, IntelligentFallbackInput, IntelligentFallbackOutput, SetupAssistantInput, SetupAssistantOutput, UnifiedChatInput, UnifiedChatOutput } from '@/ai/types';
@@ -20,6 +21,7 @@ import type { LoreWeaverInput, LoreWeaverOutput } from '@/ai/types';
 import type { ImageGeneratorInput, ImageGeneratorOutput } from '@/ai/types';
 import type { LoreEditorInput, LoreEditorOutput } from '@/ai/types';
 import type { LoreCuratorInput, LoreCuratorOutput } from '@/ai/types';
+import type { TtsOutput } from '@/ai/types';
 
 /**
  * Main service function to handle unified chat requests.
@@ -68,4 +70,11 @@ export async function getLoreEditorSuggestion(input: LoreEditorInput): Promise<L
  */
 export async function getCuratedTimeline(input: LoreCuratorInput): Promise<LoreCuratorOutput> {
     return loreCuratorFlow(input);
+}
+
+/**
+ * Service function to convert text to speech.
+ */
+export async function getTTSAudio(text: string): Promise<TtsOutput> {
+    return ttsFlow(text);
 }
