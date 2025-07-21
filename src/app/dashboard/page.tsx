@@ -13,7 +13,7 @@ import { Fallback } from '@/components/dashboard/fallback';
 import { ApiSettings } from '@/components/dashboard/api-settings';
 import { UnifiedChat } from '@/components/dashboard/unified-chat';
 import { SetupDialog } from '@/components/dashboard/setup-dialog';
-import { Bot, Twitch, Globe, Radio, Settings, Puzzle, Save, Trash2, Bookmark, Eye, LayoutGrid } from 'lucide-react';
+import { Bot, Twitch, Globe, Radio, Settings, Puzzle, Save, Trash2, Bookmark, Eye, LayoutGrid, EyeOff } from 'lucide-react';
 import DiscordLogo from '@/components/icons/discord-logo';
 import { SITES } from '@/lib/sites';
 import { Button } from '@/components/ui/button';
@@ -258,7 +258,7 @@ export default function DashboardPage() {
                 <div className="flex-grow flex flex-col gap-6 overflow-hidden">
                     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                         <SortableContext items={visibleModuleIds} strategy={verticalListSortingStrategy}>
-                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                                 {visibleModuleIds.map(id => {
                                     const moduleConfig = ALL_MODULES_CONFIG.find(m => m.id === id);
                                     if (!moduleConfig) return null;

@@ -460,7 +460,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
         </CardHeader>
         <CardContent className="flex-grow overflow-hidden flex flex-col">
           <ScrollArea className="flex-grow pr-4">
-            <form className="space-y-4" onSubmit={handleSaveChanges}>
+            <form id="api-settings-form" className="space-y-4" onSubmit={handleSaveChanges}>
               <div className="space-y-2">
                   <Label>Chat Bot Personality</Label>
                   <div className="flex items-center gap-2">
