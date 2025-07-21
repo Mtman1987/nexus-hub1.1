@@ -16,18 +16,18 @@ type CallAIChatParams = {
     userMessage: string;
     systemPrompt?: string;
     jsonMode?: boolean;
-    overrideConfig?: { [key: string]: string | undefined };
+    overrideConfig?: { [key: string]: any | undefined };
 };
 
 const PROVIDER_CONFIG = {
-    eden: { name: 'Eden AI', keyName: 'edenApiKey', modelKey: 'edenAiModelName', url: 'https://api.edenai.run/v2/text/chat' },
+    eden: { name: 'Eden AI', keyName: 'edenApiKey', url: 'https://api.edenai.run/v2/text/chat' },
     google: { name: 'Google AI', keyName: 'googleApiKey', modelKey: 'googleModelName', url: 'https://generativelanguage.googleapis.com/v1beta/models' },
     openai: { name: 'OpenAI', keyName: 'openaiApiKey', modelKey: 'openaiModelName', url: 'https://api.openai.com/v1/chat/completions' },
     groq: { name: 'Groq', keyName: 'groqApiKey', modelKey: 'groqModelName', url: 'https://api.groq.com/openai/v1/chat/completions' },
 };
 
-function getConfig(overrideConfig?: { [key: string]: string | undefined }) {
-    if (overrideConfig) {
+function getConfig(overrideConfig?: { [key:string]: any | undefined }) {
+    if (overrideConfig && Object.keys(overrideConfig).length > 0) {
         return (key: string) => overrideConfig[key];
     }
     return (key: string) => localStorage.getItem(key);
@@ -41,15 +41,31 @@ export async function callAIChat(params: CallAIChatParams): Promise<{ response: 
     const logs: FlowLog[] = [];
     const config = getConfig(overrideConfig);
     
-    const providerStatus = JSON.parse(config('providerStatus') || '{}');
-    const fallbackStrategy = JSON.parse(config('fallbackStrategy') || '["google", "openai", "groq"]');
+    let providerStatus: any = {};
+    try {
+        const statusString = config('providerStatus');
+        if (statusString) {
+            providerStatus = JSON.parse(statusString);
+        }
+    } catch (e) {
+        console.error("Could not parse providerStatus", e);
+    }
+    
+    let fallbackStrategy: AiProviderId[] = ['google', 'openai', 'groq'];
+     try {
+        const strategyString = config('fallbackStrategy');
+        if (strategyString) {
+            fallbackStrategy = JSON.parse(strategyString);
+        }
+    } catch (e) {
+        console.error("Could not parse fallbackStrategy", e);
+    }
     
     const providerTryOrder: AiProviderId[] = ['eden', ...fallbackStrategy];
 
     for (const providerId of providerTryOrder) {
         const providerInfo = PROVIDER_CONFIG[providerId];
         const apiKey = config(providerInfo.keyName);
-        const modelName = config(providerInfo.modelKey);
 
         if (!apiKey) {
             logs.push({ service: providerInfo.name, level: 'warn', message: `Skipping provider: API key is not configured.` });
@@ -61,14 +77,18 @@ export async function callAIChat(params: CallAIChatParams): Promise<{ response: 
         }
 
         try {
-            logs.push({ service: providerInfo.name, level: 'info', message: `Attempting API call with model: ${modelName}` });
+            logs.push({ service: providerInfo.name, level: 'info', message: `Attempting API call.` });
             
             let response;
             if (providerId === 'eden') {
-                response = await callEdenAI(apiKey, modelName, systemPrompt, userMessage, jsonMode);
+                const edenProvider = config('edenAiProvider');
+                const edenModel = config('edenAiModel');
+                response = await callEdenAI(apiKey, edenProvider, edenModel, systemPrompt, userMessage, jsonMode);
             } else if (providerId === 'google') {
+                const modelName = config(providerInfo.modelKey);
                 response = await callGoogleAI(apiKey, modelName, systemPrompt, userMessage, jsonMode);
             } else if (providerId === 'openai' || providerId === 'groq') {
+                 const modelName = config(providerInfo.modelKey);
                  response = await callOpenAICompatible(providerInfo.url, apiKey, modelName, systemPrompt, userMessage, jsonMode);
             } else {
                 throw new Error(`Unknown provider: ${providerId}`);
@@ -88,15 +108,18 @@ export async function callAIChat(params: CallAIChatParams): Promise<{ response: 
 
 // --- Provider-Specific Implementations ---
 
-async function callEdenAI(apiKey: string, model: string | null, system: string, user: string, json: boolean) {
+async function callEdenAI(apiKey: string, provider: string | null, model: string | null, system: string, user: string, json: boolean) {
+    if (!provider || !model) {
+        throw new Error("Eden AI provider or model is not configured.");
+    }
     const payload = {
-        providers: model ? model.split('/')[0] : "openai",
+        providers: provider,
+        model: model,
         text: user,
         chatbot_global_action: system,
         previous_history: [],
         temperature: 0.0,
         max_tokens: 1000,
-        model: model ? model.split('/')[1] : "gpt-4-turbo",
         response_as_dict: json,
     };
 
@@ -109,10 +132,10 @@ async function callEdenAI(apiKey: string, model: string | null, system: string, 
     if (!response.ok) throw new Error(`EdenAI request failed with status ${response.status}: ${await response.text()}`);
     
     const result = await response.json();
-    const providerResult = result[Object.keys(result)[0]];
+    const providerResult = result[provider];
 
-    if (providerResult.status !== 'success') {
-        throw new Error(`EdenAI call failed: ${providerResult.error.message}`);
+    if (!providerResult || providerResult.status !== 'success') {
+        throw new Error(`EdenAI call failed: ${providerResult?.error?.message || 'Unknown error from Eden AI'}`);
     }
     
     return json ? JSON.parse(providerResult.generated_text) : providerResult.generated_text;
@@ -121,7 +144,7 @@ async function callEdenAI(apiKey: string, model: string | null, system: string, 
 
 async function callOpenAICompatible(url: string, apiKey: string, model: string | null, system: string, user: string, json: boolean) {
     const messages = [{ role: 'system', content: system }, { role: 'user', content: user }];
-    const payload: any = { model: model || 'gpt-4-turbo', messages };
+    const payload: any = { model: model, messages };
     if (json) payload.response_format = { type: 'json_object' };
 
     const response = await fetch(url, {
@@ -142,14 +165,15 @@ async function callGoogleAI(apiKey: string, model: string | null, system: string
     const url = `${PROVIDER_CONFIG.google.url}/${model || 'gemini-1.5-flash-latest'}:generateContent?key=${apiKey}`;
     const contents = [{ role: 'user', parts: [{ text: user }] }];
     
-    const payload: any = {
-        contents,
-        systemInstruction: { role: 'system', parts: [{ text: system }] }
+    const generationConfig = {
+        response_mime_type: json ? 'application/json' : 'text/plain',
     };
 
-    if (json) {
-        payload.responseMimeType = 'application/json';
-    }
+    const payload: any = {
+        contents,
+        systemInstruction: { role: 'system', parts: [{ text: system }] },
+        generationConfig,
+    };
 
     const response = await fetch(url, {
         method: 'POST',
@@ -160,6 +184,10 @@ async function callGoogleAI(apiKey: string, model: string | null, system: string
     if (!response.ok) throw new Error(`Google AI request failed with status ${response.status}: ${await response.text()}`);
     
     const result = await response.json();
+    if(!result.candidates || result.candidates.length === 0){
+        const errorDetails = result.promptFeedback ? `Safety issue: ${result.promptFeedback.blockReason}` : 'No response from model.';
+        throw new Error(`Google AI call failed: ${errorDetails}`);
+    }
     const content = result.candidates[0].content.parts[0].text;
     return content; // Google returns JSON as a string, so no need for conditional parsing here.
 }
@@ -178,3 +206,4 @@ export async function getIntelligentFallback(input: IntelligentFallbackInput): P
 export async function getSetupAssistantResponse(input: SetupAssistantInput): Promise<{response: SetupAssistantOutput, logs: FlowLog[]}> {
     return setupAssistantFlow(input);
 }
+

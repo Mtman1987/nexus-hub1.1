@@ -20,7 +20,7 @@ import { Textarea } from '../ui/textarea';
 import { PopOutButton } from './pop-out-button';
 
 export const settingKeys = [
-  'botPersonalities', 'selectedPersonalityId', 'edenApiKey', 'edenAiModelName', 'googleApiKey', 'googleModelName',
+  'botPersonalities', 'selectedPersonalityId', 'edenApiKey', 'edenAiProvider', 'edenAiModel', 'googleApiKey', 'googleModelName',
   'openaiApiKey', 'openaiModelName', 'groqApiKey', 'groqModelName',
   'discordToken', 'discordWebhook', 'twitchToken', 'providerStatus',
   'streamerbotServerAddress', 'streamerbotServerPort', 'streamerbotRequestType', 'streamerbotActionName', 'streamerbotVariableName', 'streamerbotWebhookUrl',
@@ -51,15 +51,33 @@ export type BotPersonality = {
   prompt: string;
 }
 
-const modelOptions = {
-    eden: [
-        { value: "openai/gpt-4-turbo", label: "openai/gpt-4-turbo" },
-        { value: "openai/gpt-4o", label: "openai/gpt-4o" },
-        { value: "google/gemini-1.5-pro-latest", label: "google/gemini-1.5-pro-latest" },
-        { value: "anthropic/claude-3-haiku-20240307", label: "anthropic/claude-3-haiku" },
-        { value: "cohere/command-r-plus", label: "cohere/command-r-plus" },
-        { value: "meta/llama-3-70b-instruct", label: "meta/llama-3-70b-instruct" },
+const edenModelOptions: { [key: string]: { value: string, label: string }[] } = {
+    openai: [
+        { value: "gpt-4-turbo", label: "GPT-4 Turbo" },
+        { value: "gpt-4o", label: "GPT-4o" },
+        { value: "gpt-3.5-turbo", label: "GPT-3.5 Turbo" },
     ],
+    google: [
+        { value: "gemini-1.5-pro-latest", label: "Gemini 1.5 Pro" },
+        { value: "gemini-1.5-flash-latest", label: "Gemini 1.5 Flash" },
+        { value: "gemini-1.0-pro", label: "Gemini 1.0 Pro" },
+    ],
+    anthropic: [
+        { value: "claude-3-haiku-20240307", label: "Claude 3 Haiku" },
+        { value: "claude-3-sonnet-20240229", label: "Claude 3 Sonnet" },
+        { value: "claude-3-opus-20240229", label: "Claude 3 Opus" },
+    ],
+    cohere: [
+        { value: "command-r-plus", label: "Command R+" },
+        { value: "command-r", label: "Command R" },
+    ],
+    meta: [
+        { value: "llama-3-70b-instruct", label: "Llama 3 70B Instruct" },
+        { value: "llama-3-8b-instruct", label: "Llama 3 8B Instruct" },
+    ],
+}
+
+const fallbackModelOptions = {
     google: [
         { value: "gemini-1.5-flash-latest", label: "gemini-1.5-flash-latest (Default)" },
         { value: "gemini-1.5-pro-latest", label: "gemini-1.5-pro-latest" },
@@ -77,12 +95,15 @@ const modelOptions = {
     ]
 }
 
-const defaultModels: { [key in 'edenAiModelName' | 'googleModelName' | 'openaiModelName' | 'groqModelName']: string } = {
-    edenAiModelName: 'openai/gpt-4-turbo',
+const defaultModels: { [key in 'googleModelName' | 'openaiModelName' | 'groqModelName']: string } = {
     googleModelName: 'gemini-1.5-flash-latest',
     openaiModelName: 'gpt-4-turbo',
     groqModelName: 'llama3-8b-8192',
 };
+
+const defaultEdenProvider = 'openai';
+const defaultEdenModel = 'gpt-4-turbo';
+
 
 const defaultProviderStatus: ProviderStatus = {
     google: 'enabled',
@@ -105,6 +126,8 @@ const defaultSettings: Partial<Settings> = {
   nexusConnectConnections: [],
   remoteHubAddress: '',
   remoteAccessSecret: '',
+  edenAiProvider: defaultEdenProvider,
+  edenAiModel: defaultEdenModel,
 }
 
 const FALLBACK_ORDER: AiProviderId[] = ['google', 'openai', 'groq'];
@@ -295,12 +318,17 @@ export function ApiSettings({ isPoppedOut = false, onPopOut, setBotName: setCont
     }
   };
 
+  const handleEdenProviderChange = (provider: string) => {
+      handleInputChange('edenAiProvider', provider);
+      // Reset the model to the default for the new provider
+      const newDefaultModel = edenModelOptions[provider]?.[0]?.value;
+      if (newDefaultModel) {
+          handleInputChange('edenAiModel', newDefaultModel);
+      }
+  };
+
   const handleModelChange = (key: keyof Settings, value: string | undefined) => {
-    const defaultModelKey = key as keyof typeof defaultModels;
-    const modelValue = value || defaultModels[defaultModelKey];
-    if(modelValue){
-        handleInputChange(key as SettingsObjectKey, modelValue);
-    }
+    handleInputChange(key as SettingsObjectKey, value || '');
   };
 
   const handleStatusChange = (providerId: ProviderId, enabled: boolean) => {
@@ -398,6 +426,9 @@ export function ApiSettings({ isPoppedOut = false, onPopOut, setBotName: setCont
         toast({ title: "Copy Failed", description: "Could not copy the URL.", variant: "destructive" });
     });
   };
+
+  const currentEdenProvider = settings.edenAiProvider || defaultEdenProvider;
+  const currentEdenModels = edenModelOptions[currentEdenProvider] || [];
 
   return (
     <>
@@ -515,11 +546,20 @@ export function ApiSettings({ isPoppedOut = false, onPopOut, setBotName: setCont
                                 <Input id="eden-key" type="password" placeholder="Your primary key from Eden AI" value={settings.edenApiKey || ''} onChange={(e) => handleInputChange('edenApiKey', e.target.value)} />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="eden-model-name">Eden AI Model (provider/model_name)</Label>
-                                <Select value={settings.edenAiModelName || defaultModels.edenAiModelName} onValueChange={(value) => handleModelChange('edenAiModelName', value)}>
+                                <Label htmlFor="eden-provider">Provider</Label>
+                                <Select value={currentEdenProvider} onValueChange={handleEdenProviderChange}>
+                                    <SelectTrigger><SelectValue placeholder="Select a provider..." /></SelectTrigger>
+                                    <SelectContent>
+                                        {Object.keys(edenModelOptions).map(provider => <SelectItem key={provider} value={provider}>{provider.charAt(0).toUpperCase() + provider.slice(1)}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="eden-model">Model</Label>
+                                <Select value={settings.edenAiModel || ''} onValueChange={(value) => handleModelChange('edenAiModel', value)}>
                                     <SelectTrigger><SelectValue placeholder="Select a model..." /></SelectTrigger>
                                     <SelectContent>
-                                        {modelOptions.eden.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
+                                        {currentEdenModels.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -535,11 +575,11 @@ export function ApiSettings({ isPoppedOut = false, onPopOut, setBotName: setCont
                                 <Input id="google-ai-key" type="password" placeholder="Your Google AI API Key" value={settings.googleApiKey || ''} onChange={(e) => handleInputChange('googleApiKey', e.target.value)} />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="google-model-name">Google AI Model (model_name only)</Label>
+                                <Label htmlFor="google-model-name">Google AI Model</Label>
                                 <Select value={settings.googleModelName || defaultModels.googleModelName} onValueChange={(value) => handleModelChange('googleModelName', value)}>
                                     <SelectTrigger><SelectValue placeholder="Select a model..." /></SelectTrigger>
                                     <SelectContent>
-                                        {modelOptions.google.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
+                                        {fallbackModelOptions.google.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -555,11 +595,11 @@ export function ApiSettings({ isPoppedOut = false, onPopOut, setBotName: setCont
                                 <Input id="openai-key" type="password" placeholder="Your OpenAI API Key" value={settings.openaiApiKey || ''} onChange={(e) => handleInputChange('openaiApiKey', e.target.value)} />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="openai-model-name">OpenAI Model (model_name only)</Label>
+                                <Label htmlFor="openai-model-name">OpenAI Model</Label>
                                  <Select value={settings.openaiModelName || defaultModels.openaiModelName} onValueChange={(value) => handleModelChange('openaiModelName', value)}>
                                     <SelectTrigger><SelectValue placeholder="Select a model..." /></SelectTrigger>
                                     <SelectContent>
-                                        {modelOptions.openai.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
+                                        {fallbackModelOptions.openai.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -575,11 +615,11 @@ export function ApiSettings({ isPoppedOut = false, onPopOut, setBotName: setCont
                                 <Input id="groq-key" type="password" placeholder="Your Groq API Key" value={settings.groqApiKey || ''} onChange={(e) => handleInputChange('groqApiKey', e.target.value)} />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="groq-model-name">Groq Model (model_name only)</Label>
+                                <Label htmlFor="groq-model-name">Groq Model</Label>
                                 <Select value={settings.groqModelName || defaultModels.groqModelName} onValueChange={(value) => handleModelChange('groqModelName', value)}>
                                     <SelectTrigger><SelectValue placeholder="Select a model..." /></SelectTrigger>
                                     <SelectContent>
-                                        {modelOptions.groq.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
+                                        {fallbackModelOptions.groq.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -701,4 +741,3 @@ export function ApiSettings({ isPoppedOut = false, onPopOut, setBotName: setCont
   );
 }
 
-    
