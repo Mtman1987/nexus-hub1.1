@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from 'react';
@@ -87,7 +88,7 @@ const bottomRowModules = allModules.slice(3);
 
 export default function DashboardPage() {
   const mainSite = SITES['main'];
-  const { botName } = useBotName();
+  const { botName, setBotName } = useBotName();
   const { toast } = useToast();
   const { addLog } = useLogs();
   
@@ -382,6 +383,7 @@ export default function DashboardPage() {
                             <ModuleComponent 
                               isPoppedOut={false} 
                               onPopOut={() => handlePopOut(m.id, m.title)} 
+                              {...(m.id === 'apiSettings' ? { botName, setBotName } : {})}
                             />
                           </div>
                         );
@@ -397,7 +399,8 @@ export default function DashboardPage() {
                           <div key={m.id} className="relative h-full">
                             <ModuleComponent 
                               isPoppedOut={false}
-                              onPopOut={() => handlePopOut(m.id, m.title)} 
+                              onPopOut={() => handlePopOut(m.id, m.title)}
+                              {...(m.id === 'apiSettings' ? { botName, setBotName } : {})}
                             />
                           </div>
                        );
@@ -410,3 +413,5 @@ export default function DashboardPage() {
     </>
   );
 }
+
+    

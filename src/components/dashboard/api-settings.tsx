@@ -155,16 +155,20 @@ const ServiceStatusToggle: React.FC<{
 interface ApiSettingsProps {
     isPoppedOut?: boolean;
     onPopOut?: () => void;
+    botName?: string;
+    setBotName?: (name: string) => void;
 }
 
-export function ApiSettings({ isPoppedOut = false, onPopOut }: ApiSettingsProps) {
+export function ApiSettings({ isPoppedOut = false, onPopOut, setBotName: setContextBotName }: ApiSettingsProps) {
   const [showSetup, setShowSetup] = useState(false);
   const { toast } = useToast();
   const [settings, setSettings] = useState<Settings>(defaultSettings);
   const [providerStatus, setProviderStatus] = useState<ProviderStatus>(defaultProviderStatus);
   const { addLog } = useLogs();
   const [openAccordions, setOpenAccordions] = useState<string[]>(['bot-personality', 'eden', 'discord']);
-  const { setBotName } = useBotName();
+  
+  const { botName, setBotName: contextSetBotName } = useBotName();
+  const setBotName = setContextBotName || contextSetBotName;
 
   const [personalities, setPersonalities] = useState<BotPersonality[]>([]);
   const [selectedPersonalityId, setSelectedPersonalityId] = useState<string | null>(null);
@@ -227,7 +231,7 @@ export function ApiSettings({ isPoppedOut = false, onPopOut }: ApiSettingsProps)
         setSelectedPersonalityId(selectedId);
         
         const selectedPersonality = loadedPersonalities.find((p: BotPersonality) => p.id === selectedId);
-        if (selectedPersonality) {
+        if (selectedPersonality && setBotName) {
             setBotName(selectedPersonality.name);
         }
 
@@ -251,7 +255,7 @@ export function ApiSettings({ isPoppedOut = false, onPopOut }: ApiSettingsProps)
         return p;
     });
     setPersonalities(newPersonalities);
-    if (field === 'name') {
+    if (field === 'name' && setBotName) {
         const selectedPersonality = newPersonalities.find(p => p.id === selectedPersonalityId);
         if (selectedPersonality) {
             setBotName(selectedPersonality.name);
@@ -262,7 +266,7 @@ export function ApiSettings({ isPoppedOut = false, onPopOut }: ApiSettingsProps)
   const handleSelectPersonality = (id: string) => {
     setSelectedPersonalityId(id);
     const selectedPersonality = personalities.find(p => p.id === id);
-    if (selectedPersonality) {
+    if (selectedPersonality && setBotName) {
         setBotName(selectedPersonality.name);
     }
   };
@@ -273,7 +277,9 @@ export function ApiSettings({ isPoppedOut = false, onPopOut }: ApiSettingsProps)
     const newPersonalities = [...personalities, newPersonality];
     setPersonalities(newPersonalities);
     setSelectedPersonalityId(newId);
-    setBotName(newPersonality.name);
+    if (setBotName) {
+        setBotName(newPersonality.name);
+    }
   };
   
   const handleDeletePersonality = () => {
@@ -284,7 +290,9 @@ export function ApiSettings({ isPoppedOut = false, onPopOut }: ApiSettingsProps)
     const newPersonalities = personalities.filter(p => p.id !== selectedPersonalityId);
     setPersonalities(newPersonalities);
     setSelectedPersonalityId(newPersonalities[0].id);
-    setBotName(newPersonalities[0].name);
+    if (setBotName) {
+      setBotName(newPersonalities[0].name);
+    }
   };
 
   const handleModelChange = (key: keyof Settings, value: string | undefined) => {
@@ -692,3 +700,5 @@ export function ApiSettings({ isPoppedOut = false, onPopOut }: ApiSettingsProps)
     </>
   );
 }
+
+    
