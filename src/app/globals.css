@@ -37,30 +37,43 @@
   body {
     @apply bg-background text-foreground;
     background-image:
-        /* Shooting stars */
-        radial-gradient(circle at center, transparent 49%, hsl(var(--primary)) 50%, transparent 51%),
-        radial-gradient(circle at center, transparent 49%, hsl(var(--primary)) 50%, transparent 51%),
-        radial-gradient(circle at center, transparent 49%, hsl(var(--accent)) 50%, transparent 51%),
         /* Starfield */
         radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
         radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
         radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px),
         radial-gradient(rgba(255,255,255,.4), rgba(255,255,255,.1) 2px, transparent 30px);
     background-size: 
-        /* Shooting stars */
-        1px 200px, 2px 300px, 1px 250px,
         /* Starfield */
         550px 550px, 350px 350px, 250px 250px, 150px 150px; 
     background-position: 
-        /* Shooting stars */
-        -500px -500px, -800px -800px, -1200px -1200px,
         /* Starfield */
         0 0, 40px 60px, 130px 270px, 70px 100px;
-    animation: 
-      stars 200s linear infinite,
-      shooting-star1 15s linear infinite,
-      shooting-star2 25s linear infinite,
-      shooting-star3 18s linear infinite;
+    animation: stars 200s linear infinite;
+  }
+
+  body::before, body::after {
+    content: '';
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 2px;
+    height: 150px;
+    background: linear-gradient(180deg, hsl(var(--accent) / 0.5), transparent);
+    transform-origin: 0 0;
+    opacity: 0;
+    box-shadow: 0 0 10px 2px hsl(var(--accent));
+  }
+
+  body::before {
+    animation: shooting-star 15s ease-in-out -3s infinite;
+  }
+
+  body::after {
+    width: 3px;
+    height: 200px;
+    background: linear-gradient(180deg, hsl(var(--primary) / 0.6), transparent);
+    box-shadow: 0 0 10px 2px hsl(var(--primary));
+    animation: shooting-star 18s ease-in-out -10s infinite;
   }
 }
 
@@ -69,15 +82,19 @@
   to {transform: translateY(-2000px);}
 }
 
-@keyframes shooting-star1 {
-    0% { background-position: 50% 100%, -800px -800px, -1200px -1200px, 0 0, 40px 60px, 130px 270px, 70px 100px; }
-    100% { background-position: -50% -100%, -800px -800px, -1200px -1200px, 0 0, 40px 60px, 130px 270px, 70px 100px; }
-}
-@keyframes shooting-star2 {
-    0% { background-position: -500px -500px, 20% 150%, -1200px -1200px, 0 0, 40px 60px, 130px 270px, 70px 100px; }
-    100% { background-position: -500px -500px, -40% -100%, -1200px -1200px, 0 0, 40px 60px, 130px 270px, 70px 100px; }
-}
-@keyframes shooting-star3 {
-    0% { background-position: -500px -500px, -800px -800px, 120% 80%, 0 0, 40px 60px, 130px 270px, 70px 100px; }
-    100% { background-position: -500px -500px, -800px -800px, 20% -120%, 0 0, 40px 60px, 130px 270px, 70px 100px; }
+@keyframes shooting-star {
+    0% {
+        opacity: 0;
+        transform: rotate(315deg) translateX(50vw) scaleY(1);
+    }
+    15% {
+        opacity: 1;
+    }
+    30% {
+        opacity: 0;
+        transform: rotate(315deg) translateX(-50vw) scaleY(0);
+    }
+    100% {
+        opacity: 0;
+    }
 }
