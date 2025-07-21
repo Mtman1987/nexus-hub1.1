@@ -47,12 +47,19 @@ type ProviderStatus = {
     [key in ProviderId]: 'enabled' | 'disabled';
 }
 
-const defaultModels: { [key in 'googleModelName' | 'openaiModelName' | 'groqModelName' | 'edenAiProvider' | 'edenAiModel']: string } = {
+const defaultModels = {
     edenAiProvider: 'openai',
-    edenAiModel: 'gpt-4-turbo',
+    edenAiModel: 'gpt-4o',
     googleModelName: 'gemini-1.5-flash-latest',
     openaiModelName: 'gpt-4o',
     groqModelName: 'llama3-8b-8192',
+};
+
+const popularModels = {
+    eden: ['gpt-4-turbo', 'gpt-4o', 'claude-3-opus-20240229', 'claude-3-haiku-20240307', 'gemini-1.5-pro-latest'],
+    google: ['gemini-1.5-flash-latest', 'gemini-1.5-pro-latest', 'gemini-1.0-pro'],
+    openai: ['gpt-4o', 'gpt-4-turbo', 'gpt-3.5-turbo'],
+    groq: ['llama3-8b-8192', 'llama3-70b-8192', 'mixtral-8x7b-32768', 'gemma-7b-it'],
 };
 
 const defaultProviderStatus: ProviderStatus = {
@@ -121,6 +128,47 @@ const ServiceStatusToggle: React.FC<{
       </div>
     </div>
   );
+};
+
+interface ModelSelectorProps {
+    provider: 'eden' | 'google' | 'openai' | 'groq';
+    value: string;
+    onChange: (value: string) => void;
+    isLocked: boolean;
+}
+
+const ModelSelector: React.FC<ModelSelectorProps> = ({ provider, value, onChange, isLocked }) => {
+    const isCustom = !popularModels[provider].includes(value) && value !== '';
+    const displayValue = isCustom ? 'custom' : value;
+
+    const handleSelectChange = (newValue: string) => {
+        if (newValue !== 'custom') {
+            onChange(newValue);
+        }
+    };
+
+    return (
+        <div className="space-y-2">
+            <Select value={displayValue} onValueChange={handleSelectChange} disabled={isLocked}>
+                <SelectTrigger><SelectValue placeholder="Select a model..." /></SelectTrigger>
+                <SelectContent>
+                    {popularModels[provider].map(model => (
+                        <SelectItem key={model} value={model}>{model}</SelectItem>
+                    ))}
+                    <SelectItem value="custom">Custom...</SelectItem>
+                </SelectContent>
+            </Select>
+            {isCustom && (
+                <Input
+                    type="text"
+                    placeholder="Enter custom model ID"
+                    value={value}
+                    onChange={(e) => onChange(e.target.value)}
+                    disabled={isLocked}
+                />
+            )}
+        </div>
+    );
 };
 
 
@@ -446,7 +494,12 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                           </div>
                           <div className="space-y-2">
                               <Label htmlFor="eden-model">Model Name via Eden</Label>
-                              <Input id="eden-model" type="text" placeholder="e.g., gpt-4o or a fine-tuned model ID" value={settings.edenAiModel || ''} onChange={(e) => handleInputChange('edenAiModel', e.target.value)} disabled={isLocked}/>
+                              <ModelSelector
+                                provider="eden"
+                                value={settings.edenAiModel || defaultModels.edenAiModel}
+                                onChange={(value) => handleInputChange('edenAiModel', value)}
+                                isLocked={isLocked}
+                              />
                           </div>
                       </AccordionContent>
                   </AccordionItem>
@@ -461,7 +514,12 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                           </div>
                            <div className="space-y-2">
                               <Label htmlFor="google-model-name">Google AI Model Name</Label>
-                              <Input id="google-model-name" type="text" placeholder="e.g., gemini-1.5-pro-latest or a fine-tuned model ID" value={settings.googleModelName || defaultModels.googleModelName} onChange={(e) => handleInputChange('googleModelName', e.target.value)} disabled={isLocked}/>
+                               <ModelSelector
+                                provider="google"
+                                value={settings.googleModelName || defaultModels.googleModelName}
+                                onChange={(value) => handleInputChange('googleModelName', value)}
+                                isLocked={isLocked}
+                               />
                           </div>
                       </AccordionContent>
                   </AccordionItem>
@@ -476,7 +534,12 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                           </div>
                           <div className="space-y-2">
                               <Label htmlFor="openai-model-name">OpenAI Model Name</Label>
-                               <Input id="openai-model-name" type="text" placeholder="e.g., gpt-4o or ft:gpt-3.5-turbo:..." value={settings.openaiModelName || defaultModels.openaiModelName} onChange={(e) => handleInputChange('openaiModelName', e.target.value)} disabled={isLocked}/>
+                               <ModelSelector
+                                provider="openai"
+                                value={settings.openaiModelName || defaultModels.openaiModelName}
+                                onChange={(value) => handleInputChange('openaiModelName', value)}
+                                isLocked={isLocked}
+                               />
                           </div>
                       </AccordionContent>
                   </AccordionItem>
@@ -491,7 +554,12 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                           </div>
                           <div className="space-y-2">
                               <Label htmlFor="groq-model-name">Groq Model Name</Label>
-                              <Input id="groq-model-name" type="text" placeholder="e.g., llama3-70b-8192" value={settings.groqModelName || defaultModels.groqModelName} onChange={(e) => handleInputChange('groqModelName', e.target.value)} disabled={isLocked}/>
+                               <ModelSelector
+                                provider="groq"
+                                value={settings.groqModelName || defaultModels.groqModelName}
+                                onChange={(value) => handleInputChange('groqModelName', value)}
+                                isLocked={isLocked}
+                               />
                           </div>
                       </AccordionContent>
                   </AccordionItem>
@@ -610,5 +678,3 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     </>
   );
 }
-
-    
