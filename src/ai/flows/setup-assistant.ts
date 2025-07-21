@@ -14,7 +14,7 @@ export async function setupAssistantFlow(input: SetupAssistantInput): Promise<Se
         'Google AI': "You can get a Google AI API key from the Google AI Studio (formerly MakerSuite). Sign in with your Google account, create a new API key, and copy it. This key gives you access to Google's Gemini family of models.",
         'Discord': "For Discord, you need two things: a Bot Token and a Webhook URL. Create an application in the Discord Developer Portal to get a bot token (remember to enable Message Content Intent!). For the webhook, go to your server settings, then Integrations, and create a new webhook for the channel you want to post messages to.",
         'Twitch': "A Twitch Bot Token can be generated from services like TMI.js or other third-party sites that connect to the Twitch API. It's used to allow the bot to send messages in your chat.",
-        'Streamer.bot': "Streamer.bot runs on your local computer. The server address is usually '127.0.0.1' (meaning 'this computer') and the port is configured in the Streamer.bot application under the 'Servers/Clients' tab. The default is often 8080.",
+        'Streamer.bot': "Streamer.bot runs on your local computer. The server address is usually '127.0.0.1' (meaning 'this computer') and the port is configured in the Streamer.bot application under the 'Servers/Clients' tab. The default is often 8080, but 9003 is recommended for this app.",
     };
 
     if (lowerCaseQuestion.includes('where') || lowerCaseQuestion.includes('how')) {

@@ -49,7 +49,7 @@ export async function getIntelligentFallback(input: IntelligentFallbackInput): P
         return { response, logs };
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-        logs.push({ service: 'System', level: 'error', message: `Intelligent Fallback flow failed: ${errorMessage}`, details: error instanceof Error ? error.stack : JSON.stringify(error) });
+        logs.push({ service: 'System', level: 'error', message: `Intelligent Fallback flow failed: ${errorMessage}`, details: error instanceof Error ? error.stack : String(error) });
         return {
             response: {
                 recommendation: 'Error',
@@ -63,14 +63,21 @@ export async function getIntelligentFallback(input: IntelligentFallbackInput): P
 /**
  * Function to power the AI assistant within the Setup Wizard.
  */
-export async function getSetupAssistantResponse(input: SetupAssistantInput): Promise<SetupAssistantOutput> {
+export async function getSetupAssistantResponse(input: SetupAssistantInput): Promise<{response: SetupAssistantOutput, logs: FlowLog[]}> {
+    const logs: FlowLog[] = [];
     try {
-        return await setupAssistantFlow(input);
+        const response = await setupAssistantFlow(input);
+         logs.push({ service: 'System', level: 'info', message: `Setup Assistant provided help for topic: ${input.topic}`});
+        return { response, logs };
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
         console.error("Setup Assistant error:", error);
+         logs.push({ service: 'System', level: 'error', message: `Setup Assistant failed: ${errorMessage}` });
         return {
-            answer: `Sorry, I encountered an error: ${errorMessage}`
+            response: {
+                answer: `Sorry, I encountered an error: ${errorMessage}`
+            },
+            logs
         };
     }
 }

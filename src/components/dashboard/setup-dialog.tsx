@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -17,13 +16,10 @@ import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal, Wand2, Sparkles, Loader2 } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { getSetupAssistantResponse } from '@/services/ai';
+import type { SetupAssistantInput, SetupAssistantOutput } from '@/ai/types';
 import { useToast } from '@/hooks/use-toast';
 import { useLogs } from '@/context/LogContext';
-
-// Define a placeholder type as the original was removed.
-type SetupAssistantOutput = {
-    answer: string;
-};
 
 interface SetupDialogProps {
   open: boolean;
@@ -127,13 +123,29 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
     if (!aiQuestion.trim()) return;
     setAiIsLoading(true);
     setAiResult(null);
-    addLog({ service: 'System', level: 'warn', message: "Setup Assistant is disabled because Genkit was removed." });
-    toast({
-        title: "Feature Disabled",
-        description: "This AI feature is currently disabled.",
-        variant: "destructive",
-    });
-    setAiIsLoading(false);
+
+    try {
+        const input: SetupAssistantInput = {
+            topic: steps[currentStep].topic,
+            question: aiQuestion,
+        };
+        const { response, logs } = await getSetupAssistantResponse(input);
+        setAiResult(response);
+        logs.forEach(log => addLog(log));
+
+    } catch (error) {
+        console.error(error);
+        const errorMessage = error instanceof Error ? error.message : "An unknown error occurred."
+        setAiResult({ answer: `Sorry, there was an error: ${errorMessage}` });
+        toast({
+            title: "AI Assistant Error",
+            description: "Could not get a response from the AI. Check your primary Eden AI key if provided.",
+            variant: "destructive",
+        });
+        addLog({ service: 'System', level: 'error', message: `Setup Assistant failed: ${errorMessage}` });
+    } finally {
+        setAiIsLoading(false);
+    }
 }
 
 
