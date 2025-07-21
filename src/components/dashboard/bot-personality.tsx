@@ -1,0 +1,218 @@
+
+"use client";
+
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Bot, PlusCircle, Trash2, GripVertical, EyeOff, Save, Smile } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useToast } from '@/hooks/use-toast';
+import { useLogs } from '@/context/LogContext';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { PopOutButton } from './pop-out-button';
+import { useBotName } from '@/context/BotNameContext';
+import { Textarea } from '../ui/textarea';
+
+export type BotPersonalityType = {
+  id: string;
+  name: string;
+  prompt: string;
+}
+
+interface BotPersonalityProps {
+    onPopOut?: () => void;
+    isPoppedOut?: boolean;
+    onHide?: () => void;
+    dragHandleProps?: any;
+}
+
+export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHandleProps }: BotPersonalityProps) {
+  const { toast } = useToast();
+  const { addLog } = useLogs();
+  const { setBotName } = useBotName();
+
+  const [personalities, setPersonalities] = useState<BotPersonalityType[]>([]);
+  const [selectedPersonalityId, setSelectedPersonalityId] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+        const savedPersonalities = localStorage.getItem('botPersonalities');
+        const loadedPersonalities = savedPersonalities ? JSON.parse(savedPersonalities) : [{id: 'default-1', name: 'Station AI', prompt: 'You are the AI for Apollo Station, the Space Mountain community\'s central command hub.'}];
+        setPersonalities(loadedPersonalities);
+
+        const savedSelectedId = localStorage.getItem('selectedPersonalityId');
+        const selectedId = savedSelectedId && loadedPersonalities.some((p: BotPersonalityType) => p.id === savedSelectedId) ? savedSelectedId : loadedPersonalities[0].id;
+        setSelectedPersonalityId(selectedId);
+        
+        const selectedPersonality = loadedPersonalities.find((p: BotPersonalityType) => p.id === selectedId);
+        if (selectedPersonality) {
+            setBotName(selectedPersonality.name);
+        }
+
+        addLog({ service: 'System', level: 'info', message: 'Bot Personality settings loaded.' });
+    } catch (error) {
+        console.error("Failed to load personality settings", error);
+        addLog({ service: 'System', level: 'error', message: 'Failed to load personality settings from local storage.', details: error instanceof Error ? error.stack : String(error) });
+    }
+  }, [setBotName, addLog]);
+  
+  const handlePersonalityChange = (field: 'name' | 'prompt', value: string) => {
+    if (!selectedPersonalityId) return;
+    const newPersonalities = personalities.map(p => {
+        if (p.id === selectedPersonalityId) {
+            return {...p, [field]: value};
+        }
+        return p;
+    });
+    setPersonalities(newPersonalities);
+    if (field === 'name') {
+        const selectedPersonality = newPersonalities.find(p => p.id === selectedPersonalityId);
+        if (selectedPersonality) {
+            setBotName(selectedPersonality.name);
+        }
+    }
+  };
+
+  const handleSelectPersonality = (id: string) => {
+    setSelectedPersonalityId(id);
+    const selectedPersonality = personalities.find(p => p.id === id);
+    if (selectedPersonality) {
+        setBotName(selectedPersonality.name);
+    }
+  };
+  
+  const handleAddNewPersonality = () => {
+    const newId = `personality-${Date.now()}`;
+    const newPersonality: BotPersonalityType = { id: newId, name: 'New Bot', prompt: ''};
+    const newPersonalities = [...personalities, newPersonality];
+    setPersonalities(newPersonalities);
+    setSelectedPersonalityId(newId);
+    setBotName(newPersonality.name);
+  };
+  
+  const handleDeletePersonality = () => {
+    if (personalities.length <= 1 || !selectedPersonalityId) {
+        toast({title: "Cannot Delete", description: "You must have at least one personality.", variant: "destructive"});
+        return;
+    }
+    const newPersonalities = personalities.filter(p => p.id !== selectedPersonalityId);
+    setPersonalities(newPersonalities);
+    const newSelectedId = newPersonalities[0].id;
+    setSelectedPersonalityId(newSelectedId);
+    setBotName(newPersonalities[0].name);
+  };
+  
+  const handleSaveChanges = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      localStorage.setItem('botPersonalities', JSON.stringify(personalities));
+      if(selectedPersonalityId) {
+          localStorage.setItem('selectedPersonalityId', selectedPersonalityId);
+      }
+      
+      const currentPersonality = personalities.find(p => p.id === selectedPersonalityId);
+      if (currentPersonality) {
+        localStorage.setItem('botPersonalityPrompt', currentPersonality.prompt);
+        localStorage.setItem('botName', currentPersonality.name);
+      }
+
+      toast({
+        title: "Personality Saved",
+        description: "Your bot's personality has been updated.",
+      });
+      addLog({ service: 'System', level: 'info', message: 'Bot personality saved by user.' });
+      window.dispatchEvent(new Event('storage'));
+    } catch (error) {
+      console.error("Failed to save personality settings", error);
+      toast({
+        title: "Save Failed",
+        description: "Could not save personality. Your browser might be blocking local storage.",
+        variant: "destructive",
+      });
+      addLog({ service: 'System', level: 'error', message: 'Failed to save personality settings.', details: error instanceof Error ? error.stack : String(error) });
+    }
+  };
+  
+  const selectedPersonality = personalities.find(p => p.id === selectedPersonalityId);
+
+  return (
+      <Card className="h-full flex flex-col">
+        <CardHeader>
+          <div className="flex justify-between items-start">
+            <div className="flex items-center gap-2 flex-grow">
+               {dragHandleProps && (
+                <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab">
+                  <GripVertical />
+                </Button>
+              )}
+              <div className='flex-grow'>
+                <CardTitle className="flex items-center gap-2 text-2xl">
+                  <Smile className="h-6 w-6 text-accent" />
+                  Bot Personality
+                </CardTitle>
+                <CardDescription>Customize your AI assistant's name and behavior.</CardDescription>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {!isPoppedOut && onHide && (
+                 <Button variant="ghost" size="icon" onClick={onHide}>
+                  <EyeOff className="h-4 w-4" />
+                </Button>
+              )}
+              {!isPoppedOut && onPopOut && <PopOutButton onClick={onPopOut} />}
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="flex-grow flex flex-col">
+          <form id="bot-personality-form" className="space-y-4 flex-grow flex flex-col" onSubmit={handleSaveChanges}>
+            <div className="space-y-2">
+                <Label>Chat Bot Personality</Label>
+                <div className="flex items-center gap-2">
+                     <Select value={selectedPersonalityId || ''} onValueChange={handleSelectPersonality}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select a personality..."/>
+                        </SelectTrigger>
+                        <SelectContent>
+                            {personalities.map(p => (
+                                <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <Button type="button" variant="outline" size="icon" onClick={handleAddNewPersonality}><PlusCircle className="h-4 w-4"/></Button>
+                    <Button type="button" variant="destructive" size="icon" onClick={handleDeletePersonality} disabled={personalities.length <= 1}><Trash2 className="h-4 w-4"/></Button>
+                </div>
+            </div>
+
+            <div className="space-y-2">
+                <Label htmlFor="bot-name">Bot Name</Label>
+                <Input 
+                    id="bot-name" 
+                    type="text" 
+                    placeholder="e.g., Station AI" 
+                    value={selectedPersonality?.name || ''} 
+                    onChange={(e) => handlePersonalityChange('name', e.target.value)} 
+                />
+            </div>
+            <div className="space-y-2 flex-grow flex flex-col">
+                <Label htmlFor="bot-prompt">System Prompt</Label>
+                <Textarea 
+                    id="bot-prompt" 
+                    placeholder="You are a helpful assistant." 
+                    value={selectedPersonality?.prompt || ''} 
+                    onChange={(e) => handlePersonalityChange('prompt', e.target.value)} 
+                    className="flex-grow"
+                />
+                <p className="text-xs text-muted-foreground">If this is empty, it will default to "You are a helpful assistant."</p>
+            </div>
+             <div className="flex justify-end pt-4 border-t mt-auto">
+                <Button type="submit" form="bot-personality-form">
+                  <Save className="mr-2 h-4 w-4" />
+                  Save Personality
+                </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+  );
+}

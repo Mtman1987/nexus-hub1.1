@@ -1,12 +1,11 @@
-
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { ShieldCheck, Save, LifeBuoy, Power, Bot, PlusCircle, Trash2, Link, Copy, Server, KeyRound, RefreshCw, Radio, GripVertical, EyeOff } from 'lucide-react';
-import React, { useState, useEffect } from 'react';
+import { ShieldCheck, Save, LifeBuoy, Power, Bot, PlusCircle, Trash2, Link, Copy, Server, KeyRound, RefreshCw, Radio, GripVertical, EyeOff, Lock, Unlock } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useLogs } from '@/context/LogContext';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -15,9 +14,11 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { PopOutButton } from './pop-out-button';
-import { useBotName } from '@/context/BotNameContext';
-import { Textarea } from '../ui/textarea';
-import { SetupDialog } from './setup-dialog';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+
+// You can change the vault password here
+const VAULT_PASSWORD = 'spcmtn';
+const UNLOCK_DURATION_MS = 5 * 60 * 1000; // 5 minutes
 
 export const settingKeys = [
   'botPersonalities', 'selectedPersonalityId', 'edenApiKey', 'edenAiProvider', 'edenAiModel', 'googleApiKey', 'googleModelName',
@@ -142,7 +143,8 @@ const ServiceStatusToggle: React.FC<{
   isConfigured: boolean;
   providerStatus: ProviderStatus;
   onStatusChange: (providerId: ProviderId, enabled: boolean) => void;
-}> = ({ providerId, isConfigured, providerStatus, onStatusChange }) => {
+  isLocked: boolean;
+}> = ({ providerId, isConfigured, providerStatus, onStatusChange, isLocked }) => {
   const isEnabled = providerStatus[providerId] === 'enabled';
   const lightColor = !isConfigured ? 'bg-status-neutral' : isEnabled ? 'bg-status-positive' : 'bg-destructive';
 
@@ -157,7 +159,7 @@ const ServiceStatusToggle: React.FC<{
           id={`${providerId}-status`}
           checked={isEnabled}
           onCheckedChange={(checked) => onStatusChange(providerId, checked)}
-          disabled={!isConfigured}
+          disabled={!isConfigured || isLocked}
         />
         <div className="flex items-center gap-2">
           <div className={cn("h-3 w-3 rounded-full", lightColor)}></div>
@@ -174,24 +176,23 @@ const ServiceStatusToggle: React.FC<{
 interface ApiSettingsProps {
     onPopOut?: () => void;
     isPoppedOut?: boolean;
-    setBotName?: (name: string) => void;
     onHide?: () => void;
     dragHandleProps?: any;
 }
 
-export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setContextBotName, onHide, dragHandleProps }: ApiSettingsProps) {
+export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleProps }: ApiSettingsProps) {
   const { toast } = useToast();
   const [settings, setSettings] = useState<Settings>(defaultSettings);
   const [providerStatus, setProviderStatus] = useState<ProviderStatus>(defaultProviderStatus);
   const { addLog } = useLogs();
-  const [openAccordions, setOpenAccordions] = useState<string[]>(['bot-personality', 'eden', 'discord']);
-  const [showSetup, setShowSetup] = useState(false);
-  
-  const { setBotName: contextSetBotName } = useBotName();
-  const setBotName = setContextBotName || contextSetBotName;
+  const [openAccordions, setOpenAccordions] = useState<string[]>(['eden', 'discord']);
 
-  const [personalities, setPersonalities] = useState<BotPersonality[]>([]);
-  const [selectedPersonalityId, setSelectedPersonalityId] = useState<string | null>(null);
+  const [isLocked, setIsLocked] = useState(true);
+  const [password, setPassword] = useState('');
+  const [unlockTimestamp, setUnlockTimestamp] = useState<number | null>(null);
+  const [timeLeft, setTimeLeft] = useState(0);
+  const lockTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const countdownRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     try {
@@ -206,12 +207,6 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
         }
         
         let savedConnections = localStorage.getItem('nexusConnectConnections');
-        if (!savedConnections && typeof window !== 'undefined') {
-            const selfUrl = `${window.location.protocol}//${window.location.host}/api/nexus-connect`;
-            savedConnections = JSON.stringify([selfUrl]); 
-            localStorage.setItem('nexusConnectConnections', savedConnections); 
-        }
-
         if (savedConnections) {
             loadedSettings.nexusConnectConnections = JSON.parse(savedConnections);
         }
@@ -234,94 +229,70 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
         }
 
         const finalSettings = { ...defaultSettings, ...loadedSettings };
-        if (!finalSettings.streamerbotWebhookUrl) {
-            finalSettings.streamerbotWebhookUrl = `${window.location.protocol}//${window.location.host}/api/streamerbot-relay`;
-        }
-        if (!finalSettings.nexusConnectWebhookUrl) {
-          finalSettings.nexusConnectWebhookUrl = `${window.location.protocol}//${window.location.host}/api/nexus-connect`;
-        }
         setSettings(finalSettings);
-
-        const savedPersonalities = localStorage.getItem('botPersonalities');
-        const loadedPersonalities = savedPersonalities ? JSON.parse(savedPersonalities) : [{id: 'default-1', name: 'Station AI', prompt: 'You are the AI for Apollo Station, the Space Mountain community\'s central command hub.'}];
-        setPersonalities(loadedPersonalities);
-
-        const savedSelectedId = localStorage.getItem('selectedPersonalityId');
-        const selectedId = savedSelectedId && loadedPersonalities.some((p: BotPersonality) => p.id === savedSelectedId) ? savedSelectedId : loadedPersonalities[0].id;
-        setSelectedPersonalityId(selectedId);
-        
-        const selectedPersonality = loadedPersonalities.find((p: BotPersonality) => p.id === selectedId);
-        if (selectedPersonality && setBotName) {
-            setBotName(selectedPersonality.name);
-        }
-
         addLog({ service: 'System', level: 'info', message: 'API Key Vault settings loaded from local storage.' });
     } catch (error) {
         console.error("Failed to load settings from local storage", error);
         addLog({ service: 'System', level: 'error', message: 'Failed to load settings from local storage.', details: error instanceof Error ? error.stack : String(error) });
     }
-  }, [setBotName, addLog]);
+  }, [addLog]);
+  
+  // Timer effect
+  useEffect(() => {
+    if (unlockTimestamp) {
+        countdownRef.current = setInterval(() => {
+            const now = Date.now();
+            const remaining = unlockTimestamp - now;
+            if (remaining > 0) {
+                setTimeLeft(Math.ceil(remaining / 1000));
+            } else {
+                setIsLocked(true);
+                setUnlockTimestamp(null);
+                setPassword('');
+                toast({ title: "Vault Locked", description: "The vault has been automatically locked due to inactivity." });
+            }
+        }, 1000);
+    }
+    return () => {
+        if(countdownRef.current) clearInterval(countdownRef.current);
+    }
+  }, [unlockTimestamp, toast]);
+
+  useEffect(() => {
+    return () => { // Cleanup timers on unmount
+      if (lockTimerRef.current) clearTimeout(lockTimerRef.current);
+      if (countdownRef.current) clearInterval(countdownRef.current);
+    }
+  }, []);
+
+  const handleUnlock = () => {
+    if (password === VAULT_PASSWORD) {
+        setIsLocked(false);
+        const newUnlockTimestamp = Date.now() + UNLOCK_DURATION_MS;
+        setUnlockTimestamp(newUnlockTimestamp);
+        toast({ title: "Vault Unlocked", description: "You can now edit settings for the next 5 minutes." });
+        
+        lockTimerRef.current = setTimeout(() => {
+            setIsLocked(true);
+            setUnlockTimestamp(null);
+            setPassword('');
+            toast({ title: "Vault Locked", description: "The vault has been automatically locked." });
+        }, UNLOCK_DURATION_MS);
+    } else {
+        toast({ title: "Incorrect Password", variant: "destructive" });
+    }
+  }
 
   const handleInputChange = (key: keyof typeof settings, value: string | string[]) => {
     setSettings(prev => ({ ...prev, [key]: value }));
   };
   
-  const handlePersonalityChange = (field: 'name' | 'prompt', value: string) => {
-    if (!selectedPersonalityId) return;
-    const newPersonalities = personalities.map(p => {
-        if (p.id === selectedPersonalityId) {
-            return {...p, [field]: value};
-        }
-        return p;
-    });
-    setPersonalities(newPersonalities);
-    if (field === 'name' && setBotName) {
-        const selectedPersonality = newPersonalities.find(p => p.id === selectedPersonalityId);
-        if (selectedPersonality) {
-            setBotName(selectedPersonality.name);
-        }
-    }
-  };
-
-  const handleSelectPersonality = (id: string) => {
-    setSelectedPersonalityId(id);
-    const selectedPersonality = personalities.find(p => p.id === id);
-    if (selectedPersonality && setBotName) {
-        setBotName(selectedPersonality.name);
-    }
-  };
-  
-  const handleAddNewPersonality = () => {
-    const newId = `personality-${Date.now()}`;
-    const newPersonality: BotPersonality = { id: newId, name: 'New Bot', prompt: ''};
-    const newPersonalities = [...personalities, newPersonality];
-    setPersonalities(newPersonalities);
-    setSelectedPersonalityId(newId);
-    if (setBotName) {
-        setBotName(newPersonality.name);
-    }
-  };
-  
-  const handleDeletePersonality = () => {
-    if (personalities.length <= 1 || !selectedPersonalityId) {
-        toast({title: "Cannot Delete", description: "You must have at least one personality.", variant: "destructive"});
-        return;
-    }
-    const newPersonalities = personalities.filter(p => p.id !== selectedPersonalityId);
-    setPersonalities(newPersonalities);
-    setSelectedPersonalityId(newPersonalities[0].id);
-    if (setBotName) {
-      setBotName(newPersonalities[0].name);
-    }
-  };
-
   const handleModelChange = (key: keyof Settings, value: string | undefined) => {
     handleInputChange(key as SettingsObjectKey, value || '');
   };
 
   const handleEdenProviderChange = (value: string) => {
       handleInputChange('edenAiProvider', value);
-      // Reset model when provider changes
       const defaultModelForProvider = edenProviderModels[value]?.[0]?.value;
       handleInputChange('edenAiModel', defaultModelForProvider || '');
   }
@@ -380,21 +351,10 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
           }
       });
       
-      localStorage.setItem('botPersonalities', JSON.stringify(personalities));
-      if(selectedPersonalityId) {
-          localStorage.setItem('selectedPersonalityId', selectedPersonalityId);
-      }
-      
       localStorage.setItem('providerStatus', JSON.stringify(providerStatus));
       localStorage.setItem('fallbackStrategy', JSON.stringify(FALLBACK_ORDER));
       localStorage.setItem('apiSettingsOpen', JSON.stringify(openAccordions));
       
-      const currentPersonality = personalities.find(p => p.id === selectedPersonalityId);
-      if (currentPersonality) {
-        localStorage.setItem('botPersonalityPrompt', currentPersonality.prompt);
-        localStorage.setItem('botName', currentPersonality.name);
-      }
-
       toast({
         title: "Configuration Saved",
         description: "Your API keys and settings have been saved locally.",
@@ -412,7 +372,6 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
     }
   };
   
-  const selectedPersonality = personalities.find(p => p.id === selectedPersonalityId);
   const copyToClipboard = (text: string) => {
     if(!text) return;
     navigator.clipboard.writeText(text).then(() => {
@@ -423,10 +382,10 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
   };
 
   const currentEdenModels = edenProviderModels[settings.edenAiProvider || ''] || [];
+  const timeFormatter = new Intl.DateTimeFormat('en', { minute: '2-digit', second: '2-digit' });
 
   return (
     <>
-      <SetupDialog open={showSetup} onOpenChange={setShowSetup} />
       <Card className="h-full flex flex-col">
         <CardHeader>
           <div className="flex justify-between items-start">
@@ -445,10 +404,6 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={() => setShowSetup(true)}>
-                  <LifeBuoy className="mr-2 h-4 w-4" />
-                  Onboarding
-              </Button>
               {!isPoppedOut && onHide && (
                  <Button variant="ghost" size="icon" onClick={onHide}>
                   <EyeOff className="h-4 w-4" />
@@ -459,56 +414,35 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
           </div>
         </CardHeader>
         <CardContent className="flex-grow overflow-hidden flex flex-col">
+          <div className="mb-4 p-4 border rounded-lg bg-background">
+            <Label htmlFor="vault-password">Vault Password</Label>
+            <div className="flex items-center gap-2 mt-1">
+                <Input 
+                    id="vault-password"
+                    type="password"
+                    placeholder="Enter password to unlock"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleUnlock()}
+                    disabled={!isLocked}
+                />
+                <Button onClick={handleUnlock} disabled={!isLocked}>
+                    <Unlock className="h-4 w-4" />
+                </Button>
+            </div>
+            {!isLocked && (
+                 <Alert variant="default" className="mt-4">
+                    <Unlock className="h-4 w-4" />
+                    <AlertTitle>Vault Unlocked</AlertTitle>
+                    <AlertDescription>
+                       Vault will automatically lock in {timeFormatter.format(new Date(timeLeft * 1000))}.
+                    </AlertDescription>
+                </Alert>
+            )}
+          </div>
           <ScrollArea className="flex-grow pr-4">
             <form id="api-settings-form" className="space-y-4" onSubmit={handleSaveChanges}>
-              <div className="space-y-2">
-                  <Label>Chat Bot Personality</Label>
-                  <div className="flex items-center gap-2">
-                       <Select value={selectedPersonalityId || ''} onValueChange={handleSelectPersonality}>
-                          <SelectTrigger>
-                              <SelectValue placeholder="Select a personality..."/>
-                          </SelectTrigger>
-                          <SelectContent>
-                              {personalities.map(p => (
-                                  <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-                              ))}
-                          </SelectContent>
-                      </Select>
-                      <Button type="button" variant="outline" size="icon" onClick={handleAddNewPersonality}><PlusCircle className="h-4 w-4"/></Button>
-                      <Button type="button" variant="destructive" size="icon" onClick={handleDeletePersonality} disabled={personalities.length <= 1}><Trash2 className="h-4 w-4"/></Button>
-                  </div>
-              </div>
-
-
               <Accordion type="multiple" value={openAccordions} onValueChange={handleAccordionChange} className="w-full space-y-2">
-                  
-                  <AccordionItem value="bot-personality">
-                      <CustomAccordionTrigger icon={<Bot className="h-5 w-5"/>} title="Bot Personality" />
-                      <AccordionContent className="space-y-4 pt-4">
-                           <div className="space-y-2">
-                              <Label htmlFor="bot-name">Bot Name</Label>
-                              <Input 
-                                  id="bot-name" 
-                                  type="text" 
-                                  placeholder="e.g., Station AI" 
-                                  value={selectedPersonality?.name || ''} 
-                                  onChange={(e) => handlePersonalityChange('name', e.target.value)} 
-                              />
-                          </div>
-                          <div className="space-y-2">
-                              <Label htmlFor="bot-prompt">System Prompt</Label>
-                              <Textarea 
-                                  id="bot-prompt" 
-                                  placeholder="You are a helpful assistant." 
-                                  value={selectedPersonality?.prompt || ''} 
-                                  onChange={(e) => handlePersonalityChange('prompt', e.target.value)} 
-                                  rows={5}
-                              />
-                              <p className="text-xs text-muted-foreground">If this is empty, it will default to "You are a helpful assistant."</p>
-                          </div>
-                      </AccordionContent>
-                  </AccordionItem>
-                  
                   <AccordionItem value="remote-settings">
                     <CustomAccordionTrigger icon={<Server className="h-5 w-5"/>} title="Remote Access" />
                      <AccordionContent className="space-y-4 pt-4">
@@ -520,6 +454,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
                                  placeholder="e.g., https://your-tunnel.ngrok.io" 
                                  value={settings.remoteHubAddress || ''} 
                                  onChange={(e) => handleInputChange('remoteHubAddress', e.target.value)} 
+                                 disabled={isLocked}
                              />
                              <p className="text-xs text-muted-foreground">Enter your public tunneling URL (like ngrok) to control your local hub from this deployed UI.</p>
                          </div>
@@ -532,8 +467,9 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
                                      placeholder="A strong, unique password for security" 
                                      value={settings.remoteAccessSecret || ''} 
                                      onChange={(e) => handleInputChange('remoteAccessSecret', e.target.value)} 
+                                     disabled={isLocked}
                                   />
-                                  <Button type="button" variant="outline" size="icon" onClick={generateSecretKey} aria-label="Generate new secret key">
+                                  <Button type="button" variant="outline" size="icon" onClick={generateSecretKey} aria-label="Generate new secret key" disabled={isLocked}>
                                       <RefreshCw className="h-4 w-4"/>
                                   </Button>
                               </div>
@@ -549,11 +485,11 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
                       <AccordionContent className="space-y-4 pt-4">
                           <div className="space-y-2">
                               <Label htmlFor="eden-key">Eden AI API Key</Label>
-                              <Input id="eden-key" type="password" placeholder="Your primary key from Eden AI" value={settings.edenApiKey || ''} onChange={(e) => handleInputChange('edenApiKey', e.target.value)} />
+                              <Input id="eden-key" type="password" placeholder="Your primary key from Eden AI" value={settings.edenApiKey || ''} onChange={(e) => handleInputChange('edenApiKey', e.target.value)} disabled={isLocked}/>
                           </div>
                           <div className="space-y-2">
                               <Label htmlFor="eden-provider">Provider</Label>
-                              <Select value={settings.edenAiProvider || defaultModels.edenAiProvider} onValueChange={handleEdenProviderChange}>
+                              <Select value={settings.edenAiProvider || defaultModels.edenAiProvider} onValueChange={handleEdenProviderChange} disabled={isLocked}>
                                   <SelectTrigger><SelectValue placeholder="Select a provider..." /></SelectTrigger>
                                   <SelectContent>
                                       {Object.keys(edenProviderModels).map(provider => <SelectItem key={provider} value={provider}>{provider.charAt(0).toUpperCase() + provider.slice(1)}</SelectItem>)}
@@ -562,7 +498,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
                           </div>
                           <div className="space-y-2">
                               <Label htmlFor="eden-model">Model</Label>
-                              <Select value={settings.edenAiModel || ''} onValueChange={(value) => handleModelChange('edenAiModel', value)} disabled={!settings.edenAiProvider}>
+                              <Select value={settings.edenAiModel || ''} onValueChange={(value) => handleModelChange('edenAiModel', value)} disabled={!settings.edenAiProvider || isLocked}>
                                   <SelectTrigger><SelectValue placeholder="Select a model..." /></SelectTrigger>
                                   <SelectContent>
                                       {currentEdenModels.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
@@ -572,18 +508,17 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
                       </AccordionContent>
                   </AccordionItem>
 
-
                   <AccordionItem value="google">
                       <CustomAccordionTrigger icon={<Bot className="h-5 w-5"/>} title="Google AI (Fallback)" />
                       <AccordionContent className="space-y-4 pt-4">
-                          <ServiceStatusToggle providerId="google" isConfigured={!!settings.googleApiKey} providerStatus={providerStatus} onStatusChange={handleStatusChange} />
+                          <ServiceStatusToggle providerId="google" isConfigured={!!settings.googleApiKey} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
                           <div className="space-y-2">
                               <Label htmlFor="google-ai-key">Google AI API Key</Label>
-                              <Input id="google-ai-key" type="password" placeholder="Your Google AI API Key" value={settings.googleApiKey || ''} onChange={(e) => handleInputChange('googleApiKey', e.target.value)} />
+                              <Input id="google-ai-key" type="password" placeholder="Your Google AI API Key" value={settings.googleApiKey || ''} onChange={(e) => handleInputChange('googleApiKey', e.target.value)} disabled={isLocked}/>
                           </div>
                           <div className="space-y-2">
                               <Label htmlFor="google-model-name">Google AI Model</Label>
-                              <Select value={settings.googleModelName || defaultModels.googleModelName} onValueChange={(value) => handleModelChange('googleModelName', value)}>
+                              <Select value={settings.googleModelName || defaultModels.googleModelName} onValueChange={(value) => handleModelChange('googleModelName', value)} disabled={isLocked}>
                                   <SelectTrigger><SelectValue placeholder="Select a model..." /></SelectTrigger>
                                   <SelectContent>
                                       {modelOptions.google.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
@@ -596,14 +531,14 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
                   <AccordionItem value="openai">
                       <CustomAccordionTrigger icon={<Bot className="h-5 w-5"/>} title="OpenAI (Fallback)" />
                       <AccordionContent className="space-y-4 pt-4">
-                           <ServiceStatusToggle providerId="openai" isConfigured={!!settings.openaiApiKey} providerStatus={providerStatus} onStatusChange={handleStatusChange} />
+                           <ServiceStatusToggle providerId="openai" isConfigured={!!settings.openaiApiKey} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
                           <div className="space-y-2">
                               <Label htmlFor="openai-key">OpenAI API Key</Label>
-                              <Input id="openai-key" type="password" placeholder="Your OpenAI API Key" value={settings.openaiApiKey || ''} onChange={(e) => handleInputChange('openaiApiKey', e.target.value)} />
+                              <Input id="openai-key" type="password" placeholder="Your OpenAI API Key" value={settings.openaiApiKey || ''} onChange={(e) => handleInputChange('openaiApiKey', e.target.value)} disabled={isLocked}/>
                           </div>
                           <div className="space-y-2">
                               <Label htmlFor="openai-model-name">OpenAI Model</Label>
-                               <Select value={settings.openaiModelName || defaultModels.openaiModelName} onValueChange={(value) => handleModelChange('openaiModelName', value)}>
+                               <Select value={settings.openaiModelName || defaultModels.openaiModelName} onValueChange={(value) => handleModelChange('openaiModelName', value)} disabled={isLocked}>
                                   <SelectTrigger><SelectValue placeholder="Select a model..." /></SelectTrigger>
                                   <SelectContent>
                                       {modelOptions.openai.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
@@ -616,14 +551,14 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
                   <AccordionItem value="groq">
                       <CustomAccordionTrigger icon={<Bot className="h-5 w-5"/>} title="Groq (Fallback)" />
                       <AccordionContent className="space-y-4 pt-4">
-                          <ServiceStatusToggle providerId="groq" isConfigured={!!settings.groqApiKey} providerStatus={providerStatus} onStatusChange={handleStatusChange} />
+                          <ServiceStatusToggle providerId="groq" isConfigured={!!settings.groqApiKey} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
                           <div className="space-y-2">
                               <Label htmlFor="groq-key">Groq API Key</Label>
-                              <Input id="groq-key" type="password" placeholder="Your Groq API Key" value={settings.groqApiKey || ''} onChange={(e) => handleInputChange('groqApiKey', e.target.value)} />
+                              <Input id="groq-key" type="password" placeholder="Your Groq API Key" value={settings.groqApiKey || ''} onChange={(e) => handleInputChange('groqApiKey', e.target.value)} disabled={isLocked}/>
                           </div>
                           <div className="space-y-2">
                               <Label htmlFor="groq-model-name">Groq Model</Label>
-                              <Select value={settings.groqModelName || defaultModels.groqModelName} onValueChange={(value) => handleModelChange('groqModelName', value)}>
+                              <Select value={settings.groqModelName || defaultModels.groqModelName} onValueChange={(value) => handleModelChange('groqModelName', value)} disabled={isLocked}>
                                   <SelectTrigger><SelectValue placeholder="Select a model..." /></SelectTrigger>
                                   <SelectContent>
                                       {modelOptions.groq.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
@@ -636,14 +571,14 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
                    <AccordionItem value="discord">
                       <CustomAccordionTrigger icon={<Bot className="h-5 w-5"/>} title="Discord Integration" />
                       <AccordionContent className="space-y-4 pt-4">
-                          <ServiceStatusToggle providerId="discord" isConfigured={!!settings.discordWebhook || !!settings.discordToken} providerStatus={providerStatus} onStatusChange={handleStatusChange} />
+                          <ServiceStatusToggle providerId="discord" isConfigured={!!settings.discordWebhook || !!settings.discordToken} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
                           <div className="space-y-2">
                               <Label htmlFor="discord-token">Discord Bot Token (For Python Bot)</Label>
-                              <Input id="discord-token" type="password" placeholder="Needed to run the separate Python bot" value={settings.discordToken || ''} onChange={(e) => handleInputChange('discordToken', e.target.value)} />
+                              <Input id="discord-token" type="password" placeholder="Needed to run the separate Python bot" value={settings.discordToken || ''} onChange={(e) => handleInputChange('discordToken', e.target.value)} disabled={isLocked}/>
                           </div>
                           <div className="space-y-2">
                               <Label htmlFor="discord-webhook">Discord Webhook URL (For App to Send)</Label>
-                              <Input id="discord-webhook" type="password" placeholder="For sending messages from this app to Discord" value={settings.discordWebhook || ''} onChange={(e) => handleInputChange('discordWebhook', e.target.value)} />
+                              <Input id="discord-webhook" type="password" placeholder="For sending messages from this app to Discord" value={settings.discordWebhook || ''} onChange={(e) => handleInputChange('discordWebhook', e.target.value)} disabled={isLocked}/>
                           </div>
                       </AccordionContent>
                   </AccordionItem>
@@ -651,10 +586,10 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
                    <AccordionItem value="twitch">
                       <CustomAccordionTrigger icon={<Bot className="h-5 w-5"/>} title="Twitch Integration" />
                       <AccordionContent className="space-y-4 pt-4">
-                          <ServiceStatusToggle providerId="twitch" isConfigured={!!settings.twitchToken} providerStatus={providerStatus} onStatusChange={handleStatusChange} />
+                          <ServiceStatusToggle providerId="twitch" isConfigured={!!settings.twitchToken} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
                           <div className="space-y-2">
                               <Label htmlFor="twitch-token">Twitch Bot Token (Optional)</Label>
-                              <Input id="twitch-token" type="password" placeholder="For direct Twitch bot actions" value={settings.twitchToken || ''} onChange={(e) => handleInputChange('twitchToken', e.target.value)} />
+                              <Input id="twitch-token" type="password" placeholder="For direct Twitch bot actions" value={settings.twitchToken || ''} onChange={(e) => handleInputChange('twitchToken', e.target.value)} disabled={isLocked}/>
                           </div>
                       </AccordionContent>
                   </AccordionItem>
@@ -662,18 +597,18 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
                   <AccordionItem value="streamerbot">
                       <CustomAccordionTrigger icon={<Radio className="h-5 w-5"/>} title="Streamer.bot Integration" />
                       <AccordionContent className="space-y-4 pt-4">
-                          <ServiceStatusToggle providerId="streamerbot" isConfigured={true} providerStatus={providerStatus} onStatusChange={handleStatusChange} />
+                          <ServiceStatusToggle providerId="streamerbot" isConfigured={true} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
                           <div className="space-y-2">
                               <Label htmlFor="streamerbot-address">Server Address</Label>
-                              <Input id="streamerbot-address" type="text" placeholder="127.0.0.1" value={settings.streamerbotServerAddress || ''} onChange={(e) => handleInputChange('streamerbotServerAddress', e.target.value)} />
+                              <Input id="streamerbot-address" type="text" placeholder="127.0.0.1" value={settings.streamerbotServerAddress || ''} onChange={(e) => handleInputChange('streamerbotServerAddress', e.target.value)} disabled={isLocked}/>
                           </div>
                           <div className="space-y-2">
                               <Label htmlFor="streamerbot-port">Server Port</Label>
-                              <Input id="streamerbot-port" type="text" placeholder="9003" value={settings.streamerbotServerPort || ''} onChange={(e) => handleInputChange('streamerbotServerPort', e.target.value)} />
+                              <Input id="streamerbot-port" type="text" placeholder="9003" value={settings.streamerbotServerPort || ''} onChange={(e) => handleInputChange('streamerbotServerPort', e.target.value)} disabled={isLocked}/>
                           </div>
                           <div className="space-y-2">
                               <Label htmlFor="streamerbot-request-type">Request Type</Label>
-                              <Select value={settings.streamerbotRequestType || 'DoAction'} onValueChange={(value) => handleInputChange('streamerbotRequestType', value as string)}>
+                              <Select value={settings.streamerbotRequestType || 'DoAction'} onValueChange={(value) => handleInputChange('streamerbotRequestType', value as string)} disabled={isLocked}>
                                   <SelectTrigger><SelectValue placeholder="Select a request type..." /></SelectTrigger>
                                   <SelectContent>
                                       <SelectItem value="DoAction">Do Action</SelectItem>
@@ -685,19 +620,19 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
                           {settings.streamerbotRequestType === 'DoAction' && (
                               <div className="space-y-2">
                                   <Label htmlFor="streamerbot-action-name">Action Name</Label>
-                                  <Input id="streamerbot-action-name" type="text" placeholder="e.g., Apollo Station Message" value={settings.streamerbotActionName || ''} onChange={(e) => handleInputChange('streamerbotActionName', e.target.value)} />
+                                  <Input id="streamerbot-action-name" type="text" placeholder="e.g., Apollo Station Message" value={settings.streamerbotActionName || ''} onChange={(e) => handleInputChange('streamerbotActionName', e.target.value)} disabled={isLocked}/>
                               </div>
                           )}
                           {settings.streamerbotRequestType === 'SetGlobalVariable' && (
                               <div className="space-y-2">
                                   <Label htmlFor="streamerbot-variable-name">Variable Name</Label>
-                                  <Input id="streamerbot-variable-name" type="text" placeholder="e.g., spcmtnMessage" value={settings.streamerbotVariableName || ''} onChange={(e) => handleInputChange('streamerbotVariableName', e.target.value)} />
+                                  <Input id="streamerbot-variable-name" type="text" placeholder="e.g., spcmtnMessage" value={settings.streamerbotVariableName || ''} onChange={(e) => handleInputChange('streamerbotVariableName', e.target.value)} disabled={isLocked}/>
                                   <p className="text-xs text-muted-foreground">The message from Unified Chat will be set as the value for this variable.</p>
                               </div>
                           )}
                           <div className="space-y-2">
                               <Label htmlFor="streamerbot-webhook-url">Streamer.bot Webhook URL (for events)</Label>
-                              <Input id="streamerbot-webhook-url" type="text" value={settings.streamerbotWebhookUrl || ''} onChange={(e) => handleInputChange('streamerbotWebhookUrl', e.target.value)} />
+                              <Input id="streamerbot-webhook-url" type="text" value={settings.streamerbotWebhookUrl || ''} onChange={(e) => handleInputChange('streamerbotWebhookUrl', e.target.value)} disabled={isLocked}/>
                           </div>
                       </AccordionContent>
                   </AccordionItem>
@@ -705,12 +640,12 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
                    <AccordionItem value="nexusconnect">
                       <CustomAccordionTrigger icon={<Link className="h-5 w-5"/>} title="Nexus Connect" />
                       <AccordionContent className="space-y-4 pt-4">
-                          <ServiceStatusToggle providerId="nexusconnect" isConfigured={true} providerStatus={providerStatus} onStatusChange={handleStatusChange} />
+                          <ServiceStatusToggle providerId="nexusconnect" isConfigured={true} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
                           <div className="space-y-2">
                               <Label htmlFor="nexus-webhook-url">Your Inbound Webhook URL (Share this)</Label>
                               <div className="flex items-center gap-2">
-                                  <Input id="nexus-webhook-url" type="text" value={settings.nexusConnectWebhookUrl || ''} readOnly />
-                                  <Button type="button" variant="outline" size="icon" onClick={() => copyToClipboard(settings.nexusConnectWebhookUrl || '')}><Copy className="h-4 w-4"/></Button>
+                                  <Input id="nexus-webhook-url" type="text" value={settings.nexusConnectWebhookUrl || ''} readOnly disabled={isLocked}/>
+                                  <Button type="button" variant="outline" size="icon" onClick={() => copyToClipboard(settings.nexusConnectWebhookUrl || '')} disabled={isLocked}><Copy className="h-4 w-4"/></Button>
                               </div>
                           </div>
                           <div className="space-y-2">
@@ -723,12 +658,13 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
                                               placeholder="Enter another user's webhook URL"
                                               value={conn}
                                               onChange={(e) => handleConnectionChange(index, e.target.value)}
+                                              disabled={isLocked}
                                           />
-                                          <Button type="button" variant="destructive" size="icon" onClick={() => handleRemoveConnection(index)}><Trash2 className="h-4 w-4"/></Button>
+                                          <Button type="button" variant="destructive" size="icon" onClick={() => handleRemoveConnection(index)} disabled={isLocked}><Trash2 className="h-4 w-4"/></Button>
                                       </div>
                                   ))}
                               </div>
-                              <Button type="button" variant="outline" size="sm" onClick={handleAddConnection}><PlusCircle className="mr-2 h-4 w-4"/>Add Connection</Button>
+                              <Button type="button" variant="outline" size="sm" onClick={handleAddConnection} disabled={isLocked}><PlusCircle className="mr-2 h-4 w-4"/>Add Connection</Button>
                           </div>
                       </AccordionContent>
                   </AccordionItem>
@@ -736,7 +672,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, setBotName: setCont
             </form>
           </ScrollArea>
           <div className="flex justify-end pt-4 border-t mt-auto">
-            <Button type="submit" form="api-settings-form">
+            <Button type="submit" form="api-settings-form" disabled={isLocked}>
               <Save className="mr-2 h-4 w-4" />
               Save Configuration
             </Button>

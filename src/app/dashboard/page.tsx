@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from 'react';
@@ -12,7 +11,7 @@ import { LogViewer } from '@/components/dashboard/log-viewer';
 import { Fallback } from '@/components/dashboard/fallback';
 import { ApiSettings } from '@/components/dashboard/api-settings';
 import { UnifiedChat } from '@/components/dashboard/unified-chat';
-import { Bot, Twitch, Globe, Radio, Settings, Puzzle, Save, Trash2, Bookmark, Eye, LayoutGrid, EyeOff, ScrollText, Clock } from 'lucide-react';
+import { Bot, Twitch, Globe, Radio, Settings, Puzzle, Save, Trash2, Bookmark, Eye, LayoutGrid, EyeOff, ScrollText, Clock, Smile } from 'lucide-react';
 import DiscordLogo from '@/components/icons/discord-logo';
 import { SITES } from '@/lib/sites';
 import { Button } from '@/components/ui/button';
@@ -22,13 +21,13 @@ import { WebsiteViewer } from '@/components/dashboard/website-viewer';
 import { FallbackStrategy } from '@/components/dashboard/fallback-strategy';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useLogs } from '@/context/LogContext';
-import { useBotName } from '@/context/BotNameContext';
 import { Sidebar } from '@/components/layout/sidebar';
 import { MobileSidebar } from '@/components/layout/mobile-sidebar';
 import { SavedItems } from '@/components/dashboard/saved-items';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LoreWeaver } from '@/components/dashboard/lore-weaver';
 import { TimeZoneConverter } from '@/components/dashboard/timezone-converter';
+import { BotPersonality } from '@/components/dashboard/bot-personality';
 
 type WindowRecord = {
   id: string;
@@ -40,6 +39,7 @@ const OPEN_POPOUTS_KEY = 'apollo-open-popouts';
 // Define all modules with their components
 const ALL_MODULES_CONFIG = [
     { id: 'unifiedChat', title: 'Unified Chat', component: UnifiedChat},
+    { id: 'botPersonality', title: 'Bot Personality', component: BotPersonality },
     { id: 'apiSettings', title: 'API Key Vault', component: ApiSettings },
     { id: 'logViewer', title: 'Captain\'s Log', component: LogViewer },
     { id: 'timeZoneConverter', title: 'Time Zone Converter', component: TimeZoneConverter },
@@ -69,7 +69,6 @@ const SortableModule = ({ id, children }: { id: string, children: React.ReactNod
 
 export default function DashboardPage() {
   const mainSite = SITES['main'];
-  const { botName, setBotName } = useBotName();
   const { toast } = useToast();
   const { addLog } = useLogs();
   
@@ -266,7 +265,6 @@ export default function DashboardPage() {
                                                     onPopOut={() => handlePopOut(id, moduleConfig.title)}
                                                     onHide={() => handleHideModule(id)}
                                                     isPoppedOut={false}
-                                                    {...(id === 'apiSettings' ? { botName, setBotName } : {})}
                                                 />
                                             </div>
                                         </SortableModule>
