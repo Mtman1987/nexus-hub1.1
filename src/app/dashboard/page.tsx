@@ -69,15 +69,22 @@ type ToolModule = {
   component: React.ComponentType<{ isPoppedOut?: boolean }>;
 };
 
-const allToolModules: ToolModule[] = [
+// Explicitly define rows for the grid
+const topRowModules: ToolModule[] = [
     { id: 'unifiedChat', title: 'Unified Chat', component: UnifiedChat},
     { id: 'apiSettings', title: 'API Key Vault', component: ApiSettings },
     { id: 'logViewer', title: 'Captain\'s Log', component: LogViewer },
+];
+
+const bottomRowModules: ToolModule[] = [
     { id: 'fallback', title: 'Intelligent Fallback', component: Fallback },
     { id: 'fallbackStrategy', title: 'Fallback Strategy', component: FallbackStrategy},
     { id: 'userRoles', title: 'Access Control', component: UserRoles },
     { id: 'websiteViewer', title: 'Website Viewer', component: WebsiteViewer },
 ];
+
+const allToolModules = [...topRowModules, ...bottomRowModules];
+
 
 export default function DashboardPage() {
   const mainSite = SITES['main'];
@@ -167,6 +174,22 @@ export default function DashboardPage() {
   ];
   
   const visibleServiceModules = serviceModules.filter(m => m.visible);
+  
+  const renderModules = (modules: ToolModule[]) => {
+      return modules
+        .filter(m => visibleModules[m.id] && !poppedOutModules.includes(m.id))
+        .map(m => (
+        <div key={m.id} className="h-full relative">
+            {React.createElement(m.component, {
+                isPoppedOut: false,
+            })}
+            <div className="absolute top-3 right-3">
+            <PopOutButton onClick={() => handlePopOut(m.id)} />
+            </div>
+        </div>
+    ));
+  }
+
 
   return (
     <>
@@ -176,7 +199,7 @@ export default function DashboardPage() {
       
         {allToolModules.map(m =>
             poppedOutModules.includes(m.id) && (
-            <PopOutWindow key={m.id} onClose={() => handlePopIn(m.id)} title={m.title}>
+            <PopOutWindow key={`popout-${m.id}`} onClose={() => handlePopIn(m.id)} title={m.title}>
                 {React.createElement(m.component, { isPoppedOut: true })}
             </PopOutWindow>
             )
@@ -248,24 +271,21 @@ export default function DashboardPage() {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
                 {visibleServiceModules.map(m => <div key={m.id}>{m.component}</div>)}
             </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                {allToolModules
-                    .filter(m => visibleModules[m.id] && !poppedOutModules.includes(m.id))
-                    .map(m => (
-                    <div key={m.id} className="h-full relative">
-                        {React.createElement(m.component, {
-                            isPoppedOut: false,
-                        })}
-                        <div className="absolute top-3 right-3">
-                        <PopOutButton onClick={() => handlePopOut(m.id)} />
-                        </div>
-                    </div>
-                ))}
+            
+            <div className="flex-grow grid grid-cols-1 grid-rows-2 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {renderModules(topRowModules)}
+                </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
+                    {renderModules(bottomRowModules)}
+                </div>
             </div>
+
         </div>
       </main>
     </div>
     </>
   );
 }
+
+    
