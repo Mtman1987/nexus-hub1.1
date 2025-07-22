@@ -49,15 +49,20 @@ const defaultModuleOrder = ALL_MODULES_CONFIG.map(m => m.id);
 
 // Wrapper component to make modules sortable
 const SortableModule = ({ id, children }: { id: string, children: React.ReactNode }) => {
-    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
-    const style = {
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ 
+      id,
+      strategy: verticalListSortingStrategy, // Use a simple strategy
+    });
+    const style: React.CSSProperties = {
         transform: CSS.Transform.toString(transform),
-        transition,
+        transition: transition || 'transform 0.25s ease',
+        opacity: isDragging ? 0.8 : 1,
+        zIndex: isDragging ? 10 : 'auto',
     };
     // Pass the listeners to the child component as dragHandleProps
     return (
-        <div ref={setNodeRef} style={style} {...attributes} className="h-[400px] xl:h-[450px]">
-            {React.cloneElement(children as React.ReactElement, { dragHandleProps: listeners })}
+        <div ref={setNodeRef} style={style} className="h-[400px] xl:h-[450px]">
+             {React.cloneElement(children as React.ReactElement, { dragHandleProps: listeners, ...attributes })}
         </div>
     );
 };
@@ -259,7 +264,7 @@ export default function DashboardPage() {
                                     const ModuleComponent = moduleConfig.component;
                                     return (
                                         <SortableModule key={id} id={id}>
-                                           <ModuleComponent 
+                                            <ModuleComponent 
                                                 onPopOut={() => handlePopOut(id, moduleConfig.title)}
                                                 onHide={() => handleHideModule(id)}
                                             />
