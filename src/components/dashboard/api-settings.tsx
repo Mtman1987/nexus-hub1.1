@@ -90,6 +90,14 @@ const defaultSettings: Partial<Settings> = {
   remoteAccessSecret: '',
 }
 
+const PROVIDER_CONFIG = {
+    eden: { name: 'Eden AI' },
+    google: { name: 'Google AI' },
+    openai: { name: 'OpenAI' },
+    groq: { name: 'Groq' },
+};
+
+
 const FALLBACK_ORDER: AiProviderId[] = ['google', 'openai', 'groq'];
 
 const CustomAccordionTrigger: React.FC<React.PropsWithChildren<{icon: React.ReactNode, title: string}>> = ({ children, icon, title }) => (
