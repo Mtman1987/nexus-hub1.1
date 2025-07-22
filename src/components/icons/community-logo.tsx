@@ -9,8 +9,8 @@ export function CommunityLogo(props: ComponentProps<'div'>) {
         <Image 
             src="/community-logo.png" 
             alt="Space Mountain Community Logo" 
-            width={128} 
-            height={64}
+            width={256} 
+            height={128}
             className={cn("h-auto w-full", props.className)}
             priority
         />

@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://firebasestudio.com/static/images/projects/apollo-station/community-logo.png" alt="Apollo Station Community Logo" width="128"/>
+  <img src="https://firebasestudio.com/static/images/projects/apollo-station/community-logo.png" alt="Apollo Station Community Logo" width="256"/>
 </div>
 
 # Apollo Station
