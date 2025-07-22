@@ -1,35 +1,25 @@
 
 'use server';
 /**
- * @fileOverview An AI flow for recommending the best provider for a given task.
+ * @fileOverview An AI flow for generating code snippets from an instruction.
  *
- * - intelligentFallbackFlow - The main function to get a recommendation.
+ * - intelligentFallbackFlow - The main function to get a code snippet.
  */
-import type { IntelligentFallbackInput, IntelligentFallbackOutput, FlowLog } from '@/ai/types';
+import type { CodeGeneratorInput, CodeGeneratorOutput, FlowLog } from '@/ai/types';
 import { callEdenAiChat } from '../utils/eden-ai';
 
-const getSystemPrompt = (providers: string[]) => `You are an expert AI routing system. Your job is to recommend the best AI provider for a specific task based on the user's prompt and goal.
+const getSystemPrompt = (language: string) => `You are an expert code generation AI. Your task is to write a clean, efficient, and well-documented code snippet based on the user's instruction. The code should be written in ${language}.
 
-You have been configured with the following providers: ${providers.join(', ')}.
-
-Analyze the prompt and goal. Based on the available providers, recommend the single best one for this task. Your recommendation should be based on the general strengths of the providers (e.g., Google Gemini for general knowledge and speed, Groq for fastest response, OpenAI for creative and complex writing). 
-
-IMPORTANT: Your response MUST be a valid JSON object with two keys: "recommendation" and "reasoning". Do not include any other text or formatting.
-Example: {"recommendation": "Google AI", "reasoning": "This task requires up-to-date information, which Google's model excels at."}
+IMPORTANT: Your response MUST be a valid JSON object with a single key: "generated_code". The value should be the code snippet as a string. Do not include any other text, markdown formatting like \`\`\`, or explanations.
 `;
 
 
 export async function intelligentFallbackFlow(
-  input: IntelligentFallbackInput
-): Promise<{response: IntelligentFallbackOutput, logs: FlowLog[]}> {
+  input: CodeGeneratorInput
+): Promise<{response: CodeGeneratorOutput, logs: FlowLog[]}> {
     
-    // Filter to only enabled providers for the prompt
-    const enabledProviders = Object.entries(input.config.providerStatus || {})
-        .filter(([, status]) => status === 'enabled')
-        .map(([key]) => key);
-
-    const systemPrompt = getSystemPrompt(enabledProviders);
-    const userPrompt = `User's Goal: "${input.goal}"\nUser's Prompt: "${input.prompt}"`;
+    const systemPrompt = getSystemPrompt(input.language);
+    const userPrompt = `Instruction: "${input.instruction}"\n\nPrompt/Context: "${input.prompt || 'No additional context provided.'}"`;
 
     const { text, logs } = await callEdenAiChat(
         input.config, 
@@ -38,15 +28,15 @@ export async function intelligentFallbackFlow(
             { role: 'user', text: userPrompt }
         ],
         true, // Request JSON response format
-        'google', // Force provider
-        'gemini-1.5-flash-latest' // Force model
+        input.config.edenAiProvider || 'openai',
+        (input.config.edenAiModel ? input.config.edenAiModel.split('/')[1] : undefined) || 'gpt-4o'
     );
     
     try {
-        const parsedResponse = JSON.parse(text) as IntelligentFallbackOutput;
+        const parsedResponse = JSON.parse(text);
         return { response: parsedResponse, logs };
     } catch (error) {
-        logs.push({ service: 'System', level: 'error', message: 'Failed to parse JSON response from AI for fallback.', details: `Raw AI response: ${text}` });
+        logs.push({ service: 'System', level: 'error', message: 'Failed to parse JSON response from AI for code generation.', details: `Raw AI response: ${text}` });
         throw new Error("AI returned an invalid JSON object.");
     }
 }
