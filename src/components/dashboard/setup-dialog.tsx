@@ -62,8 +62,8 @@ const steps = [
     topic: "Twitch"
   },
   {
-    title: "Streamer.bot & Speaker.bot (Optional)",
-    description: "Enter the server details for your local Streamer.bot and Speaker.bot instances.",
+    title: "Streamer.bot (Optional)",
+    description: "Enter the address and port for your local Streamer.bot WebSocket server. This should usually be 127.0.0.1.",
     isGroup: true,
     topic: "Streamer.bot"
   },
@@ -302,5 +302,3 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
     </Dialog>
   );
 }
-
-    
