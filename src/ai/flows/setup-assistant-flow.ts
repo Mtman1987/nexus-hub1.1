@@ -24,6 +24,14 @@ IMPORTANT: The final transmission must be a valid JSON object with a single key:
 export async function setupAssistantFlow(input: SetupAssistantInput): Promise<{response: SetupAssistantOutput, logs: FlowLog[]}> {
     
     const userPrompt = `The crew member is focused on the following system: ${input.topic}\nTheir specific query is: "${input.question}"`;
+    const initialLogs: FlowLog[] = [];
+
+    initialLogs.push({ 
+        service: 'System', 
+        level: 'info', 
+        message: 'Constructing prompts for Setup Assistant.',
+        details: `SYSTEM PROMPT:\n${systemPrompt}\n\nUSER PROMPT:\n${userPrompt}`
+    });
     
     const { text, logs } = await callEdenAiChat(
         input.config,
@@ -36,11 +44,13 @@ export async function setupAssistantFlow(input: SetupAssistantInput): Promise<{r
         'gemini-1.5-flash-latest' // Force model
     );
     
+    const allLogs = [...initialLogs, ...logs];
+    
     try {
         const parsedResponse = JSON.parse(text);
-        return { response: parsedResponse, logs };
+        return { response: parsedResponse, logs: allLogs };
     } catch (e) {
-        logs.push({ service: 'System', level: 'error', message: 'Failed to parse JSON from AI in setup assistant.', details: `Raw AI Response: ${text}` });
+        allLogs.push({ service: 'System', level: 'error', message: 'Failed to parse JSON from AI in setup assistant.', details: `Raw AI Response: ${text}` });
         throw new Error("The AI returned an invalid response.");
     }
 }
