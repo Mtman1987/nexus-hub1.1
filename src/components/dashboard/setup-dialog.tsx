@@ -92,6 +92,8 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
           localStorage.setItem(key, value);
         }
       });
+      // Set a default model so the app works out of the box
+      localStorage.setItem('edenAiModel', 'openai/gpt-4o');
       localStorage.setItem('vaultPassword', password);
 
       toast({
@@ -137,7 +139,13 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
     setAiResult(null);
 
     try {
-        const tempConfigForAI = { edenApiKey: apiKeys.edenApiKey };
+        // We provide a temporary config for the AI helper call.
+        // The flow itself forces the use of a specific cost-effective model.
+        const tempConfigForAI = { 
+            edenApiKey: apiKeys.edenApiKey,
+            // Provide a default model for the call structure, even though the flow overrides it.
+            edenAiModel: 'google/gemini-1.5-flash-latest',
+        };
         const input: SetupAssistantInput = {
             topic: steps[currentStep].topic,
             question: aiQuestion,
