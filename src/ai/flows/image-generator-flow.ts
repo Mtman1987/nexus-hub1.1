@@ -17,13 +17,14 @@ async function selectBestProvider(
     prompt: string
 ): Promise<{ provider: string, logs: FlowLog[] }> {
     const logs: FlowLog[] = [];
-    const systemPrompt = `You are an expert AI art director. Your job is to select the best image generation provider for a given prompt. The available providers are "openai", "stabilityai", and "bytedance".
+    const systemPrompt = `You are an expert AI art director. Your job is to select the best image generation provider for a given prompt. The available providers are "openai", "stabilityai", "bytedance", and "replicate".
 
 - Choose "openai" for complex scenes, natural language, and brand-safe content.
 - Choose "stabilityai" for general purpose, creative, and photorealistic images.
 - Choose "bytedance" for high-quality anime, manga, or stylized character art.
+- Choose "replicate" for accessing a wide variety of open-source models and specific, experimental artistic styles.
 
-Analyze the user's prompt and decide which of the three providers is the best fit. Your response MUST be a valid JSON object with a single key "provider".
+Analyze the user's prompt and decide which of the providers is the best fit. Your response MUST be a valid JSON object with a single key "provider".
 Example: {"provider": "stabilityai"}`;
 
     const userPrompt = `User's prompt: "${prompt}"`;
@@ -40,7 +41,7 @@ Example: {"provider": "stabilityai"}`;
         logs.push(...chatLogs);
         const result = JSON.parse(text);
         const provider = result.provider;
-        if (!['openai', 'stabilityai', 'bytedance'].includes(provider)) {
+        if (!['openai', 'stabilityai', 'bytedance', 'replicate'].includes(provider)) {
             throw new Error(`AI returned an invalid provider: ${provider}`);
         }
         logs.push({ service: 'Eden', level: 'info', message: `Selected provider: ${provider}` });
