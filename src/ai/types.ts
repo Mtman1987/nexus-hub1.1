@@ -68,12 +68,16 @@ export interface LoreWeaverOutput {
 // --- Image Generator ---
 export interface ImageGeneratorInput {
     prompt: string;
+    provider: string;
+    resolution: string;
+    numImages: number;
+    optimizePrompt: boolean;
 }
 
 export interface ImageGeneratorOutput {
-    imageUrl: string;
-    enhancedPrompt: string;
-    selectedProvider?: string;
+    images: { image_resource_url: string }[];
+    enhancedPrompt?: string;
+    selectedProvider: string;
 }
 
 

@@ -2,17 +2,52 @@
 'use server';
 /**
  * @fileOverview An AI flow for generating images from a text prompt.
- * It directly calls the Eden AI image generation endpoint.
+ * It can optionally optimize the prompt first and allows for detailed configuration.
  */
 import type { ImageGeneratorInput, ImageGeneratorOutput, FlowLog } from '@/ai/types';
 import { AppConfig } from '@/ai/types';
+
+async function optimizePrompt(config: AppConfig, text: string, targetProvider: string): Promise<{ result: string, logs: FlowLog[] }> {
+    const logs: FlowLog[] = [];
+    if (!config.edenApiKey) {
+        throw new Error("Eden AI API key is not configured for prompt optimization.");
+    }
+    
+    logs.push({ service: 'Eden', level: 'info', message: `Optimizing prompt for target provider: ${targetProvider}...` });
+    
+    const url = "https://api.edenai.run/v2/text/prompt_optimization";
+    const payload = {
+        providers: "openai", // OpenAI is good for general prompt optimization
+        text: text,
+        target_provider: targetProvider,
+    };
+    const headers = { "Authorization": `Bearer ${config.edenApiKey}` };
+
+    try {
+        const response = await fetch(url, { method: 'POST', json: payload, headers });
+        if (!response.ok) {
+            const errorBody = await response.text();
+            throw new Error(`Prompt optimization failed with status ${response.status}: ${errorBody}`);
+        }
+        const result = await response.json();
+        const optimizedText = result.openai.result;
+        logs.push({ service: 'Eden', level: 'info', message: 'Successfully optimized prompt.' });
+        return { result: optimizedText, logs };
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "An unknown error occurred during prompt optimization.";
+        logs.push({ service: 'Eden', level: 'error', message: errorMessage, details: error instanceof Error ? error.stack : undefined });
+        throw error;
+    }
+}
 
 
 async function callEdenAiImage(
     config: AppConfig,
     prompt: string,
-    provider: string
-): Promise<{ imageUrl: string, logs: FlowLog[] }> {
+    provider: string,
+    resolution: string,
+    numImages: number
+): Promise<{ images: any[], logs: FlowLog[] }> {
     const logs: FlowLog[] = [];
     if (!config.edenApiKey) {
         throw new Error("Eden AI API key is not configured.");
@@ -29,8 +64,8 @@ async function callEdenAiImage(
         response_as_dict: true,
         attributes_as_list: false,
         show_original_response: false,
-        resolution: "1024x1024",
-        num_images: 1,
+        resolution,
+        num_images: numImages,
         providers: provider,
         text: prompt,
     };
@@ -50,21 +85,20 @@ async function callEdenAiImage(
         }
 
         const result = await response.json();
+        const providerResponse = result[provider];
         
-        const providerResponse = result[payload.providers];
         if (!providerResponse || providerResponse.status === 'fail') {
             const errorMessage = providerResponse?.error?.message || `An unknown error occurred with the ${provider} provider.`;
             throw new Error(errorMessage);
         }
 
         if (!providerResponse.items || providerResponse.items.length === 0) {
-            throw new Error(`Unexpected response format from Eden AI Image API. Provider: ${payload.providers}. Response: ${JSON.stringify(result)}`);
+            throw new Error(`Unexpected response format from Eden AI Image API. Provider: ${provider}. Response: ${JSON.stringify(result)}`);
         }
         
-        const imageUrl = providerResponse.items[0].image_resource_url;
-        
-        logs.push({ service: 'Eden', level: 'info', message: `Successfully generated image via ${provider}.` });
-        return { imageUrl, logs };
+        const images = providerResponse.items;
+        logs.push({ service: 'Eden', level: 'info', message: `Successfully generated ${images.length} image(s) via ${provider}.` });
+        return { images, logs };
 
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : "An unknown error occurred during Eden AI Image call.";
@@ -77,25 +111,23 @@ async function callEdenAiImage(
 export async function imageGeneratorFlow(input: ImageGeneratorInput): Promise<ImageGeneratorOutput> {
     const config: AppConfig = {
         edenApiKey: localStorage.getItem('edenApiKey'),
-        // Use the globally selected provider from settings, default to openai
-        edenAiProvider: localStorage.getItem('edenAiProvider') || 'openai',
     };
     
-    try {
-        const providerToUse = config.edenAiProvider as string;
-        
-        const { imageUrl, logs } = await callEdenAiImage(config, input.prompt, providerToUse);
+    const { prompt, provider, resolution, numImages, optimize } = input;
+    let finalPrompt = prompt;
+    let enhancedPrompt: string | undefined = undefined;
 
-        return {
-            imageUrl: imageUrl,
-            // Since we are not optimizing, the enhanced prompt is just the original prompt.
-            enhancedPrompt: input.prompt, 
-            selectedProvider: providerToUse,
-        };
-
-    } catch (error) {
-        // Errors are logged in the helper function.
-        // We re-throw it so the UI layer can catch it and display a toast.
-        throw error;
+    if (optimize) {
+        const optimizationResult = await optimizePrompt(config, prompt, provider);
+        finalPrompt = optimizationResult.result;
+        enhancedPrompt = finalPrompt;
     }
+    
+    const { images, logs } = await callEdenAiImage(config, finalPrompt, provider, resolution, numImages);
+
+    return {
+        images: images,
+        enhancedPrompt: enhancedPrompt,
+        selectedProvider: provider,
+    };
 }

@@ -5,14 +5,21 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Wand2, GripVertical, EyeOff, Image as ImageIcon, ExternalLink } from 'lucide-react';
+import { Loader2, Wand2, GripVertical, EyeOff, Image as ImageIcon, ExternalLink, Settings, ChevronDown, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { PopOutButton } from './pop-out-button';
 import { useLogs } from '@/context/LogContext';
 import { generateImage } from '@/services/ai';
-import type { ImageGeneratorOutput } from '@/ai/types';
+import type { ImageGeneratorOutput, ImageGeneratorInput } from '@/ai/types';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
+import { Switch } from '../ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+
+const providers = ['openai', 'stabilityai', 'replicate', 'amazon', 'bytedance', 'minimax', 'leonardo'];
+const resolutions = ['1024x1024', '1024x1792', '1792x1024'];
 
 interface ImageGeneratorProps {
   onPopOut?: () => void;
@@ -29,11 +36,16 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
     const { toast } = useToast();
     const { addLog } = useLogs();
 
+    const [provider, setProvider] = useState('openai');
+    const [resolution, setResolution] = useState('1024x1024');
+    const [numImages, setNumImages] = useState(1);
+    const [optimizePrompt, setOptimizePrompt] = useState(true);
+
     const handleGenerateImage = async () => {
         setIsLoading(true);
         setResult(null);
 
-        const logDetails = `Prompt: "${prompt.substring(0, 100)}..."`;
+        const logDetails = `Prompt: "${prompt.substring(0, 100)}...", Provider: ${provider}, Optimize: ${optimizePrompt}`;
         addLog({ service: 'Image Generator', level: 'info', message: "User requested an image.", details: logDetails });
         
         try {
@@ -48,8 +60,16 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
                 setIsLoading(false);
                 return;
             }
+            
+            const input: ImageGeneratorInput = {
+                prompt,
+                provider,
+                resolution,
+                numImages,
+                optimize: optimizePrompt
+            };
 
-            const response = await generateImage({ prompt });
+            const response = await generateImage(input);
             setResult(response);
             addLog({ service: 'Image Generator', level: 'info', message: 'Image successfully generated.', details: `Provider: ${response.selectedProvider}` });
 
@@ -67,11 +87,10 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
         }
     }
     
-    const handleViewImage = () => {
-        if (!result) return;
+    const handleViewImage = (url: string) => {
         const newWindow = window.open();
         if (newWindow) {
-            newWindow.document.write(`<body style="margin:0; background: #111;"><img src="${result.imageUrl}" style="width:100%; height:auto;"/></body>`);
+            newWindow.document.write(`<body style="margin:0; background: #111;"><img src="${url}" style="width:100%; height:auto;"/></body>`);
             newWindow.document.title = "Stargate Imagery";
         } else {
             toast({
@@ -118,26 +137,36 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
                     <p>Generating image...</p>
                     <p className="text-xs">This may take a moment.</p>
                 </div>
-            ) : result?.imageUrl ? (
-                <div className="w-full space-y-2">
-                    <Label htmlFor="image-url">Image URL</Label>
-                    <div className="flex gap-2">
-                         <Input id="image-url" readOnly value={result.imageUrl} className="text-xs" />
-                         <Button variant="outline" size="icon" onClick={handleViewImage}>
-                            <ExternalLink className="h-4 w-4" />
-                         </Button>
-                    </div>
-                    <p className="text-xs text-muted-foreground">Click the button to view the full-size image in a new window.</p>
+            ) : result?.images?.length ? (
+                <div className="w-full h-full grid grid-cols-2 gap-2">
+                    {result.images.map((img, index) => (
+                        <div key={index} className="relative group">
+                            <img src={img.image_resource_url} alt={`Generated image ${index + 1}`} className="w-full h-full object-cover rounded-md" />
+                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <Button variant="outline" size="icon" onClick={() => handleViewImage(img.image_resource_url)}>
+                                    <ExternalLink className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             ) : (
                 <div className="text-center text-muted-foreground">
                     <ImageIcon className="h-12 w-12 mx-auto mb-2" />
-                    <p>Your generated image URL will appear here.</p>
+                    <p>Your generated images will appear here.</p>
                 </div>
             )}
         </div>
         
-        <div className="space-y-2 mt-auto shrink-0">
+        {result && result.enhancedPrompt && (
+            <Alert variant="default" className="shrink-0">
+                <Sparkles className="h-4 w-4" />
+                <AlertTitle>Optimized Prompt</AlertTitle>
+                <AlertDescription>{result.enhancedPrompt}</AlertDescription>
+            </Alert>
+        )}
+        
+        <div className="space-y-4 mt-auto shrink-0">
             <Textarea 
                 id="prompt" 
                 placeholder="Enter a prompt, e.g., 'A majestic dragon soaring over a mystical forest at dawn.'" 
@@ -145,8 +174,67 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
                 onChange={(e) => setPrompt(e.target.value)}
                 className="h-20"
             />
+            
+            <Popover>
+                <PopoverTrigger asChild>
+                    <Button variant="outline" className="w-full justify-start">
+                        <Settings className="mr-2 h-4 w-4" />
+                        Options
+                        <ChevronDown className="ml-auto h-4 w-4" />
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80" align="start">
+                    <div className="grid gap-4">
+                        <div className="space-y-2">
+                            <h4 className="font-medium leading-none">Image Generation Options</h4>
+                            <p className="text-sm text-muted-foreground">
+                            Configure the generation parameters.
+                            </p>
+                        </div>
+                        <div className="grid gap-2">
+                            <div className="grid grid-cols-3 items-center gap-4">
+                                <Label htmlFor="provider">Provider</Label>
+                                <Select value={provider} onValueChange={setProvider}>
+                                    <SelectTrigger className="col-span-2 capitalize"><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        {providers.map(p => <SelectItem key={p} value={p} className="capitalize">{p}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="grid grid-cols-3 items-center gap-4">
+                                <Label htmlFor="resolution">Resolution</Label>
+                                <Select value={resolution} onValueChange={setResolution}>
+                                    <SelectTrigger className="col-span-2"><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        {resolutions.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                             <div className="grid grid-cols-3 items-center gap-4">
+                                <Label htmlFor="num-images">Images</Label>
+                                <Input 
+                                    id="num-images" 
+                                    type="number" 
+                                    min={1} max={4} 
+                                    value={numImages} 
+                                    onChange={(e) => setNumImages(Math.max(1, Math.min(4, parseInt(e.target.value, 10))))} 
+                                    className="col-span-2"
+                                />
+                            </div>
+                             <div className="flex items-center justify-between">
+                                <Label htmlFor="optimize-prompt" className="flex items-center gap-2">
+                                    <Wand2 className="h-4 w-4"/>
+                                    Optimize Prompt
+                                </Label>
+                                <Switch id="optimize-prompt" checked={optimizePrompt} onCheckedChange={setOptimizePrompt} />
+                            </div>
+                        </div>
+                    </div>
+                </PopoverContent>
+            </Popover>
+
              <Button onClick={handleGenerateImage} disabled={isLoading || !prompt} className="w-full">
-                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                 Generate
             </Button>
         </div>
