@@ -21,22 +21,21 @@ async function callEdenAiResumeParser(
     
     const url = "https://api.edenai.run/v2/ocr/resume_parser";
     const payload = {
-        providers: "amazon,affinda,google,microsoft,openai", // Use a range of good providers
+        providers: "google", // Use a single, reliable provider for consistency
         file_url: fileUrl,
-        fallback_providers: "google"
+        fallback_providers: "" // No fallback needed when specifying one provider
     };
-    const headers = { "Authorization": `Bearer ${config.edenApiKey}` };
+    const headers = { "Authorization": `Bearer ${config.edenApiKey}`, "Content-Type": "application/json" };
 
     try {
-        const response = await fetch(url, { method: 'POST', body: JSON.stringify(payload), headers: {'Content-Type': 'application/json'} });
+        const response = await fetch(url, { method: 'POST', body: JSON.stringify(payload), headers: headers });
         if (!response.ok) {
             const errorBody = await response.text();
             throw new Error(`Resume Parser failed with status ${response.status}: ${errorBody}`);
         }
         const result = await response.json();
         
-        // EdenAI returns a consolidated result under `eden-ai` if multiple providers are used.
-        const parsedData = result['eden-ai'];
+        const parsedData = result['google'];
 
         if (!parsedData || parsedData.status !== 'success') {
            throw new Error(parsedData?.error?.message || "An unknown error occurred during parsing.");
