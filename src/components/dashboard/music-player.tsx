@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PopOutButton } from './pop-out-button';
@@ -66,7 +66,7 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
             channel.close();
         };
     }, [addLog, playlist.length, isPreview]);
-
+    
     useEffect(() => {
         const audio = audioRef.current;
         if (!audio) return;
@@ -88,33 +88,51 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
             audio.removeEventListener('timeupdate', setAudioTime);
         }
     }, [volume, isMuted, trackIndex]);
-    
-    useEffect(() => {
-        const currentTrack = playlist[trackIndex];
-        if (currentTrack?.type === 'audio' && isPlaying) {
-            audioRef.current?.play().catch(e => console.error("Audio play failed:", e));
-        } else {
-            audioRef.current?.pause();
-        }
-    }, [isPlaying, trackIndex, playlist]);
+
+    const playAudio = useCallback(() => {
+        audioRef.current?.play().catch(e => console.error("Audio play failed:", e));
+    }, []);
+
+    const pauseAudio = useCallback(() => {
+        audioRef.current?.pause();
+    }, []);
 
     const togglePlayPause = () => {
         const currentTrack = playlist[trackIndex];
         if (currentTrack.type === 'youtube') {
             window.open(currentTrack.src, '_blank');
-        } else {
-            setIsPlaying(prev => !prev);
+            return;
         }
+
+        if (isPlaying) {
+            pauseAudio();
+        } else {
+            playAudio();
+        }
+        setIsPlaying(prev => !prev);
     };
 
     const nextTrack = () => {
-        setTrackIndex(prev => (prev + 1) % playlist.length);
-        setIsPlaying(true);
+        const newIndex = (trackIndex + 1) % playlist.length;
+        setTrackIndex(newIndex);
+        if (playlist[newIndex].type === 'audio') {
+            setIsPlaying(true);
+            // Need a small delay to allow the new src to load
+            setTimeout(playAudio, 50);
+        } else {
+            setIsPlaying(false);
+        }
     };
 
     const prevTrack = () => {
-        setTrackIndex(prev => (prev - 1 + playlist.length) % playlist.length);
-        setIsPlaying(true);
+        const newIndex = (trackIndex - 1 + playlist.length) % playlist.length;
+        setTrackIndex(newIndex);
+        if (playlist[newIndex].type === 'audio') {
+            setIsPlaying(true);
+             setTimeout(playAudio, 50);
+        } else {
+            setIsPlaying(false);
+        }
     };
 
     const handleVolumeChange = (value: number[]) => {
