@@ -16,6 +16,7 @@ import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { PopOutButton } from './pop-out-button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import VaultConfig from '@/../vault.config.json';
 
 const UNLOCK_DURATION_MS = 5 * 60 * 1000; // 5 minutes
 
@@ -169,9 +170,21 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
   const [customModels, setCustomModels] = useState<{ [key: string]: string }>({});
   
   const [vaultPassword, setVaultPassword] = useState<string | null>(null);
+  const [isPasswordFromFile, setIsPasswordFromFile] = useState(false);
 
   useEffect(() => {
     if (isPreview) return;
+    
+    // Check for password in the config file first
+    if (VaultConfig && VaultConfig.password) {
+        setVaultPassword(VaultConfig.password);
+        setIsPasswordFromFile(true);
+    } else {
+        // Fallback to local storage
+        setVaultPassword(localStorage.getItem('vaultPassword'));
+        setIsPasswordFromFile(false);
+    }
+
     try {
         const loadedSettings: Partial<Settings> = {};
         const keysToLoad: SettingsObjectKey[] = settingKeys.filter((k): k is SettingsObjectKey => !['providerStatus', 'nexusConnectConnections'].includes(k));
@@ -182,8 +195,6 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                 loadedSettings[key as SettingsObjectKey] = value;
             }
         }
-        
-        setVaultPassword(localStorage.getItem('vaultPassword'));
         
         let savedConnections = localStorage.getItem('nexusConnectConnections');
         if (savedConnections) {
@@ -226,7 +237,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
         setCustomModels(tempCustomModels);
 
 
-        addLog({ service: 'System', level: 'info', message: 'API Key Vault settings loaded from local storage.' });
+        addLog({ service: 'System', level: 'info', message: 'API Key Vault settings loaded.' });
     } catch (error) {
         console.error("Failed to load settings from local storage", error);
         addLog({ service: 'System', level: 'error', message: 'Failed to load settings from local storage.', details: error instanceof Error ? error.stack : String(error) });
@@ -441,8 +452,16 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                   <Unlock className="h-4 w-4" />
               </Button>
           </div>
-           {!vaultPassword && (
-               <Alert variant="destructive" className="mt-4">
+          {isPasswordFromFile ? (
+             <Alert variant="default" className="mt-4">
+                <Lock className="h-4 w-4" />
+                <AlertTitle>Password Locked by Config</AlertTitle>
+                <AlertDescription>
+                   The vault password is set in `vault.config.json` and cannot be changed here.
+                </AlertDescription>
+            </Alert>
+          ) : !vaultPassword && (
+              <Alert variant="destructive" className="mt-4">
                   <Lock className="h-4 w-4" />
                   <AlertTitle>No Vault Password Set</AlertTitle>
                   <AlertDescription>
@@ -716,5 +735,3 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     </Card>
   );
 }
-
-    

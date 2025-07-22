@@ -57,6 +57,21 @@ With the new Genkit integration, you only need to run a single command to start 
   ```
   This will start the web server. Once running, open your browser to: **`http://localhost:9002`**
 
+## Enhanced Local Security (Optional)
+
+For an added layer of security on your local machine, you can set a master password in a configuration file. This prevents the password from being changed through the UI and ensures it persists even if browser data is cleared.
+
+1.  Open the `vault.config.json` file in the root of your project.
+2.  Add a password inside the quotes:
+    ```json
+    {
+      "password": "your-super-secret-password-here"
+    }
+    ```
+3.  Save the file and restart the application (`npm run dev`).
+
+The API Key Vault will now be permanently locked using this password. If you forget it, you must edit this file again. For maximum security in a multi-user environment, you can point this configuration to a secure, remote source.
+
 ## Hybrid Architecture: Local Hub with Cloud Remote (Optional)
 
 You can run Apollo Station locally to connect to services like Streamer.bot and simultaneously access it from your phone using a deployed version of the app. This is achieved using a tunneling service.
