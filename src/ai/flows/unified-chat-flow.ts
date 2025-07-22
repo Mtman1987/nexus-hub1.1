@@ -6,33 +6,8 @@
  *
  * - unifiedChat - The main function to handle chat messages.
  */
-import { ai } from '@/ai/genkit';
-import { z } from 'zod';
 import type { UnifiedChatInput, UnifiedChatOutput, FlowLog } from '@/ai/types';
-import { websiteControl } from './website-control-flow';
-
-// Define a simple AI chat flow using Genkit
-const simpleChatFlow = ai.defineFlow(
-  {
-    name: 'simpleChatFlow',
-    inputSchema: z.object({
-      message: z.string(),
-      systemPrompt: z.string(),
-    }),
-    outputSchema: z.string(),
-  },
-  async (input) => {
-    const { text } = await ai.generate({
-      prompt: input.message,
-      system: input.systemPrompt,
-      config: {
-        // Here you could add provider-specific logic based on a config object if needed
-        // For now, it uses the default Genkit config (likely Google AI)
-      },
-    });
-    return text;
-  }
-);
+import { callEdenAiChat, callEdenAiImage } from '../utils/eden-ai';
 
 
 async function sendToDiscordWebhook(webhookUrl: string, message: string, username: string) {
@@ -213,55 +188,18 @@ export async function unifiedChatFlow(input: UnifiedChatInput): Promise<UnifiedC
 
     const otherTargets = targets.filter(t => t !== 'AI Bot' && t !== 'Website');
 
-    // Handle Website Control logic first if targeted
-    if (targets.includes('Website')) {
-        try {
-            const webControlResult = await websiteControl({ command: message });
-            websiteAction = webControlResult;
-             if (websiteAction.action === 'youtube_search') {
-                logs.push({
-                    service: 'Website Control',
-                    level: 'info',
-                    message: `Converted command to YouTube search: "${websiteAction.payload}"`,
-                    details: `Original command: "${message}"`,
-                });
-                uiReply = `Website command sent: Searching for "${websiteAction.payload}".`;
-             } else if (websiteAction.action === 'add_youtube_song') {
-                logs.push({
-                    service: 'Website Control',
-                    level: 'info',
-                    message: `Extracted YouTube URL to add to playlist: "${websiteAction.payload}"`,
-                });
-                uiReply = `Song added to the music player queue.`;
-             }
-        } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-            uiReply = `An error occurred with the website control: ${errorMessage}`;
-            logs.push({
-                service: 'Website Control',
-                level: 'error',
-                message: `Website control AI call failed: ${errorMessage}`,
-                details: error instanceof Error ? error.stack : undefined
-            });
-        }
-    }
-    
     // Handle AI Bot logic
     if (targets.includes('AI Bot')) {
         try {
             const systemPrompt = config?.botPersonalityPrompt || 'You are a helpful assistant.';
-
-            const botReply = await simpleChatFlow({
-                message: message,
-                systemPrompt: systemPrompt
-            });
+            const botReply = await callEdenAiChat(config, [{ role: 'system', text: systemPrompt }, { role: 'user', text: message }]);
             
-            uiReply = uiReply ? `${uiReply}\n${botReply}` : botReply;
-            logs.push({ service: 'AI Bot', level: 'info', message: 'AI chat call successful.' });
+            uiReply = uiReply ? `${uiReply}\n${botReply.text}` : botReply.text;
+            logs.push(...botReply.logs);
 
             // If other services are targeted, the AI's reply becomes the payload.
             if(otherTargets.length > 0) {
-              messageToSendToServices = botReply; 
+              messageToSendToServices = botReply.text; 
               logs.push({ service: 'System', level: 'info', message: 'AI response will be relayed to other selected targets.', details: `AI Response: "${uiReply}"` });
             }
 

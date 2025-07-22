@@ -1,6 +1,5 @@
 
 import type { LogEntry } from "@/context/LogContext";
-import { z } from "zod";
 
 export type AiProviderId = 'eden' | 'google' | 'openai' | 'groq';
 
@@ -28,124 +27,87 @@ export interface UnifiedChatInput {
 export interface UnifiedChatOutput {
     reply: string;
     logs: FlowLog[];
-    websiteAction: WebsiteControlOutput | null;
+    websiteAction: any | null; // Simplified for now
 }
 
 // --- Intelligent Fallback ---
-export const IntelligentFallbackInputSchema = z.object({
-    goal: z.string(),
-    prompt: z.string(),
-    config: z.any(),
-});
-export type IntelligentFallbackInput = z.infer<typeof IntelligentFallbackInputSchema>;
+export interface IntelligentFallbackInput {
+    goal: string;
+    prompt: string;
+    config: App-Config;
+}
 
-export const IntelligentFallbackOutputSchema = z.object({
-    recommendation: z.string(),
-    reasoning: z.string(),
-});
-export type IntelligentFallbackOutput = z.infer<typeof IntelligentFallbackOutputSchema>;
-
+export interface IntelligentFallbackOutput {
+    recommendation: string;
+    reasoning: string;
+}
 
 // --- Setup Assistant ---
-export const SetupAssistantInputSchema = z.object({
-    topic: z.string(),
-    question: z.string(),
-    config: z.any(), // Pass config for the AI call
-});
-export type SetupAssistantInput = z.infer<typeof SetupAssistantInputSchema>;
+export interface SetupAssistantInput {
+    topic: string;
+    question: string;
+    config: AppConfig;
+}
 
-export const SetupAssistantOutputSchema = z.object({
-    answer: z.string(),
-});
-export type SetupAssistantOutput = z.infer<typeof SetupAssistantOutputSchema>;
-
-// --- Website Control ---
-export const WebsiteControlInputSchema = z.object({
-    command: z.string(),
-});
-export type WebsiteControlInput = z.infer<typeof WebsiteControlInputSchema>;
-
-export const WebsiteControlOutputSchema = z.object({
-    action: z.enum(['youtube_search', 'add_youtube_song']),
-    payload: z.string(),
-});
-export type WebsiteControlOutput = z.infer<typeof WebsiteControlOutputSchema>;
+export interface SetupAssistantOutput {
+    answer: string;
+}
 
 // --- Lore Weaver ---
-export const LoreWeaverInputSchema = z.object({
-    prompt: z.string(),
-    config: z.any(),
-});
-export type LoreWeaverInput = z.infer<typeof LoreWeaverInputSchema>;
+export interface LoreWeaverInput {
+    prompt: string;
+    config: AppConfig;
+}
 
-export const LoreWeaverOutputSchema = z.object({
-    response: z.string(),
-});
-export type LoreWeaverOutput = z.infer<typeof LoreWeaverOutputSchema>;
+export interface LoreWeaverOutput {
+    response: string;
+}
+
 
 // --- Image Generator ---
-export const ImageGeneratorInputSchema = z.object({
-    prompt: z.string(),
-});
-export type ImageGeneratorInput = z.infer<typeof ImageGeneratorInputSchema>;
+export interface ImageGeneratorInput {
+    prompt: string;
+}
 
-export const ImageGeneratorOutputSchema = z.object({
-    imageUrl: z.string(),
-    enhancedPrompt: z.string(),
-});
-export type ImageGeneratorOutput = z.infer<typeof ImageGeneratorOutputSchema>;
+export interface ImageGeneratorOutput {
+    imageUrl: string;
+    enhancedPrompt: string;
+}
+
 
 // --- Lore Editor ---
-export const LoreEditorInputSchema = z.object({
-  currentDraft: z.string().describe("The user's current version of the lore entry."),
-  userRequest: z.string().describe("The user's specific question or request for help with the draft.")
-});
-export type LoreEditorInput = z.infer<typeof LoreEditorInputSchema>;
+export interface LoreEditorInput {
+  currentDraft: string;
+  userRequest: string;
+}
 
-export const LoreEditorOutputSchema = z.object({
-  suggestion: z.string().describe("The AI's creative suggestion to help the user improve their draft.")
-});
-export type LoreEditorOutput = z.infer<typeof LoreEditorOutputSchema>;
+export interface LoreEditorOutput {
+  suggestion: string;
+}
 
 
 // --- Lore Curator ---
-const LoreEntrySchema = z.object({
-  prompt: z.string(),
-  response: z.string(),
-});
+export type LoreEntry = {
+  prompt: string;
+  response: string;
+};
 
-export const LoreCuratorInputSchema = z.object({
-  existingTimeline: z.array(LoreEntrySchema).describe("The current timeline of lore entries, in chronological order."),
-  newLore: LoreEntrySchema.describe("The new lore entry to be added to the timeline.")
-});
-export type LoreCuratorInput = z.infer<typeof LoreCuratorInputSchema>;
+export interface LoreCuratorInput {
+  existingTimeline: LoreEntry[];
+  newLore: LoreEntry;
+}
 
-export const LoreCuratorOutputSchema = z.object({
-  sortedTimeline: z.array(LoreEntrySchema).describe("The complete, re-sorted timeline including the new entry in its correct chronological position."),
-  personalityPrompt: z.string().describe("A concise summary of the timeline to be used as a bot personality prompt.")
-});
-export type LoreCuratorOutput = z.infer<typeof LoreCuratorOutputSchema>;
+export interface LoreCuratorOutput {
+  sortedTimeline: LoreEntry[];
+  personalityPrompt: string;
+}
+
 
 // --- Lore Summarizer ---
-export const LoreSummarizerInputSchema = z.object({
-  timeline: z.array(LoreEntrySchema).describe("The complete, up-to-date timeline of lore entries."),
-});
-export type LoreSummarizerInput = z.infer<typeof LoreSummarizerInputSchema>;
+export interface LoreSummarizerInput {
+  timeline: LoreEntry[];
+}
 
-export const LoreSummarizerOutputSchema = z.object({
-  personalityPrompt: z.string().describe("The generated system prompt for the Mountain Man AI personality, based on the provided lore.")
-});
-export type LoreSummarizerOutput = z.infer<typeof LoreSummarizerOutputSchema>;
-
-
-// --- Text to Speech (TTS) ---
-export const TtsInputSchema = z.object({
-  text: z.string(),
-  voice: z.string().optional().describe("The prebuilt voice to use for generation, e.g., 'Algenib'."),
-});
-export type TtsInput = z.infer<typeof TtsInputSchema>;
-
-export const TtsOutputSchema = z.object({
-    media: z.string().describe("A data URI of the generated audio file (e.g., data:audio/wav;base64,...).")
-});
-export type TtsOutput = z.infer<typeof TtsOutputSchema>;
+export interface LoreSummarizerOutput {
+  personalityPrompt: string;
+}

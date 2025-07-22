@@ -5,49 +5,29 @@
  *
  * - loreEditorFlow - The main function to get a creative suggestion for a lore draft.
  */
-import { ai } from '@/ai/genkit';
-import { z } from 'zod';
-import {
-  LoreEditorInputSchema,
-  LoreEditorOutputSchema,
-  type LoreEditorInput,
-  type LoreEditorOutput,
-} from '@/ai/types';
+import type { LoreEditorInput, LoreEditorOutput } from '@/ai/types';
+import { callEdenAiChat } from '../utils/eden-ai';
 
-const editorPrompt = ai.definePrompt({
-  name: 'loreEditorPrompt',
-  input: { schema: LoreEditorInputSchema },
-  output: { schema: LoreEditorOutputSchema },
-  prompt: `You are COSMO, a creative AI partner for the Apollo Station community. You are helping a crew member write and expand on a piece of lore for the "Galactic Timeline".
+const systemPrompt = `You are COSMO, a creative AI partner for the Apollo Station community. You are helping a crew member write and expand on a piece of lore for the "Galactic Timeline".
 
 The user has provided their current draft and a specific request for help. Your task is to provide a creative, helpful suggestion that directly addresses their request, helping them to flesh out their idea.
 
-The user's current draft is:
-"{{currentDraft}}"
+Generate a helpful and creative suggestion. The final transmission must be a JSON object with a single key: "suggestion".`;
 
-The user's request for help is:
-"{{userRequest}}"
 
-Generate a helpful and creative suggestion. The final transmission must be a JSON object with a single key: "suggestion".`,
-});
+export async function loreEditorFlow(input: LoreEditorInput): Promise<LoreEditorOutput> {
+    const config = {
+        edenApiKey: localStorage.getItem('edenApiKey'),
+        edenAiProvider: 'openai',
+        edenAiModel: 'gpt-4-turbo'
+    };
 
-const loreEditorFlowBare = ai.defineFlow(
-  {
-    name: 'loreEditorFlow',
-    inputSchema: LoreEditorInputSchema,
-    outputSchema: LoreEditorOutputSchema,
-  },
-  async (input) => {
-    const { output } = await editorPrompt(input);
-    if (!output) {
-      throw new Error('The Lore Editor AI failed to return a suggestion.');
-    }
-    return output;
-  }
-);
-
-export async function loreEditorFlow(
-  input: LoreEditorInput
-): Promise<LoreEditorOutput> {
-  return loreEditorFlowBare(input);
+    const userPrompt = `The user's current draft is:\n"${input.currentDraft}"\n\nThe user's request for help is:\n"${input.userRequest}"`;
+    
+    const { text, logs } = await callEdenAiChat(config, [{ role: 'system', text: systemPrompt }, { role: 'user', text: userPrompt }], true);
+    
+    // The main service function will handle logging
+    
+    const parsed = JSON.parse(text);
+    return parsed;
 }

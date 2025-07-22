@@ -1,5 +1,4 @@
 
-
 'use server';
 /**
  * @fileOverview This file is the single entry point for all AI service calls.
@@ -14,8 +13,6 @@ import { imageGeneratorFlow } from '@/ai/flows/image-generator-flow';
 import { loreEditorFlow } from '@/ai/flows/lore-editor-flow';
 import { loreCuratorFlow } from '@/ai/flows/lore-curator-flow';
 import { loreSummarizerFlow } from '@/ai/flows/lore-summarizer-flow';
-import { ttsFlow } from '@/ai/flows/tts-flow';
-
 
 import type { FlowLog, IntelligentFallbackInput, IntelligentFallbackOutput, SetupAssistantInput, SetupAssistantOutput, UnifiedChatInput, UnifiedChatOutput } from '@/ai/types';
 import type { LoreWeaverInput, LoreWeaverOutput } from '@/ai/types';
@@ -23,7 +20,6 @@ import type { ImageGeneratorInput, ImageGeneratorOutput } from '@/ai/types';
 import type { LoreEditorInput, LoreEditorOutput } from '@/ai/types';
 import type { LoreCuratorInput, LoreCuratorOutput } from '@/ai/types';
 import type { LoreSummarizerInput, LoreSummarizerOutput } from '@/ai/types';
-import type { TtsInput, TtsOutput } from '@/ai/types';
 
 /**
  * Main service function to handle unified chat requests.
@@ -79,11 +75,4 @@ export async function getCuratedTimeline(input: LoreCuratorInput): Promise<LoreC
  */
 export async function getSummarizedPersonality(input: LoreSummarizerInput): Promise<LoreSummarizerOutput> {
     return loreSummarizerFlow(input);
-}
-
-/**
- * Service function to convert text to speech.
- */
-export async function getTTSAudio(input: TtsInput): Promise<TtsOutput> {
-    return ttsFlow(input);
 }
