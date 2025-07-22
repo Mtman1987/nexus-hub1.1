@@ -17,6 +17,7 @@ import { Separator } from '../ui/separator';
 import { ScrollArea } from '../ui/scroll-area';
 import { collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc, query, getDocs } from "firebase/firestore";
 import { db } from '@/lib/firebase';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 
 
 export type BotPersonalityType = {
@@ -391,9 +392,23 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                              )}
                           </SelectContent>
                       </Select>
-                      <Button type="button" variant="outline" onClick={handleShareToStore} disabled={isSelectedPersonalityDefault}>
-                          <Upload className="mr-2 h-4 w-4"/> Share
-                      </Button>
+                       <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                {/* The button is wrapped in a span so the tooltip works when the button is disabled */}
+                                <span tabIndex={isSelectedPersonalityDefault ? 0 : undefined}>
+                                    <Button type="button" variant="outline" onClick={handleShareToStore} disabled={isSelectedPersonalityDefault}>
+                                        <Upload className="mr-2 h-4 w-4"/> Share
+                                    </Button>
+                                </span>
+                            </TooltipTrigger>
+                            {isSelectedPersonalityDefault && (
+                                <TooltipContent>
+                                    <p>Default personalities cannot be shared. Create a new one to share it.</p>
+                                </TooltipContent>
+                            )}
+                        </Tooltip>
+                      </TooltipProvider>
                   </div>
               </div>
             </div>
@@ -409,3 +424,5 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
       </Card>
   );
 }
+
+    
