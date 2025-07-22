@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { PopOutButton } from './pop-out-button';
+import { ScrollArea } from '../ui/scroll-area';
 
 type User = {
   id: string;
@@ -102,7 +103,7 @@ export function UserRoles({ isPoppedOut = false, onPopOut, onHide, dragHandlePro
   return (
     <>
       <Card className="h-full flex flex-col">
-        <CardHeader>
+        <CardHeader className='shrink-0'>
            <div className="flex justify-between items-start">
             <div className="flex items-center gap-2 flex-grow">
                {dragHandleProps && (
@@ -130,52 +131,54 @@ export function UserRoles({ isPoppedOut = false, onPopOut, onHide, dragHandlePro
             </div>
           </div>
         </CardHeader>
-        <CardContent className="flex-grow flex flex-col justify-between">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>User</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar>
-                        <AvatarImage src={`https://placehold.co/40x40.png`} data-ai-hint="avatar abstract" alt={user.name} />
-                        <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
-                      </Avatar>
-                      <span className="font-medium">{user.name}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Select value={user.role} onValueChange={(value) => handleRoleChange(user.id, value)}>
-                      <SelectTrigger className="w-[180px]">
-                         <div className="flex items-center gap-2">
-                           <Shield className="h-4 w-4 text-muted-foreground" />
-                           <SelectValue placeholder="Select a role" />
-                         </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {roles.map((role) => (
-                          <SelectItem key={role} value={role}>{role}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="sm" onClick={() => handleViewDetails(user)}>
-                      View Details
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <div className="flex justify-end mt-6">
+        <CardContent className="flex-grow flex flex-col overflow-hidden">
+          <ScrollArea className="flex-grow">
+            <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>User</TableHead>
+                    <TableHead>Role</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {users.map((user) => (
+                    <TableRow key={user.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <Avatar>
+                            <AvatarImage src={`https://placehold.co/40x40.png`} data-ai-hint="avatar abstract" alt={user.name} />
+                            <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+                          </Avatar>
+                          <span className="font-medium">{user.name}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Select value={user.role} onValueChange={(value) => handleRoleChange(user.id, value)}>
+                          <SelectTrigger className="w-[180px]">
+                             <div className="flex items-center gap-2">
+                               <Shield className="h-4 w-4 text-muted-foreground" />
+                               <SelectValue placeholder="Select a role" />
+                             </div>
+                          </SelectTrigger>
+                          <SelectContent>
+                            {roles.map((role) => (
+                              <SelectItem key={role} value={role}>{role}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button variant="ghost" size="sm" onClick={() => handleViewDetails(user)}>
+                          View Details
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+            </Table>
+          </ScrollArea>
+          <div className="flex justify-end mt-auto pt-4 border-t">
             <Button onClick={handleSaveChanges} disabled={isSaving}>
               {isSaving ? (
                 <>

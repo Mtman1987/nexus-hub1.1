@@ -51,7 +51,7 @@ const defaultModuleOrder = ALL_MODULES_CONFIG.map(m => m.id);
 const SortableModule = ({ id, children }: { id: string, children: React.ReactNode }) => {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ 
       id,
-      strategy: verticalListSortingStrategy, // Use a simple strategy
+      strategy: verticalListSortingStrategy,
     });
     const style: React.CSSProperties = {
         transform: CSS.Transform.toString(transform),
@@ -59,10 +59,10 @@ const SortableModule = ({ id, children }: { id: string, children: React.ReactNod
         opacity: isDragging ? 0.8 : 1,
         zIndex: isDragging ? 10 : 'auto',
     };
-    // Pass the listeners to the child component as dragHandleProps
+
     return (
-        <div ref={setNodeRef} style={style} className="h-[400px] xl:h-[450px]">
-             {React.cloneElement(children as React.ReactElement, { dragHandleProps: listeners, ...attributes })}
+        <div ref={setNodeRef} style={style}>
+             {React.isValidElement(children) ? React.cloneElement(children, { dragHandleProps: listeners, ...attributes }) : children}
         </div>
     );
 };
@@ -256,7 +256,7 @@ export default function DashboardPage() {
                 <div className="flex-grow flex flex-col gap-6 overflow-hidden">
                     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                         <SortableContext items={visibleModuleIds} strategy={verticalListSortingStrategy}>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                                 {visibleModuleIds.map(id => {
                                     const moduleConfig = ALL_MODULES_CONFIG.find(m => m.id === id);
                                     if (!moduleConfig) return null;

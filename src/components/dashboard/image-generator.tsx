@@ -15,6 +15,7 @@ import Image from 'next/image';
 import { Skeleton } from '../ui/skeleton';
 import { Alert, AlertTitle, AlertDescription } from '../ui/alert';
 import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 
 interface ImageGeneratorProps {
   onPopOut?: () => void;
@@ -150,7 +151,7 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
             </Alert>
         )}
 
-        <div className="space-y-2 mt-auto">
+        <div className="space-y-2 mt-auto shrink-0">
             <Textarea 
                 id="prompt" 
                 placeholder="Enter a prompt, e.g., 'A majestic dragon soaring over a mystical forest at dawn.'" 

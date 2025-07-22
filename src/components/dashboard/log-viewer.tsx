@@ -79,7 +79,7 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
   return (
     <>
       <Card className="h-full flex flex-col">
-        <CardHeader>
+        <CardHeader className="shrink-0">
           <div className="flex justify-between items-start">
              <div className="flex items-center gap-2 flex-grow">
                {dragHandleProps && (
@@ -106,7 +106,7 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
           </div>
         </CardHeader>
         <CardContent className="flex-grow overflow-hidden">
-          <ScrollArea className="h-full pr-4">
+          <ScrollArea className="h-full">
             <Table>
               <TableHeader>
                 <TableRow>

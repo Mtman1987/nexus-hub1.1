@@ -14,6 +14,7 @@ import { PopOutButton } from './pop-out-button';
 import { useBotName } from '@/context/BotNameContext';
 import { Textarea } from '../ui/textarea';
 import { Separator } from '../ui/separator';
+import { ScrollArea } from '../ui/scroll-area';
 
 export type BotPersonalityType = {
   id: string;
@@ -252,106 +253,109 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
             </div>
           </div>
         </CardHeader>
-        <CardContent className="flex-grow flex flex-col">
-          <form id="bot-personality-form" className="space-y-4 flex-grow flex flex-col" onSubmit={handleSaveChanges}>
-            <div className="space-y-2">
-                <Label>Active Personality</Label>
-                <div className="flex items-center gap-2">
-                     <Select value={selectedPersonalityId || ''} onValueChange={handleSelectPersonality}>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select a personality..."/>
-                        </SelectTrigger>
-                        <SelectContent>
-                            {personalities.map(p => (
-                                <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    <Button type="button" variant="outline" size="icon" onClick={handleAddNewPersonality} title="Add New Personality"><PlusCircle className="h-4 w-4"/></Button>
-                    <Button type="button" variant="destructive" size="icon" onClick={handleDeletePersonality} disabled={isSelectedPersonalityDefault} title="Delete Personality"><Trash2 className="h-4 w-4"/></Button>
+        <CardContent className="flex-grow flex flex-col overflow-hidden">
+          <form id="bot-personality-form" className="flex flex-col flex-grow overflow-hidden" onSubmit={handleSaveChanges}>
+            <ScrollArea className="flex-grow pr-1">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                      <Label>Active Personality</Label>
+                      <div className="flex items-center gap-2">
+                           <Select value={selectedPersonalityId || ''} onValueChange={handleSelectPersonality}>
+                              <SelectTrigger>
+                                  <SelectValue placeholder="Select a personality..."/>
+                              </SelectTrigger>
+                              <SelectContent>
+                                  {personalities.map(p => (
+                                      <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                                  ))}
+                              </SelectContent>
+                          </Select>
+                          <Button type="button" variant="outline" size="icon" onClick={handleAddNewPersonality} title="Add New Personality"><PlusCircle className="h-4 w-4"/></Button>
+                          <Button type="button" variant="destructive" size="icon" onClick={handleDeletePersonality} disabled={isSelectedPersonalityDefault} title="Delete Personality"><Trash2 className="h-4 w-4"/></Button>
+                      </div>
+                  </div>
+
+                  {selectedPersonality && (
+                      <>
+                          <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                  <Label htmlFor="bot-name">Bot Name</Label>
+                                  <Input 
+                                      id="bot-name" 
+                                      type="text" 
+                                      placeholder="e.g., Station AI" 
+                                      value={selectedPersonality?.name || ''} 
+                                      onChange={(e) => handlePersonalityChange('name', e.target.value)} 
+                                      disabled={isSelectedPersonalityDefault}
+                                  />
+                              </div>
+                               <div className="space-y-2">
+                                  <Label htmlFor="bot-voice">Voice</Label>
+                                  <Select 
+                                      value={selectedPersonality?.voice || 'Algenib'}
+                                      onValueChange={(value) => handlePersonalityChange('voice', value)}
+                                      disabled={isSelectedPersonalityDefault}
+                                  >
+                                      <SelectTrigger id="bot-voice">
+                                          <div className="flex items-center gap-2">
+                                              <Mic className="h-4 w-4" />
+                                              <SelectValue placeholder="Select a voice..."/>
+                                          </div>
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                          {availableVoices.map(v => (
+                                              <SelectItem key={v} value={v}>{v}</SelectItem>
+                                          ))}
+                                      </SelectContent>
+                                  </Select>
+                              </div>
+                          </div>
+                          <div className="space-y-2">
+                              <Label htmlFor="bot-prompt">System Prompt</Label>
+                              <Textarea 
+                                  id="bot-prompt" 
+                                  placeholder="You are a helpful assistant." 
+                                  value={selectedPersonality?.prompt || ''} 
+                                  onChange={(e) => handlePersonalityChange('prompt', e.target.value)} 
+                                  className="h-24"
+                                  disabled={isSelectedPersonalityDefault}
+                              />
+                              <p className="text-xs text-muted-foreground">This is the core instruction that defines your bot's behavior.</p>
+                          </div>
+                      </>
+                  )}
+
+                  <Separator />
+                  
+                  <div className="space-y-2">
+                      <Label>Bot Store</Label>
+                       <div className="flex items-center gap-2">
+                           <Select onValueChange={handleImportFromStore}>
+                              <SelectTrigger>
+                                  <div className="flex items-center gap-2">
+                                      <Store className="h-4 w-4" />
+                                      <SelectValue placeholder="Import from store..."/>
+                                  </div>
+                              </SelectTrigger>
+                              <SelectContent>
+                                 {botStore.length > 0 ? (
+                                   botStore.map(p => (
+                                      <SelectItem key={p.name} value={p.name}>{p.name}</SelectItem>
+                                  ))
+                                 ) : (
+                                  <div className="p-2 text-sm text-muted-foreground">Store is empty.</div>
+                                 )}
+                              </SelectContent>
+                          </Select>
+                          <Button type="button" variant="outline" onClick={handleShareToStore} disabled={isSelectedPersonalityDefault}>
+                              <Upload className="mr-2 h-4 w-4"/> Share
+                          </Button>
+                      </div>
+                  </div>
                 </div>
-            </div>
+            </ScrollArea>
 
-            {selectedPersonality && (
-                <>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="bot-name">Bot Name</Label>
-                            <Input 
-                                id="bot-name" 
-                                type="text" 
-                                placeholder="e.g., Station AI" 
-                                value={selectedPersonality?.name || ''} 
-                                onChange={(e) => handlePersonalityChange('name', e.target.value)} 
-                                disabled={isSelectedPersonalityDefault}
-                            />
-                        </div>
-                         <div className="space-y-2">
-                            <Label htmlFor="bot-voice">Voice</Label>
-                            <Select 
-                                value={selectedPersonality?.voice || 'Algenib'}
-                                onValueChange={(value) => handlePersonalityChange('voice', value)}
-                                disabled={isSelectedPersonalityDefault}
-                            >
-                                <SelectTrigger id="bot-voice">
-                                    <div className="flex items-center gap-2">
-                                        <Mic className="h-4 w-4" />
-                                        <SelectValue placeholder="Select a voice..."/>
-                                    </div>
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {availableVoices.map(v => (
-                                        <SelectItem key={v} value={v}>{v}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-                    <div className="space-y-2 flex-grow flex flex-col">
-                        <Label htmlFor="bot-prompt">System Prompt</Label>
-                        <Textarea 
-                            id="bot-prompt" 
-                            placeholder="You are a helpful assistant." 
-                            value={selectedPersonality?.prompt || ''} 
-                            onChange={(e) => handlePersonalityChange('prompt', e.target.value)} 
-                            className="flex-grow"
-                            disabled={isSelectedPersonalityDefault}
-                        />
-                        <p className="text-xs text-muted-foreground">This is the core instruction that defines your bot's behavior.</p>
-                    </div>
-                </>
-            )}
-
-            <Separator />
-            
-            <div className="space-y-2">
-                <Label>Bot Store</Label>
-                 <div className="flex items-center gap-2">
-                     <Select onValueChange={handleImportFromStore}>
-                        <SelectTrigger>
-                            <div className="flex items-center gap-2">
-                                <Store className="h-4 w-4" />
-                                <SelectValue placeholder="Import from store..."/>
-                            </div>
-                        </SelectTrigger>
-                        <SelectContent>
-                           {botStore.length > 0 ? (
-                             botStore.map(p => (
-                                <SelectItem key={p.name} value={p.name}>{p.name}</SelectItem>
-                            ))
-                           ) : (
-                            <div className="p-2 text-sm text-muted-foreground">Store is empty.</div>
-                           )}
-                        </SelectContent>
-                    </Select>
-                    <Button type="button" variant="outline" onClick={handleShareToStore} disabled={isSelectedPersonalityDefault}>
-                        <Upload className="mr-2 h-4 w-4"/> Share Active Bot
-                    </Button>
-                </div>
-            </div>
-
-
-             <div className="flex justify-end items-center pt-4 border-t mt-auto">
+             <div className="flex justify-end items-center pt-4 border-t mt-auto shrink-0">
                 <Button type="submit" form="bot-personality-form">
                   <Save className="mr-2 h-4 w-4" />
                   Save All

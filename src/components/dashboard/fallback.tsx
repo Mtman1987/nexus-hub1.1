@@ -15,6 +15,7 @@ import type { IntelligentFallbackInput, IntelligentFallbackOutput } from '@/ai/t
 import { PopOutButton } from './pop-out-button';
 import { useLogs } from '@/context/LogContext';
 import { SetupDialog } from './setup-dialog';
+import { ScrollArea } from '../ui/scroll-area';
 
 interface FallbackProps {
   onPopOut?: () => void;
@@ -95,7 +96,7 @@ export function Fallback({ onPopOut, isPoppedOut = false, onHide, dragHandleProp
   return (
     <>
     <SetupDialog open={showSetup} onOpenChange={setShowSetup} />
-    <Card className="h-full">
+    <Card className="h-full flex flex-col">
       <CardHeader>
         <div className="flex justify-between items-start">
              <div className="flex items-center gap-2 flex-grow">
@@ -124,29 +125,32 @@ export function Fallback({ onPopOut, isPoppedOut = false, onHide, dragHandleProp
             </div>
         </div>
       </CardHeader>
-      <CardContent className="flex flex-col gap-4">
-        <div className="space-y-2">
-            <Label htmlFor="goal">Your Goal</Label>
-            <Input id="goal" placeholder="e.g., Write a marketing email, summarize a document" value={goal} onChange={(e) => setGoal(e.target.value)} />
-        </div>
-         <div className="space-y-2">
-            <Label htmlFor="prompt">Your Full Prompt</Label>
-            <Textarea id="prompt" placeholder="Enter the full prompt you want to send to the AI..." value={prompt} onChange={(e) => setPrompt(e.target.value)} />
-        </div>
+      <CardContent className="flex flex-col flex-grow overflow-hidden">
+        <ScrollArea className="flex-grow pr-1">
+            <div className="space-y-4">
+                <div className="space-y-2">
+                    <Label htmlFor="goal">Your Goal</Label>
+                    <Input id="goal" placeholder="e.g., Write a marketing email, summarize a document" value={goal} onChange={(e) => setGoal(e.target.value)} />
+                </div>
+                 <div className="space-y-2">
+                    <Label htmlFor="prompt">Your Full Prompt</Label>
+                    <Textarea id="prompt" placeholder="Enter the full prompt you want to send to the AI..." value={prompt} onChange={(e) => setPrompt(e.target.value)} />
+                </div>
 
-        {result && (
-            <Alert variant={result.recommendation === 'Error' ? 'destructive' : 'default'}>
-                <Wand2 className="h-4 w-4" />
-                <AlertTitle>
-                    {result.recommendation === 'Error' ? 'Error' : `Recommendation: ${result.recommendation}`}
-                </AlertTitle>
-                <AlertDescription>
-                    {result.reasoning}
-                </AlertDescription>
-            </Alert>
-        )}
-
-        <div className="flex justify-between items-center mt-4">
+                {result && (
+                    <Alert variant={result.recommendation === 'Error' ? 'destructive' : 'default'}>
+                        <Wand2 className="h-4 w-4" />
+                        <AlertTitle>
+                            {result.recommendation === 'Error' ? 'Error' : `Recommendation: ${result.recommendation}`}
+                        </AlertTitle>
+                        <AlertDescription>
+                            {result.reasoning}
+                        </AlertDescription>
+                    </Alert>
+                )}
+            </div>
+        </ScrollArea>
+        <div className="flex justify-between items-center mt-auto pt-4 border-t">
             <Button variant="outline" onClick={() => setShowSetup(true)}>
                 <LifeBuoy className="mr-2 h-4 w-4" />
                 Setup Wizard
