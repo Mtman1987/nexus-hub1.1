@@ -3,8 +3,7 @@
 
 import * as React from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent, DragOverlay, DragStartEvent } from '@dnd-kit/core';
-import { arrayMove, SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { DraggableModule } from '@/components/dashboard/draggable-module';
 
 import { LogViewer } from '@/components/dashboard/log-viewer';
@@ -196,6 +195,7 @@ export default function DashboardPage() {
   const visibleModuleIds = moduleOrder.filter(id => !hiddenModules.includes(id));
   const trulyHiddenModules = ALL_MODULES_CONFIG.filter(m => hiddenModules.includes(m.id));
   const activeModule = activeId ? ALL_MODULES_CONFIG.find(({ id }) => id === activeId) : null;
+  const ActiveModuleComponent = activeModule?.component;
 
   return (
     <>
@@ -241,7 +241,7 @@ export default function DashboardPage() {
                                 if (!moduleConfig) return null;
                                 
                                 return (
-                                    <DraggableModule key={id} id={id} activeId={activeId}>
+                                    <DraggableModule key={id} id={id}>
                                       <moduleConfig.component
                                         onHide={() => handleHideModule(id)} 
                                         onPopOut={() => handlePopOut(id, moduleConfig.title)}
@@ -252,15 +252,8 @@ export default function DashboardPage() {
                         </div>
                     </SortableContext>
                      <DragOverlay>
-                        {activeModule ? (
-                            <Card className="h-full w-full bg-card/80 opacity-75">
-                                <CardHeader>
-                                    <CardTitle>{activeModule.title}</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <p>Moving...</p>
-                                </CardContent>
-                            </Card>
+                        {activeId && ActiveModuleComponent ? (
+                            <ActiveModuleComponent />
                         ) : null}
                     </DragOverlay>
                 </DndContext>

@@ -4,28 +4,26 @@
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { cn } from '@/lib/utils';
 
 interface DraggableModuleProps {
   id: string;
-  activeId: string | null;
   children: React.ReactNode;
 }
 
-export function DraggableModule({ id, activeId, children }: DraggableModuleProps) {
+export function DraggableModule({ id, children }: DraggableModuleProps) {
   const {
     attributes,
     listeners,
     setNodeRef,
     transform,
     transition,
+    isDragging,
   } = useSortable({ id });
   
-  const isDragging = activeId === id;
-
   const style: React.CSSProperties = {
     transform: CSS.Translate.toString(transform),
     transition,
-    opacity: isDragging ? 0 : 1, // Hide the original component when dragging
   };
 
   // Clone the children and pass down the listeners for the drag handle
@@ -34,7 +32,7 @@ export function DraggableModule({ id, activeId, children }: DraggableModuleProps
   });
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes}>
+    <div ref={setNodeRef} style={style} {...attributes} className={cn(isDragging && 'opacity-0')}>
       {childrenWithProps}
     </div>
   );
