@@ -6,10 +6,34 @@
  *
  * - unifiedChat - The main function to handle chat messages.
  */
-import { callAIChat } from '@/ai/utils';
-import type { LogEntry } from '@/context/LogContext';
-import { type UnifiedChatInput, type UnifiedChatOutput, type FlowLog } from '@/ai/types';
+import { ai } from '@/ai/genkit';
+import { z } from 'zod';
+import type { UnifiedChatInput, UnifiedChatOutput, FlowLog } from '@/ai/types';
 import { websiteControl } from './website-control-flow';
+
+// Define a simple AI chat flow using Genkit
+const simpleChatFlow = ai.defineFlow(
+  {
+    name: 'simpleChatFlow',
+    inputSchema: z.object({
+      message: z.string(),
+      systemPrompt: z.string(),
+    }),
+    outputSchema: z.string(),
+  },
+  async (input) => {
+    const { text } = await ai.generate({
+      prompt: input.message,
+      system: input.systemPrompt,
+      config: {
+        // Here you could add provider-specific logic based on a config object if needed
+        // For now, it uses the default Genkit config (likely Google AI)
+      },
+    });
+    return text;
+  }
+);
+
 
 async function sendToDiscordWebhook(webhookUrl: string, message: string, username: string) {
     try {
@@ -227,22 +251,19 @@ export async function unifiedChatFlow(input: UnifiedChatInput): Promise<UnifiedC
         try {
             const systemPrompt = config?.botPersonalityPrompt || 'You are a helpful assistant.';
 
-            const aiResult = await callAIChat({
-                userMessage: message,
-                systemPrompt: systemPrompt,
-                overrideConfig: config as { [key: string]: string | undefined }
+            const botReply = await simpleChatFlow({
+                message: message,
+                systemPrompt: systemPrompt
             });
             
-            const botReply = aiResult.response;
             uiReply = uiReply ? `${uiReply}\n${botReply}` : botReply;
+            logs.push({ service: 'AI Bot', level: 'info', message: 'AI chat call successful.' });
 
             // If other services are targeted, the AI's reply becomes the payload.
             if(otherTargets.length > 0) {
-              messageToSendToServices = aiResult.response; 
+              messageToSendToServices = botReply; 
               logs.push({ service: 'System', level: 'info', message: 'AI response will be relayed to other selected targets.', details: `AI Response: "${uiReply}"` });
             }
-
-            logs.push(...aiResult.logs);
 
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
