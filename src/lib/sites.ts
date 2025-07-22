@@ -1,10 +1,14 @@
 export const SITES = {
-  main: {
-    name: 'Main Viewer',
+  youtube: {
+    name: 'YouTube',
     url: 'https://www.youtube.com'
   },
-  subdomain: {
-    name: 'Example',
+  resumeParser: {
+    name: 'Resume Parser',
+    url: 'https://www.edenai.co/features/resume-parser'
+  },
+  example: {
+    name: 'IANA Example',
     url: 'https://www.iana.org/domains/example'
   }
 };
