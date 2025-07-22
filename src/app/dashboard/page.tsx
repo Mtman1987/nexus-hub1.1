@@ -198,7 +198,7 @@ export default function DashboardPage() {
 
   return (
     <>
-        <div className="flex-1 flex flex-col p-4 md:p-6 space-y-6 h-full bg-background/90">
+        <div className="flex-1 flex flex-col p-4 md:p-6 space-y-6 h-full">
             <div className="flex items-center justify-between flex-shrink-0">
                 <h1 className="text-xl md:text-3xl font-bold tracking-tight">Dashboard</h1>
                 <div className="flex items-center gap-2">
@@ -231,7 +231,7 @@ export default function DashboardPage() {
                 </div>
             </div>
 
-            <div className="flex-grow p-4 rounded-lg">
+            <div className="flex-grow p-4 rounded-lg bg-background/90">
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                     <SortableContext items={visibleModuleIds} strategy={verticalListSortingStrategy}>
                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 h-full overflow-y-auto">
