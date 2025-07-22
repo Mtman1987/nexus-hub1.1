@@ -19,6 +19,7 @@ import { MusicPlayer } from '@/components/dashboard/music-player';
 import { ResumeParser } from '@/components/dashboard/resume-parser';
 import { Translator } from '@/components/dashboard/translator';
 import { CodeHelper } from '@/components/dashboard/code-helper';
+import { VideoGenerator } from '@/components/dashboard/video-generator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { LogProvider } from '@/context/LogContext';
@@ -37,6 +38,7 @@ const moduleMap: { [key: string]: React.ComponentType<any> } = {
   timeZoneConverter: TimeZoneConverter,
   botPersonality: BotPersonality,
   imageGenerator: ImageGenerator,
+  videoGenerator: VideoGenerator,
   musicPlayer: MusicPlayer,
   resumeParser: ResumeParser,
   translator: Translator,

@@ -29,6 +29,7 @@ import { ResumeParser } from '@/components/dashboard/resume-parser';
 import { AudioTranscription } from '@/components/dashboard/audio-transcription';
 import { Translator } from '@/components/dashboard/translator';
 import { CodeHelper } from '@/components/dashboard/code-helper';
+import { VideoGenerator } from '@/components/dashboard/video-generator';
 
 
 // Define all modules with their components
@@ -39,6 +40,7 @@ const ALL_MODULES_CONFIG = [
     { id: 'logViewer', title: 'Captain\'s Log', component: LogViewer, defaultSize: 'col-span-1 lg:col-span-2' },
     { id: 'musicPlayer', title: 'Subspace Comms & Music', component: MusicPlayer, defaultSize: 'col-span-1' },
     { id: 'imageGenerator', title: 'Stargate Imagery', component: ImageGenerator, defaultSize: 'col-span-1' },
+    { id: 'videoGenerator', title: 'Avatar Forge', component: VideoGenerator, defaultSize: 'col-span-1' },
     { id: 'codeHelper', title: 'Cipher (Code Helper)', component: CodeHelper, defaultSize: 'col-span-1' },
     { id: 'resumeParser', title: 'Resume Parser', component: ResumeParser, defaultSize: 'col-span-1' },
     { id: 'audioTranscription', title: 'Audio Transcription', component: AudioTranscription, defaultSize: 'col-span-1' },

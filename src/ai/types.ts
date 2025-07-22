@@ -217,3 +217,19 @@ export interface CodeGeneratorInput {
 export interface CodeGeneratorOutput {
     generated_code: string;
 }
+
+
+// --- Video Generator ---
+export interface VideoGeneratorInput {
+    prompt: string;
+    aspectRatio: '16:9' | '9:16';
+    durationSeconds: number;
+}
+
+export interface VideoGeneratorOutput {
+    video: {
+        url: string; // The data URI of the video
+        contentType: string; // e.g., 'video/mp4'
+    };
+    logs: FlowLog[];
+}
