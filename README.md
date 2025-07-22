@@ -1,235 +1,95 @@
 
 # Apollo Station
 
-Apollo Station is a centralized, modular system by mtman1987 to manage all your online services, powered by Next.js and Google AI.
+Apollo Station is a powerful, local-first, modular mission control center for all your online services and AI tools. Built with Next.js, it features a customizable dashboard that connects to external services like Discord and Streamer.bot, and integrates with a wide range of AI providers via Eden AI for tasks like chat, code generation, image creation, and more.
 
-## Features
+![Apollo Station Screenshot](https://firebasestudio.com/static/images/projects/apollo-station/screenshot1.png)
 
-- **Responsive Dashboard**: A clean UI to monitor and control your services.
-- **Configurable Service Modules**: Individual components for services like Discord, Twitch, and a customizable template module. You can toggle the visibility of any module to create a personalized dashboard.
-- **AI-Powered Tools**: Features like Intelligent Fallback, Unified Chat, and an AI Setup Assistant leverage Genkit and Google AI.
-- **AI-Powered Setup Wizard**: On first launch (or anytime from the settings), a guided wizard with integrated AI help makes configuration simple for anyone.
-- **Dynamic Bot Name**: Personalize the application by giving your chatbot its own custom name.
-- **Access Control**: Manage user roles and permissions.
+## Core Features
+
+- **Draggable & Resizable Dashboard**: A fully customizable grid layout to arrange your modules exactly how you want.
+- **AI-Powered Setup Wizard**: A guided setup process with an integrated AI assistant (COSMO) to help you find API keys and configure services.
+- **Unified Chat**: Send messages to your AI bot, Discord, Streamer.bot, and other connected users from a single interface.
+- **Bot Personality Store**: Create, save, and switch between different AI personas. Share and import personalities from a shared community store powered by Firebase.
+- **Secure API Key Vault**: A local, password-protected vault to securely store all your API keys and credentials. Features an optional file-based lock for enhanced local security.
+- **Modular Component System**:
+  - **Code Helper**: Generate code snippets in various languages from natural language instructions.
+  - **Stargate Imagery**: Create images from text prompts using providers like OpenAI's DALL-E or Stability AI.
+  - **Translator**: A multi-tool for text translation, text-to-speech, and speech-to-text transcription.
+  - **And more...**: Including a Website Viewer, Log Viewer, Resume Parser, and Access Control panel.
 - **PWA Ready**: Install the app on your desktop or mobile device for a native-like experience.
 
 ## Local Development Setup
 
-To get this project running on your local machine, follow these steps.
-
 ### 1. Prerequisites
-
-Make sure you have the following software installed:
-- **Node.js**: Version 18 or later. You can download it from [nodejs.org](https://nodejs.org/).
-- **npm**: This comes automatically with Node.js.
+- **Node.js**: Version 18 or later.
+- **npm**: Comes with Node.js.
+- **Python**: (Optional) Required only for the Discord Bot integration.
 
 ### 2. Installation
-
-First, navigate to the project directory and install the necessary dependencies.
-
+Clone the repository and install the necessary dependencies.
 ```bash
+git clone <repository_url>
+cd <repository_name>
 npm install
 ```
 
 ### 3. Configuration
+The application requires API keys to function. On first launch, a Setup Wizard will guide you through this process.
 
-The application uses Google AI for its generative features. You will need to provide an API key.
-
-1.  Create a new file named `.env` in the root of the project.
-2.  Add your Google AI API key to this file:
-
+1.  **Run the App**: Start the development server.
+    ```bash
+    npm run dev
     ```
-    GOOGLE_API_KEY=YOUR_API_KEY_HERE
-    ```
-    
-    You can get a key from [Google AI Studio](https://aistudio.google.com/app/apikey).
+    This will start the web server, typically on **`http://localhost:9002`**.
 
-    **Note**: If you run the app without this key, a **Setup Wizard** will automatically pop up to guide you through the process.
+2.  **Setup Wizard**: When you open the app for the first time, a setup dialog will appear.
+    *   **Step 1: Vault Password**: Create a master password to secure your API Key Vault. This is stored locally in your browser.
+    *   **Step 2: Eden AI Key**: This is the **primary required key**. Get a key from [Eden AI](https://www.edenai.co/). It acts as a gateway to multiple AI providers (OpenAI, Google, Anthropic, etc.).
+    *   **Optional Keys**: Add keys for other services like Discord or a direct Google AI key for fallback purposes.
 
-### 4. Running the Application
-
-With the new Genkit integration, you only need to run a single command to start the entire application, including both the frontend and the AI backend.
-
-- **To run the Next.js app (frontend & AI backend):**
-
-  ```bash
-  npm run dev
-  ```
-  This will start the web server. Once running, open your browser to: **`http://localhost:9002`**
-
-## Enhanced Local Security (Optional)
-
-For an added layer of security on your local machine, you can set a master password in a configuration file. This prevents the password from being changed through the UI and ensures it persists even if browser data is cleared.
+### 4. Enhanced Local Security (Optional)
+For an added layer of security, you can lock your vault password in a configuration file. This prevents the password from being changed through the UI and ensures it persists even if browser data is cleared.
 
 1.  Open the `vault.config.json` file in the root of your project.
-2.  Add a password inside the quotes:
+2.  Add a password:
     ```json
     {
       "password": "your-super-secret-password-here"
     }
     ```
-3.  Save the file and restart the application (`npm run dev`).
-
-The API Key Vault will now be permanently locked using this password. If you forget it, you must edit this file again. For maximum security in a multi-user environment, you can point this configuration to a secure, remote source.
-
-## Hybrid Architecture: Local Hub with Cloud Remote (Optional)
-
-You can run Apollo Station locally to connect to services like Streamer.bot and simultaneously access it from your phone using a deployed version of the app. This is achieved using a tunneling service.
-
-1.  **Run Locally**: Start the app on your main computer with `npm run dev`. This is your "engine".
-2.  **Install a Tunnel**: Download and set up a tunneling service like [ngrok](https://ngrok.com/download). This will expose your local server to the internet.
-3.  **Start the Tunnel**: In a new terminal, run the command to expose your local port (9002).
-    ```bash
-    ngrok http 9002
-    ```
-4.  **Get Public URL**: ngrok will give you a public "Forwarding" URL (e.g., `https://random-string.ngrok.io`). Copy this URL.
-5.  **Deploy to Cloud**: Deploy a second instance of Apollo Station to a service like Vercel or Firebase App Hosting. This will be your "remote control".
-6.  **Configure Remote**: Open your deployed cloud app. Go to `API Key Vault` -> `Remote Access` and paste the ngrok Forwarding URL into the "Remote Hub Address" field and save.
-
-Now, when you use the Unified Chat on your deployed cloud app (e.g., on your phone), it will securely send the commands to your local machine for execution.
+3.  Restart the application (`npm run dev`). The API Key Vault will now be permanently locked with this password.
 
 ## Discord Bot Integration (Optional)
+To relay messages from a Discord server into the Unified Chat, you need to run a separate Python bot.
 
-To relay messages from a Discord server into the Unified Chat, you need to run a separate Python bot. This requires Python to be installed on your system.
-
-**Why a separate bot?** The main Next.js app is a web server, which restarts frequently during development. A Discord bot needs a stable, persistent connection. A separate script is the most reliable way to achieve this.
-
-### Step 1: Create the Discord Bot and Get Credentials
-
-Before you can run the bot, you need to create it in the Discord Developer Portal.
-
-1.  Go to the [Discord Developer Portal](https://discord.com/developers/applications) and click **"New Application"**.
-2.  Give your bot a name and click **"Create"**.
-3.  Go to the **"Bot"** tab on the left menu.
-    *   Click **"Reset Token"** to get your **Bot Token**. Copy this somewhere safe. **This is your `DISCORD_TOKEN`**.
-    *   Enable the **"Message Content Intent"** toggle under "Privileged Gateway Intents". This is required for the bot to read messages.
-4.  Go to the **"OAuth2" -> "General"** tab.
-    *   Copy your **"Client ID"**. You'll need this in the next step to invite the bot.
-
-### Step 2: Invite The Bot to Your Server
-
-1.  While still in the Discord Developer Portal, go to **"OAuth2" -> "URL Generator"**.
-2.  Under **"Scopes"**, check the box for **`bot`**.
-3.  A new box called **"Bot Permissions"** will appear below. Check the following permissions:
-    *   `Send Messages`
-    *   `Read Message History`
-4.  A URL will be generated at the bottom of the page. Copy this URL.
-5.  Paste the URL into your browser, select the server you want to add the bot to, and click **"Authorize"**. Your bot will now appear in your server's member list.
-
-### Step 3: Install Python Dependencies
-
-Open your terminal in the project folder and run this command. This only needs to be done once.
-
+### Step 1: Install Python Dependencies
 ```bash
 pip install discord.py python-dotenv requests
 ```
-**Note:** Do not include a period `.` at the end of the command.
 
-### Step 4: Create the Bot File
+### Step 2: Create a Discord Bot
+1.  Go to the [Discord Developer Portal](https://discord.com/developers/applications).
+2.  Create a **New Application**.
+3.  Go to the **"Bot"** tab, reset the token to get your `DISCORD_TOKEN`, and **enable the "Message Content Intent"**.
+4.  Go to **"OAuth2" -> "URL Generator"**, select the `bot` scope, and grant `Send Messages` and `Read Message History` permissions.
+5.  Use the generated URL to invite the bot to your server.
 
-Create a new file named `bot.py` in the root of your project directory. Copy and paste the entire code block below into that file.
+### Step 3: Create `bot.py`
+Create a file named `bot.py` in the root of your project and paste the code from `DEV_NOTES.md` into it.
 
-```python
-# This is a Python script to connect to Discord and relay messages.
-# Save this file as `bot.py` in your main project folder.
-# It will only relay messages where the bot is @mentioned.
-
-import os
-import requests
-import discord
-from dotenv import load_dotenv
-
-# --- Configuration ---
-# This loads variables from your .env file
-load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
-WEBHOOK_URL = os.getenv('APOLLO_STATION_WEBHOOK_URL', 'http://localhost:9002/api/discord-relay')
-BOT_NAME = os.getenv('BOT_NAME', 'Apollo Station') # Optional: Set a fallback bot name
-
-# --- Bot Setup ---
-# You must enable the "Message Content Intent" in the Discord Developer Portal
-intents = discord.Intents.default()
-intents.messages = True
-intents.message_content = True 
-client = discord.Client(intents=intents)
-
-@client.event
-async def on_ready():
-    print(f'Logged in as {client.user}. Ready to relay messages to {WEBHOOK_URL}.')
-    # Try to get the bot's name from the server, otherwise use the one from .env
-    try:
-        app_info = await client.application_info()
-        global BOT_NAME
-        BOT_NAME = app_info.name
-        print(f"Bot name set to: {BOT_NAME}")
-    except Exception as e:
-        print(f"Could not fetch bot application info, using default name. Error: {e}")
-
-
-@client.event
-async def on_message(message):
-    # Ignore messages from the bot itself
-    if message.author == client.user:
-        return
-
-    # Check if the bot is mentioned
-    is_mentioned = client.user in message.mentions
-
-    if is_mentioned:
-        # Clean the message content by removing the mention
-        # This gives us just the user's prompt
-        clean_content = message.content.replace(f'<@!{client.user.id}>', '').replace(f'<@{client.user.id}>', '').strip()
-        
-        print(f"Received @mention from {message.author.name}: {clean_content}")
-
-        # Prepare the data to send to your app
-        payload = {
-            'content': clean_content,
-            'author': message.author.name,
-        }
-
-        # Send the message to your webhook
-        try:
-            response = requests.post(WEBHOOK_URL, json=payload, timeout=5)
-            response.raise_for_status() # Raises an exception for bad status codes
-            print(f"Successfully relayed message to Apollo Station. Status: {response.status_code}")
-        except requests.exceptions.RequestException as e:
-            print(f"Error relaying message to Apollo Station: {e}")
-
-# --- Run the Bot ---
-if TOKEN:
-    client.run(TOKEN)
-else:
-    print("Error: DISCORD_TOKEN not found. Please add it to your .env file.")
-
+### Step 4: Add Token to `.env`
+Create a `.env` file in the project root and add your keys. The Python bot and the Next.js app share this file.
 ```
-
-### Step 5: Add Your Bot Token to the `.env` File
-
-Add your Discord Bot Token to your **existing `.env` file** (the same one used by the main app). The Python bot will read from this same file. 
-
+# .env file
+EDEN_AI_API_KEY=YOUR_EDEN_AI_KEY
+DISCORD_TOKEN=YOUR_DISCORD_BOT_TOKEN
 ```
-# This is your .env file
-GOOGLE_API_KEY=YOUR_API_KEY_HERE
-DISCORD_TOKEN=YOUR_BOT_TOKEN_HERE
-# The Discord Webhook for sending messages FROM the app can be set in the API Key Vault
-```
+*Note: Other keys are managed in the app's API Key Vault.*
 
-### Step 6: Run the Bot
-
-Open a **new, separate terminal** (keep the `npm run dev` terminal running) and run this command:
+### Step 5: Run the Bot
+Open a **new, separate terminal** (keep the `npm run dev` terminal running) and run the bot:
 ```bash
 python bot.py
 ```
-This bot must be running at the same time as your main `npm run dev` process for the chat relay to work.
-
-### Step 7: Configure Streamer.bot (Optional)
-
-To send messages *to* Streamer.bot (e.g., from the Unified Chat), you need to configure its WebSocket server.
-
-1.  In Streamer.bot, navigate to `Servers/Clients` -> `WebSocket Server`.
-2.  Ensure the server is **Active**.
-3.  Set the IP to `127.0.0.1`.
-4.  Set the Port to `9003`.
-5.  If you get a "port in use" error, you can change the port, but you must enter the same port number into the API Key Vault.
-6.  Save these settings in both Streamer.bot and Apollo Station.
+This bot must be running at the same time as your main app for the relay to work.

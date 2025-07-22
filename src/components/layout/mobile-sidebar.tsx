@@ -3,10 +3,9 @@
 
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, Bot } from "lucide-react";
+import { Menu, Rocket } from "lucide-react";
 import { SidebarNav } from "./sidebar-nav";
 import { useSidebar } from "@/context/SidebarContext";
-import { CommunityLogo } from "../icons/community-logo";
 
 export function MobileSidebar() {
   const { isMobileMenuOpen, setMobileMenuOpen } = useSidebar();
@@ -22,7 +21,7 @@ export function MobileSidebar() {
       <SheetContent side="left" className="flex flex-col p-0">
          <div className="flex h-14 items-center border-b px-4 lg:h-[60px]">
             <div className="flex items-center gap-2 font-semibold text-primary">
-                <CommunityLogo className="h-8 w-8" />
+                <Rocket className="h-6 w-6" />
                 <span>Apollo Station</span>
             </div>
         </div>
