@@ -225,5 +225,3 @@ export function UserRoles({ isPoppedOut = false, onPopOut, onHide, dragHandlePro
     </>
   );
 }
-
-    

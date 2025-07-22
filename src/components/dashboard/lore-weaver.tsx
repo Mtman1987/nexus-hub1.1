@@ -186,5 +186,3 @@ export function LoreWeaver({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
     </Card>
   );
 }
-
-    

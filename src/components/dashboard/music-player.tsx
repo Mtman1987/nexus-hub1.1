@@ -217,5 +217,3 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
         </>
     );
 }
-
-    
