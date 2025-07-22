@@ -231,7 +231,7 @@ export default function DashboardPage() {
                 </div>
             </div>
 
-            <div className="flex-grow rounded-lg">
+            <div className="flex-grow rounded-lg overflow-hidden">
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                     <SortableContext items={visibleModuleIds} strategy={verticalListSortingStrategy}>
                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 h-full">
@@ -252,11 +252,12 @@ export default function DashboardPage() {
                     </SortableContext>
                      <DragOverlay>
                         {activeId && activeModule ? (
-                          <Card className="h-full w-full flex items-center justify-center">
-                            <CardHeader>
-                              <CardTitle>{activeModule.title}</CardTitle>
-                            </CardHeader>
-                          </Card>
+                            (() => {
+                                const ModuleComponent = activeModule.component;
+                                return (
+                                    <ModuleComponent isPreview={true} />
+                                );
+                            })()
                         ) : null}
                     </DragOverlay>
                 </DndContext>
@@ -284,3 +285,4 @@ export default function DashboardPage() {
     </>
   );
 }
+ 

@@ -38,7 +38,7 @@ export default function RootLayout({
             <SidebarProvider>
               <div className="flex min-h-screen w-full">
                 <Sidebar />
-                <main className="flex-1 flex flex-col overflow-auto bg-background/80">
+                <main className="flex-1 flex flex-col overflow-auto bg-background">
                   <header className="flex h-14 items-center gap-4 border-b bg-card/80 px-4 md:hidden">
                     <MobileSidebar />
                     <h1 className="text-lg font-bold">Apollo Station</h1>
