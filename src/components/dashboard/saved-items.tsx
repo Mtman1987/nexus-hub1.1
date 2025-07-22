@@ -197,7 +197,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
   
   return (
     <>
-    <Card className="h-full flex flex-col bg-card/80">
+    <Card className="flex flex-col bg-card/80" style={{ height: '480px' }}>
       <CardHeader>
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-2 flex-grow">
@@ -353,3 +353,5 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
     </>
   );
 }
+
+    

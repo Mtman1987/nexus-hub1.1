@@ -25,24 +25,23 @@ import { BotPersonality } from '@/components/dashboard/bot-personality';
 import { Fallback } from '@/components/dashboard/fallback';
 import { ImageGenerator } from '@/components/dashboard/image-generator';
 import { MusicPlayer } from '@/components/dashboard/music-player';
-import { cn } from '@/lib/utils';
 
 
 // Define all modules with their components
 const ALL_MODULES_CONFIG = [
-    { id: 'unifiedChat', title: 'Unified Chat', component: UnifiedChat},
-    { id: 'botPersonality', title: 'Bot Personality', component: BotPersonality },
-    { id: 'apiSettings', title: 'API Key Vault', component: ApiSettings },
-    { id: 'logViewer', title: 'Captain\'s Log', component: LogViewer },
-    { id: 'musicPlayer', title: 'Subspace Comms & Music', component: MusicPlayer },
-    { id: 'imageGenerator', title: 'Stargate Imagery', component: ImageGenerator },
-    { id: 'timeZoneConverter', title: 'Time Zone Converter', component: TimeZoneConverter },
-    { id: 'fallback', title: 'Intelligent Fallback', component: Fallback },
-    { id: 'fallbackStrategy', title: 'Fallback Strategy', component: FallbackStrategy},
-    { id: 'userRoles', title: 'Access Control', component: UserRoles },
-    { id: 'websiteViewer', title: 'Website Viewer', component: WebsiteViewer },
-    { id: 'savedItems', title: 'Saved Items', component: SavedItems },
-    { id: 'loreWeaver', title: 'Lore Weaver', component: LoreWeaver },
+    { id: 'unifiedChat', title: 'Unified Chat', component: UnifiedChat, defaultSize: 'col-span-1 lg:col-span-2' },
+    { id: 'botPersonality', title: 'Bot Personality', component: BotPersonality, defaultSize: 'col-span-1' },
+    { id: 'apiSettings', title: 'API Key Vault', component: ApiSettings, defaultSize: 'col-span-1' },
+    { id: 'logViewer', title: 'Captain\'s Log', component: LogViewer, defaultSize: 'col-span-1 lg:col-span-2' },
+    { id: 'musicPlayer', title: 'Subspace Comms & Music', component: MusicPlayer, defaultSize: 'col-span-1' },
+    { id: 'imageGenerator', title: 'Stargate Imagery', component: ImageGenerator, defaultSize: 'col-span-1' },
+    { id: 'timeZoneConverter', title: 'Time Zone Converter', component: TimeZoneConverter, defaultSize: 'col-span-1' },
+    { id: 'fallback', title: 'Intelligent Fallback', component: Fallback, defaultSize: 'col-span-1' },
+    { id: 'fallbackStrategy', title: 'Fallback Strategy', component: FallbackStrategy, defaultSize: 'col-span-1'},
+    { id: 'userRoles', title: 'Access Control', component: UserRoles, defaultSize: 'col-span-1' },
+    { id: 'websiteViewer', title: 'Website Viewer', component: WebsiteViewer, defaultSize: 'col-span-1 lg:col-span-2' },
+    { id: 'savedItems', title: 'Saved Items', component: SavedItems, defaultSize: 'col-span-1 lg:col-span-2' },
+    { id: 'loreWeaver', title: 'Lore Weaver', component: LoreWeaver, defaultSize: 'col-span-1' },
 ];
 const defaultModuleOrder = ALL_MODULES_CONFIG.map(m => m.id);
 
@@ -198,92 +197,91 @@ export default function DashboardPage() {
   const activeModule = activeId ? ALL_MODULES_CONFIG.find(({ id }) => id === activeId) : null;
 
   return (
-    <>
-        <div className="flex-1 flex flex-col p-4 md:p-6 space-y-6 h-full">
-            <div className="flex items-center justify-between flex-shrink-0">
-                <h1 className="text-xl md:text-3xl font-bold tracking-tight">Dashboard</h1>
-                <div className="flex items-center gap-2">
-                    <Button size="sm" onClick={handleSaveLayout}>
-                        <Save className="mr-2 h-4 w-4" />
-                        Save Layout
+    <div className="flex-1 flex flex-col p-4 md:p-6 space-y-6">
+        <div className="flex items-center justify-between flex-shrink-0">
+            <h1 className="text-xl md:text-3xl font-bold tracking-tight text-title-foreground">Dashboard</h1>
+            <div className="flex items-center gap-2">
+                <Button size="sm" onClick={handleSaveLayout}>
+                    <Save className="mr-2 h-4 w-4" />
+                    Save Layout
+                </Button>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                    <Button variant="destructive" size="sm">
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Reset All
                     </Button>
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                        <Button variant="destructive" size="sm">
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Reset All
-                        </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                            This will permanently delete all API keys, settings, and layouts from your browser and close all windows.
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleClearSettings}>
-                            Yes, reset everything
-                            </AlertDialogAction>
-                        </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
-                </div>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                        This will permanently delete all API keys, settings, and layouts from your browser and close all windows.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleClearSettings}>
+                        Yes, reset everything
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </div>
-
-            <div className="flex-grow rounded-lg overflow-hidden p-6">
-                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-                    <SortableContext items={visibleModuleIds} strategy={verticalListSortingStrategy}>
-                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 h-full">
-                            {visibleModuleIds.map(id => {
-                                const moduleConfig = ALL_MODULES_CONFIG.find(m => m.id === id);
-                                if (!moduleConfig) return null;
-                                
-                                return (
-                                    <DraggableModule key={id} id={id} >
-                                      <moduleConfig.component
-                                        onHide={() => handleHideModule(id)} 
-                                        onPopOut={() => handlePopOut(id, moduleConfig.title)}
-                                      />
-                                    </DraggableModule>
-                                );
-                            })}
-                        </div>
-                    </SortableContext>
-                     <DragOverlay>
-                        {activeId && activeModule ? (
-                            (() => {
-                                const ModuleComponent = activeModule.component;
-                                return (
-                                    <ModuleComponent isPreview={true} />
-                                );
-                            })()
-                        ) : null}
-                    </DragOverlay>
-                </DndContext>
-            </div>
-            
-            {trulyHiddenModules.length > 0 && (
-                <Card className="mt-auto bg-card/80">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <LayoutGrid className="h-5 w-5" />
-                            Hidden Modules
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex flex-wrap gap-2">
-                        {trulyHiddenModules.map(module => (
-                            <Button key={module.id} variant="outline" size="sm" onClick={() => handleShowModule(module.id)}>
-                                <Eye className="mr-2 h-4 w-4"/>
-                                {module.title}
-                            </Button>
-                        ))}
-                    </CardContent>
-                </Card>
-            )}
         </div>
-    </>
+
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+            <SortableContext items={visibleModuleIds} strategy={verticalListSortingStrategy}>
+                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {visibleModuleIds.map(id => {
+                        const moduleConfig = ALL_MODULES_CONFIG.find(m => m.id === id);
+                        if (!moduleConfig) return null;
+                        
+                        return (
+                            <DraggableModule key={id} id={id} className={moduleConfig.defaultSize}>
+                              <moduleConfig.component
+                                onHide={() => handleHideModule(id)} 
+                                onPopOut={() => handlePopOut(id, moduleConfig.title)}
+                              />
+                            </DraggableModule>
+                        );
+                    })}
+                </div>
+            </SortableContext>
+             <DragOverlay>
+                {activeId && activeModule ? (
+                    (() => {
+                        const ModuleComponent = activeModule.component;
+                        return (
+                           <div className={activeModule.defaultSize}>
+                             <ModuleComponent isPreview={true} />
+                           </div>
+                        );
+                    })()
+                ) : null}
+            </DragOverlay>
+        </DndContext>
+        
+        {trulyHiddenModules.length > 0 && (
+            <Card className="mt-8 bg-card/80">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-title-foreground">
+                        <LayoutGrid className="h-5 w-5" />
+                        Hidden Modules
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-wrap gap-2">
+                    {trulyHiddenModules.map(module => (
+                        <Button key={module.id} variant="outline" size="sm" onClick={() => handleShowModule(module.id)}>
+                            <Eye className="mr-2 h-4 w-4"/>
+                            {module.title}
+                        </Button>
+                    ))}
+                </CardContent>
+            </Card>
+        )}
+    </div>
   );
 }
- 
+
+    

@@ -9,9 +9,10 @@ import { cn } from '@/lib/utils';
 interface DraggableModuleProps {
   id: string;
   children: React.ReactNode;
+  className?: string;
 }
 
-export function DraggableModule({ id, children }: DraggableModuleProps) {
+export function DraggableModule({ id, children, className }: DraggableModuleProps) {
   const {
     attributes,
     listeners,
@@ -32,8 +33,10 @@ export function DraggableModule({ id, children }: DraggableModuleProps) {
   });
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} className={cn(isDragging && 'opacity-0')}>
+    <div ref={setNodeRef} style={style} {...attributes} className={cn(className, isDragging && 'opacity-0')}>
       {childrenWithProps}
     </div>
   );
 }
+
+    

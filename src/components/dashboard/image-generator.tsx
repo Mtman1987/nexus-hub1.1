@@ -86,7 +86,7 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
     };
 
   return (
-    <Card className="h-full flex flex-col bg-card/80">
+    <Card className="flex flex-col bg-card/80">
       <CardHeader>
         <div className="flex justify-between items-start">
              <div className="flex items-center gap-2 flex-grow">
@@ -167,3 +167,5 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
     </Card>
   );
 }
+
+    

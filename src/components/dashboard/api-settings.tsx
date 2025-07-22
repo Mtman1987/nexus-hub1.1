@@ -395,7 +395,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
   const edenModelsForProvider = popularModels.eden[edenProvider as keyof typeof popularModels.eden] || [];
 
   return (
-    <Card className="h-full flex flex-col bg-card/80">
+    <Card className="flex flex-col bg-card/80">
       <CardHeader>
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-2 flex-grow">
@@ -403,7 +403,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
               <GripVertical />
             </Button>
             <div className='flex-grow'>
-              <CardTitle className="flex items-center gap-2 text-2xl text-title-foreground">
+              <CardTitle className="flex items-center gap-2 text-title-foreground">
                 <ShieldCheck className="h-6 w-6 text-accent" />
                 API Key Vault
               </CardTitle>
@@ -672,3 +672,5 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     </Card>
   );
 }
+
+    

@@ -118,7 +118,7 @@ export function LoreWeaver({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
     };
 
   return (
-    <Card className="h-full flex flex-col bg-card/80">
+    <Card className="flex flex-col bg-card/80">
       <CardHeader>
         <div className="flex justify-between items-start">
              <div className="flex items-center gap-2 flex-grow">
@@ -158,7 +158,7 @@ export function LoreWeaver({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
 
         <div className="flex-grow overflow-y-auto pr-1">
           {result && (
-              <Alert className="h-full flex flex-col">
+              <Alert className="flex flex-col">
                   <div className="flex justify-between items-start shrink-0">
                       <AlertTitle className="flex items-center gap-2">
                           <Wand2 className="h-4 w-4" />
@@ -169,7 +169,7 @@ export function LoreWeaver({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                           Save
                       </Button>
                   </div>
-                  <ScrollArea className="flex-grow mt-2 pr-4">
+                  <ScrollArea className="flex-grow mt-2 pr-4 h-24">
                       <AlertDescription className="whitespace-pre-wrap">{result.response}</AlertDescription>
                   </ScrollArea>
               </Alert>
@@ -186,3 +186,5 @@ export function LoreWeaver({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
     </Card>
   );
 }
+
+    

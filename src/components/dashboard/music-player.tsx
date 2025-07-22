@@ -138,7 +138,7 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     return (
         <>
             <audio ref={audioRef} src={currentTrack?.type === 'audio' ? currentTrack.src : ''} onEnded={nextTrack} />
-            <Card className="h-full flex flex-col bg-card/80">
+            <Card className="flex flex-col bg-card/80">
                 <CardHeader>
                     <div className="flex justify-between items-start">
                         <div className="flex items-center gap-2 flex-grow">
@@ -217,3 +217,5 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
         </>
     );
 }
+
+    
