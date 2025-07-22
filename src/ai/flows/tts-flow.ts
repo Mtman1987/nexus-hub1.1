@@ -11,7 +11,7 @@ import type { AppConfig } from '@/ai/types';
 async function callEdenAiTts(
     config: AppConfig,
     text: string,
-    voice: string
+    voiceId: string
 ): Promise<{ audio: string, logs: FlowLog[] }> {
     const logs: FlowLog[] = [];
     if (!config.edenApiKey) {
@@ -25,7 +25,16 @@ async function callEdenAiTts(
 
     const url = "https://api.edenai.run/v2/audio/text_to_speech";
     
-    const option = voice.startsWith('en-US-Wavenet') ? 'FEMALE' : 'MALE';
+    // Determine provider based on voice ID or fallback to settings
+    const provider = voiceId.toLowerCase().includes('wavenet') || voiceId.toLowerCase().includes('neural') ? "google" : config.ttsProvider || "google";
+    
+    // Simplified logic for option based on common voice naming conventions.
+    // Eden AI's `option` parameter is often 'MALE' or 'FEMALE'.
+    let option = 'MALE';
+    if (voiceId.includes('-F') || voiceId.includes('FEMALE')) {
+        option = 'FEMALE';
+    }
+
 
     const payload = {
         response_as_dict: true,
@@ -35,15 +44,15 @@ async function callEdenAiTts(
         pitch: 0,
         volume: 0,
         sampling_rate: 0,
-        providers: "google", 
+        providers: provider, 
         language: "en-US",
-        option: option, // This is simplified, real API might differ
+        option: option,
         text: text,
-        voice_id: voice // Pass voice ID directly
+        voice_id: voiceId // Pass voice ID directly as per API
     };
 
     try {
-        logs.push({ service: 'Eden', level: 'info', message: `Calling Eden AI TTS with voice: ${voice}` });
+        logs.push({ service: 'Eden', level: 'info', message: `Calling Eden AI TTS with voice: ${voiceId} on provider: ${provider}` });
 
         const response = await fetch(url, {
             method: 'POST',
@@ -57,7 +66,13 @@ async function callEdenAiTts(
         }
 
         const result = await response.json();
-        const audioBase64 = result.google.audio;
+        const providerResult = result[provider];
+        
+        if (!providerResult || providerResult.status !== 'success') {
+            throw new Error(providerResult?.error?.message || `TTS failed for provider ${provider}.`);
+        }
+
+        const audioBase64 = providerResult.audio;
         
         logs.push({ service: 'Eden', level: 'info', message: 'Successfully generated audio via Eden AI.' });
         return { audio: `data:audio/mp3;base64,${audioBase64}`, logs };
@@ -73,10 +88,12 @@ async function callEdenAiTts(
 export async function ttsFlow(input: TtsInput): Promise<TtsOutput> {
     const config: AppConfig = {
         edenApiKey: localStorage.getItem('edenApiKey'),
-        botVoice: localStorage.getItem('botVoice')
+        botVoice: localStorage.getItem('botVoice'),
+        ttsProvider: localStorage.getItem('ttsProvider'),
     };
     
     const { text, voice } = input;
+    // Use the voice passed in the call, fallback to the globally set bot voice, then to a default.
     const voiceToUse = voice || config.botVoice || 'en-US-Wavenet-F';
 
     try {
@@ -87,6 +104,7 @@ export async function ttsFlow(input: TtsInput): Promise<TtsOutput> {
         };
     } catch (error) {
         console.error("TTS Flow Error:", error);
-        throw new Error("Failed to generate text-to-speech audio.");
+        // Let the error propagate so the UI can catch it.
+        throw error;
     }
 }

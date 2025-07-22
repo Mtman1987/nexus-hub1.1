@@ -27,14 +27,19 @@ export type BotPersonalityType = {
   isDefault?: boolean;
 }
 
-const availableVoices = ['Algenib', 'Achernar', 'Spica', 'Sirius', 'Arcturus', 'Canopus', 'Vega', 'Rigel'];
+const availableVoices = [
+    'en-US-Wavenet-F', 'en-US-Wavenet-A', 'en-US-Wavenet-D', 'en-US-Wavenet-B',
+    'en-GB-Wavenet-F', 'en-GB-Wavenet-A', 'en-GB-Wavenet-D', 'en-GB-Wavenet-B',
+    'fr-FR-Wavenet-A', 'fr-FR-Wavenet-B', 'de-DE-Wavenet-A', 'de-DE-Wavenet-F'
+];
+
 
 const defaultPersonalities: BotPersonalityType[] = [
     {
         id: 'default-cosmo', 
         name: 'COSMO', 
         prompt: 'You are COSMO (Central Operating System Management Orbiter), the AI assistant for Apollo Station, the community\'s HQ, created by mtman1987. Your purpose is to act as a creative partner and lore master.',
-        voice: 'Algenib',
+        voice: 'en-US-Wavenet-F',
         isDefault: true,
     }
 ];
@@ -94,7 +99,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
         const selectedPersonality = loadedPersonalities.find((p: BotPersonalityType) => p.id === selectedId);
         if (selectedPersonality) {
             setBotName(selectedPersonality.name);
-            localStorage.setItem('botVoice', selectedPersonality.voice || 'Algenib');
+            localStorage.setItem('botVoice', selectedPersonality.voice || 'en-US-Wavenet-F');
         }
         
         addLog({ service: 'System', level: 'info', message: 'Bot Personality settings loaded.' });
@@ -128,14 +133,17 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
     const selectedPersonality = personalities.find(p => p.id === id);
     if (selectedPersonality) {
         setBotName(selectedPersonality.name);
-        localStorage.setItem('botVoice', selectedPersonality.voice || 'Algenib');
+        localStorage.setItem('botVoice', selectedPersonality.voice || 'en-US-Wavenet-F');
+        localStorage.setItem('botName', selectedPersonality.name);
+        localStorage.setItem('botPersonalityPrompt', selectedPersonality.prompt);
+        window.dispatchEvent(new Event('storage'));
         addLog({ service: 'System', level: 'info', message: `User changed active bot personality to: ${selectedPersonality.name}` });
     }
   };
   
   const handleAddNewPersonality = () => {
     const newId = `personality-${Date.now()}`;
-    const newPersonality: BotPersonalityType = { id: newId, name: 'New Bot', prompt: 'You are a helpful assistant.', voice: 'Algenib'};
+    const newPersonality: BotPersonalityType = { id: newId, name: 'New Bot', prompt: 'You are a helpful assistant.', voice: 'en-US-Wavenet-A'};
     const newPersonalities = [...personalities, newPersonality];
     setPersonalities(newPersonalities);
     setSelectedPersonalityId(newId);
@@ -155,9 +163,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
     }
     const newPersonalities = personalities.filter(p => p.id !== selectedPersonalityId);
     setPersonalities(newPersonalities);
-    const newSelectedId = newPersonalities[0].id;
-    setSelectedPersonalityId(newSelectedId);
-    setBotName(newPersonalities[0].name);
+    handleSelectPersonality(newPersonalities[0].id);
     addLog({ service: 'System', level: 'warn', message: `User deleted bot personality: ${personalityToDelete.name}` });
   };
 
@@ -200,7 +206,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
       id: `imported-${Date.now()}`,
       name: botToImport.name,
       prompt: botToImport.prompt,
-      voice: botToImport.voice || 'Algenib',
+      voice: botToImport.voice || 'en-US-Wavenet-A',
     };
 
     setPersonalities(prev => [...prev, newPersonality]);
@@ -220,7 +226,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
       if (currentPersonality) {
         localStorage.setItem('botPersonalityPrompt', currentPersonality.prompt);
         localStorage.setItem('botName', currentPersonality.name);
-        localStorage.setItem('botVoice', currentPersonality.voice || 'Algenib');
+        localStorage.setItem('botVoice', currentPersonality.voice || 'en-US-Wavenet-F');
       }
 
       toast({
@@ -307,7 +313,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                            <div className="space-y-2">
                               <Label htmlFor="bot-voice">Voice</Label>
                               <Select 
-                                  value={selectedPersonality?.voice || 'Algenib'}
+                                  value={selectedPersonality?.voice || 'en-US-Wavenet-F'}
                                   onValueChange={(value) => handlePersonalityChange('voice', value)}
                                   disabled={isSelectedPersonalityDefault}
                               >
