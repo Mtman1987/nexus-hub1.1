@@ -122,5 +122,3 @@ export function WebsiteViewer({ isPoppedOut = false, onPopOut, onHide, dragHandl
     </Card>
   );
 }
-
-    

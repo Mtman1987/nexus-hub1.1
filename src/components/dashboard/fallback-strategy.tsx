@@ -95,5 +95,3 @@ export function FallbackStrategy({ onPopOut, isPoppedOut = false, onHide, dragHa
     </Card>
   );
 }
-
-    

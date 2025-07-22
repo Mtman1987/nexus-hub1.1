@@ -353,5 +353,3 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
     </>
   );
 }
-
-    

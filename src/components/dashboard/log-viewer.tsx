@@ -225,5 +225,3 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
     </>
   );
 }
-
-    
