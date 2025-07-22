@@ -54,8 +54,9 @@ const SortableModule = ({ id, children }: { id: string, children: React.ReactNod
         transform: CSS.Transform.toString(transform),
         transition,
     };
+    // Pass the listeners to the child component as dragHandleProps
     return (
-        <div ref={setNodeRef} style={style} {...attributes}>
+        <div ref={setNodeRef} style={style} {...attributes} className="h-[400px] xl:h-[450px]">
             {React.cloneElement(children as React.ReactElement, { dragHandleProps: listeners })}
         </div>
     );
@@ -255,11 +256,13 @@ export default function DashboardPage() {
                                     const moduleConfig = ALL_MODULES_CONFIG.find(m => m.id === id);
                                     if (!moduleConfig) return null;
                                     
+                                    const ModuleComponent = moduleConfig.component;
                                     return (
                                         <SortableModule key={id} id={id}>
-                                            <div className="relative h-[400px] xl:h-[450px]">
-                                                {/* The ModuleComponent is the child that receives dragHandleProps via cloneElement */}
-                                            </div>
+                                           <ModuleComponent 
+                                                onPopOut={() => handlePopOut(id, moduleConfig.title)}
+                                                onHide={() => handleHideModule(id)}
+                                            />
                                         </SortableModule>
                                     );
                                 })}
