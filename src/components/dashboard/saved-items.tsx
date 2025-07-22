@@ -308,7 +308,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
     </Card>
 
     {/* LORE EDIT DIALOG */}
-    <EditDialog open={!!editingLore} onOpenChange={(isOpen) => !isOpen && setEditingLore(null)}>
+    <Dialog open={!!editingLore} onOpenChange={(isOpen) => !isOpen && setEditingLore(null)}>
         <EditDialogContent className="max-w-2xl">
             <EditDialogHeader>
                 <EditDialogTitle>Finalize Lore Entry</EditDialogTitle>
@@ -349,7 +349,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                 </Button>
             </EditDialogFooter>
         </EditDialogContent>
-    </EditDialog>
+    </Dialog>
     </>
   );
 }
