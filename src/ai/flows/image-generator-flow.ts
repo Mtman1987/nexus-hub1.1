@@ -24,7 +24,7 @@ async function optimizePrompt(config: AppConfig, text: string, targetProvider: s
     const headers = { "Authorization": `Bearer ${config.edenApiKey}` };
 
     try {
-        const response = await fetch(url, { method: 'POST', json: payload, headers });
+        const response = await fetch(url, { method: 'POST', body: JSON.stringify(payload), headers });
         if (!response.ok) {
             const errorBody = await response.text();
             throw new Error(`Prompt optimization failed with status ${response.status}: ${errorBody}`);
@@ -116,18 +116,22 @@ export async function imageGeneratorFlow(input: ImageGeneratorInput): Promise<Im
     const { prompt, provider, resolution, numImages, optimize } = input;
     let finalPrompt = prompt;
     let enhancedPrompt: string | undefined = undefined;
+    let allLogs: FlowLog[] = [];
 
     if (optimize) {
         const optimizationResult = await optimizePrompt(config, prompt, provider);
         finalPrompt = optimizationResult.result;
         enhancedPrompt = finalPrompt;
+        allLogs = [...allLogs, ...optimizationResult.logs];
     }
     
     const { images, logs } = await callEdenAiImage(config, finalPrompt, provider, resolution, numImages);
+    allLogs = [...allLogs, ...logs];
 
     return {
         images: images,
         enhancedPrompt: enhancedPrompt,
         selectedProvider: provider,
+        logs: allLogs,
     };
 }

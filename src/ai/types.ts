@@ -79,6 +79,7 @@ export interface ImageGeneratorOutput {
     images: { image_resource_url: string }[];
     enhancedPrompt?: string;
     selectedProvider: string;
+    logs: FlowLog[];
 }
 
 
@@ -128,6 +129,7 @@ export type TtsInput = z.infer<typeof TtsInputSchema>;
 
 export const TtsOutputSchema = z.object({
   media: z.string().describe("The audio data URI."),
+  logs: z.any()
 });
 export type TtsOutput = z.infer<typeof TtsOutputSchema>;
 

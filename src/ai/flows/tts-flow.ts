@@ -25,10 +25,6 @@ async function callEdenAiTts(
 
     const url = "https://api.edenai.run/v2/audio/text_to_speech";
     
-    // NOTE: Eden AI has different voice models per provider. 
-    // This example uses Google's, but you could add logic to select others.
-    // A mapping would be needed for voice names to provider voice IDs.
-    // For simplicity, we'll hardcode a Google voice model.
     const option = voice.startsWith('en-US-Wavenet') ? 'FEMALE' : 'MALE';
 
     const payload = {
@@ -84,9 +80,10 @@ export async function ttsFlow(input: TtsInput): Promise<TtsOutput> {
     const voiceToUse = voice || config.botVoice || 'en-US-Wavenet-F';
 
     try {
-        const { audio } = await callEdenAiTts(config, text, voiceToUse);
+        const { audio, logs } = await callEdenAiTts(config, text, voiceToUse);
         return {
             media: audio,
+            logs
         };
     } catch (error) {
         console.error("TTS Flow Error:", error);

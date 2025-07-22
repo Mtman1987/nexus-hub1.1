@@ -5,9 +5,13 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PopOutButton } from './pop-out-button';
-import { Music, Play, Pause, Rewind, FastForward, GripVertical, EyeOff, Volume2, VolumeX } from 'lucide-react';
+import { Music, Play, Pause, Rewind, FastForward, GripVertical, EyeOff, Volume2, VolumeX, Mic, Loader2, Wand2 } from 'lucide-react';
 import { Slider } from '../ui/slider';
 import { useLogs } from '@/context/LogContext';
+import { getTTSAudio } from '@/services/ai';
+import { useToast } from '@/hooks/use-toast';
+import { Textarea } from '../ui/textarea';
+import { Separator } from '../ui/separator';
 
 const initialPlaylist = [
     { title: "Lost in the Cosmos", artist: "Stellardrone", src: "https://www.chosic.com/wp-content/uploads/2021/05/Stellardrone-Lost-In-The-Cosmos.mp3", type: 'audio' },
@@ -25,6 +29,7 @@ interface MusicPlayerProps {
 
 export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleProps, isPreview }: MusicPlayerProps) {
     const { addLog } = useLogs();
+    const { toast } = useToast();
     const [playlist, setPlaylist] = useState(initialPlaylist);
     const [isPlaying, setIsPlaying] = useState(false);
     const [trackIndex, setTrackIndex] = useState(0);
@@ -33,7 +38,12 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     const [duration, setDuration] = useState(0);
     const [currentTime, setCurrentTime] = useState(0);
 
+    const [ttsText, setTtsText] = useState('');
+    const [isTtsLoading, setIsTtsLoading] = useState(false);
+    
     const audioRef = useRef<HTMLAudioElement>(null);
+    const ttsAudioRef = useRef<HTMLAudioElement>(null);
+
 
      useEffect(() => {
         if (isPreview) return;
@@ -54,7 +64,6 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                     details: `URL: ${event.data.payload}`,
                 });
                 setPlaylist(prev => [...prev, newTrack]);
-                // Optional: jump to the new track
                 setTrackIndex(playlist.length);
                 setIsPlaying(false);
             }
@@ -81,7 +90,13 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
         audio.addEventListener('loadeddata', setAudioData);
         audio.addEventListener('timeupdate', setAudioTime);
 
-        audio.volume = isMuted ? 0 : volume;
+        if (isMuted) {
+            audio.volume = 0;
+            if (ttsAudioRef.current) ttsAudioRef.current.volume = 0;
+        } else {
+            audio.volume = volume;
+            if (ttsAudioRef.current) ttsAudioRef.current.volume = volume;
+        }
 
         return () => {
             audio.removeEventListener('loadeddata', setAudioData);
@@ -90,7 +105,9 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     }, [volume, isMuted, trackIndex]);
 
     const playAudio = useCallback(() => {
-        audioRef.current?.play().catch(e => console.error("Audio play failed:", e));
+        if (audioRef.current?.src) {
+            audioRef.current?.play().catch(e => console.error("Audio play failed:", e));
+        }
     }, []);
 
     const pauseAudio = useCallback(() => {
@@ -98,18 +115,20 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     }, []);
 
     const togglePlayPause = () => {
+        if (!audioRef.current) return;
         const currentTrack = playlist[trackIndex];
         if (currentTrack.type === 'youtube') {
             window.open(currentTrack.src, '_blank');
             return;
         }
-
-        if (isPlaying) {
-            pauseAudio();
+        
+        const newIsPlaying = !isPlaying;
+        setIsPlaying(newIsPlaying);
+        if (newIsPlaying) {
+           playAudio();
         } else {
-            playAudio();
+           pauseAudio();
         }
-        setIsPlaying(prev => !prev);
     };
 
     const nextTrack = () => {
@@ -117,7 +136,6 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
         setTrackIndex(newIndex);
         if (playlist[newIndex].type === 'audio') {
             setIsPlaying(true);
-            // Need a small delay to allow the new src to load
             setTimeout(playAudio, 50);
         } else {
             setIsPlaying(false);
@@ -136,14 +154,51 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     };
 
     const handleVolumeChange = (value: number[]) => {
-        setVolume(value[0]);
-        if (isMuted) setIsMuted(false);
+        const newVolume = value[0];
+        setVolume(newVolume);
+        if(audioRef.current) audioRef.current.volume = newVolume;
+        if(ttsAudioRef.current) ttsAudioRef.current.volume = newVolume;
+        if (isMuted && newVolume > 0) setIsMuted(false);
+        if (newVolume === 0) setIsMuted(true);
     };
 
     const toggleMute = () => {
-        setIsMuted(prev => !prev);
+        const newMuted = !isMuted;
+        setIsMuted(newMuted);
+        const newVolume = newMuted ? 0 : volume;
+        if(audioRef.current) audioRef.current.volume = newVolume;
+        if(ttsAudioRef.current) ttsAudioRef.current.volume = newVolume;
     };
     
+    const handleSpeak = async () => {
+        if (!ttsText.trim()) return;
+        setIsTtsLoading(true);
+        addLog({ service: 'TTS', level: 'info', message: 'Generating speech from text.' });
+        try {
+            const voice = localStorage.getItem('botVoice') || 'Algenib';
+            const { media } = await getTTSAudio({ text: ttsText, voice });
+
+            if (ttsAudioRef.current) {
+                ttsAudioRef.current.src = media;
+                // Pause music if it's playing
+                if (isPlaying) {
+                   pauseAudio();
+                }
+                ttsAudioRef.current.play().catch(e => {
+                    toast({ title: 'Audio Error', description: 'Could not play TTS audio.', variant: 'destructive' });
+                    console.error(e);
+                });
+            }
+        } catch (e) {
+            const err = e as Error;
+            toast({ title: "TTS Error", description: err.message, variant: 'destructive' });
+            addLog({ service: 'TTS', level: 'error', message: 'Failed to generate speech.', details: err.stack });
+        } finally {
+            setIsTtsLoading(false);
+        }
+    };
+
+
     const formatTime = (time: number) => {
         if (isNaN(time)) return '0:00';
         const minutes = Math.floor(time / 60);
@@ -156,6 +211,7 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     return (
         <>
             <audio ref={audioRef} src={currentTrack?.type === 'audio' ? currentTrack.src : ''} onEnded={nextTrack} />
+            <audio ref={ttsAudioRef} />
             <Card className="flex flex-col bg-card/80">
                 <CardHeader>
                     <div className="flex justify-between items-start">
@@ -169,7 +225,7 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                                     Subspace Comms
                                 </CardTitle>
                                 <CardDescription>
-                                    Ambient music for deep space focus.
+                                    Music and Text-to-Speech engine.
                                 </CardDescription>
                             </div>
                         </div>
@@ -183,7 +239,7 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                         </div>
                     </div>
                 </CardHeader>
-                <CardContent className="flex-grow flex flex-col items-center justify-center text-center space-y-4">
+                <CardContent className="flex-grow flex flex-col justify-around text-center space-y-4">
                    <div className="w-full h-24 bg-cover bg-center rounded-lg flex items-center justify-center" style={{backgroundImage: 'url(https://placehold.co/600x400.png)', backgroundSize: 'cover'}} data-ai-hint="nebula space">
                        <div className="p-4 rounded-lg bg-black/50 backdrop-blur-sm text-white">
                             <p className="font-bold text-lg">{currentTrack?.title || "No Track"}</p>
@@ -217,7 +273,7 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                         </Button>
                    </div>
                    
-                    <div className="flex items-center gap-2 w-full pt-4">
+                    <div className="flex items-center gap-2 w-full pt-2">
                         <Button variant="ghost" size="icon" onClick={toggleMute}>
                            {isMuted ? <VolumeX className="h-5 w-5"/> : <Volume2 className="h-5 w-5"/>}
                         </Button>
@@ -227,9 +283,28 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                             step={0.01}
                             onValueChange={handleVolumeChange}
                             className="w-full"
-                            disabled={currentTrack?.type === 'youtube'}
                         />
                     </div>
+                    
+                    <Separator />
+                    
+                    <div className="space-y-2 w-full">
+                        <div className="flex items-center gap-2">
+                            <Mic className="h-5 w-5" />
+                            <h4 className="font-semibold text-left">Text-to-Speech</h4>
+                        </div>
+                        <Textarea 
+                            placeholder="Enter text to generate speech..." 
+                            value={ttsText}
+                            onChange={(e) => setTtsText(e.target.value)}
+                            className="h-20"
+                        />
+                        <Button onClick={handleSpeak} disabled={isTtsLoading || !ttsText} className="w-full">
+                            {isTtsLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Wand2 className="mr-2 h-4 w-4" />}
+                            Speak
+                        </Button>
+                    </div>
+
                 </CardContent>
             </Card>
         </>

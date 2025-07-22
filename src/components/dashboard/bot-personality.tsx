@@ -15,6 +15,9 @@ import { useBotName } from '@/context/BotNameContext';
 import { Textarea } from '../ui/textarea';
 import { Separator } from '../ui/separator';
 import { ScrollArea } from '../ui/scroll-area';
+import { collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc, query, getDocs } from "firebase/firestore";
+import { db } from '@/lib/firebase';
+
 
 export type BotPersonalityType = {
   id: string;
@@ -23,8 +26,6 @@ export type BotPersonalityType = {
   voice?: string;
   isDefault?: boolean;
 }
-
-const BOT_STORE_KEY = 'apollo-station-bot-store';
 
 const availableVoices = ['Algenib', 'Achernar', 'Spica', 'Sirius', 'Arcturus', 'Canopus', 'Vega', 'Rigel'];
 
@@ -53,19 +54,32 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
 
   const [personalities, setPersonalities] = useState<BotPersonalityType[]>(defaultPersonalities);
   const [selectedPersonalityId, setSelectedPersonalityId] = useState<string | null>(defaultPersonalities[0].id);
-  const [botStore, setBotStore] = useState<Omit<BotPersonalityType, 'id' | 'isDefault'>[]>([]);
+  const [botStore, setBotStore] = useState<BotPersonalityType[]>([]);
 
-  const loadBotStore = useCallback(() => {
+  // Load bot store from Firebase
+  useEffect(() => {
+    if (isPreview) return;
     try {
-        const storedBots = localStorage.getItem(BOT_STORE_KEY);
-        if (storedBots) {
-            setBotStore(JSON.parse(storedBots));
-        }
+      const q = query(collection(db, "bot-personalities"));
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const store: BotPersonalityType[] = [];
+        querySnapshot.forEach((doc) => {
+          store.push({ id: doc.id, ...doc.data() } as BotPersonalityType);
+        });
+        setBotStore(store);
+      });
+      return () => unsubscribe();
     } catch (e) {
-        console.error("Failed to load bot store", e);
+      console.error("Firebase connection error. Have you configured src/lib/firebase.ts?", e)
+      toast({
+        title: "Firebase Error",
+        description: "Could not connect to the Bot Store. Please ensure your firebase.ts config is correct.",
+        variant: "destructive"
+      })
     }
-  }, []);
+  }, [isPreview, toast]);
 
+  // Load local personalities
   useEffect(() => {
     if (isPreview) return;
     try {
@@ -80,15 +94,15 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
         const selectedPersonality = loadedPersonalities.find((p: BotPersonalityType) => p.id === selectedId);
         if (selectedPersonality) {
             setBotName(selectedPersonality.name);
+            localStorage.setItem('botVoice', selectedPersonality.voice || 'Algenib');
         }
         
-        loadBotStore();
         addLog({ service: 'System', level: 'info', message: 'Bot Personality settings loaded.' });
     } catch (error) {
         console.error("Failed to load personality settings", error);
         addLog({ service: 'System', level: 'error', message: 'Failed to load personality settings from local storage.', details: error instanceof Error ? error.stack : String(error) });
     }
-  }, [setBotName, addLog, loadBotStore, isPreview]);
+  }, [setBotName, addLog, isPreview]);
   
   const handlePersonalityChange = (field: 'name' | 'prompt' | 'voice', value: string) => {
     if (!selectedPersonalityId) return;
@@ -114,6 +128,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
     const selectedPersonality = personalities.find(p => p.id === id);
     if (selectedPersonality) {
         setBotName(selectedPersonality.name);
+        localStorage.setItem('botVoice', selectedPersonality.voice || 'Algenib');
         addLog({ service: 'System', level: 'info', message: `User changed active bot personality to: ${selectedPersonality.name}` });
     }
   };
@@ -146,7 +161,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
     addLog({ service: 'System', level: 'warn', message: `User deleted bot personality: ${personalityToDelete.name}` });
   };
 
-  const handleShareToStore = () => {
+  const handleShareToStore = async () => {
     const personalityToExport = personalities.find(p => p.id === selectedPersonalityId);
     if (!personalityToExport || personalityToExport.isDefault) {
         toast({ title: "Share Failed", description: "You can only share custom personalities.", variant: "destructive" });
@@ -155,19 +170,20 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
 
     const { id, isDefault, ...exportableData } = personalityToExport;
     
-    const currentStore = JSON.parse(localStorage.getItem(BOT_STORE_KEY) || '[]');
-    // Avoid duplicates
-    if (currentStore.some((p: any) => p.name === exportableData.name)) {
+    // Check for duplicates
+    if (botStore.some((p: any) => p.name === exportableData.name)) {
          toast({ title: "Already Shared", description: `A personality named '${exportableData.name}' already exists in the store.`, variant: "destructive" });
          return;
     }
 
-    const newStore = [...currentStore, exportableData];
-    localStorage.setItem(BOT_STORE_KEY, JSON.stringify(newStore));
-    setBotStore(newStore);
-
-    toast({ title: "Personality Shared", description: `${exportableData.name} is now available in the Bot Store for other users.` });
-    addLog({ service: 'System', level: 'info', message: `User shared personality to store: ${exportableData.name}` });
+    try {
+        await addDoc(collection(db, "bot-personalities"), exportableData);
+        toast({ title: "Personality Shared", description: `${exportableData.name} is now available in the shared Bot Store.` });
+        addLog({ service: 'System', level: 'info', message: `User shared personality to store: ${exportableData.name}` });
+    } catch (e) {
+        console.error("Error adding document: ", e);
+        toast({ title: "Share Failed", description: "Could not share personality to the store. Is firebase.ts configured correctly?", variant: "destructive" });
+    }
   };
 
 
@@ -209,7 +225,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
 
       toast({
         title: "Personalities Saved",
-        description: "Your bot personalities have been updated.",
+        description: "Your bot personalities have been updated locally.",
       });
       addLog({ service: 'System', level: 'info', message: 'Bot personalities saved by user.' });
       window.dispatchEvent(new Event('storage'));
@@ -327,7 +343,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
               <Separator />
               
               <div className="space-y-2">
-                  <Label>Bot Store</Label>
+                  <Label>Shared Bot Store</Label>
                    <div className="flex items-center gap-2">
                        <Select onValueChange={handleImportFromStore}>
                           <SelectTrigger>
@@ -339,7 +355,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                           <SelectContent>
                              {botStore.length > 0 ? (
                                botStore.map(p => (
-                                  <SelectItem key={p.name} value={p.name}>{p.name}</SelectItem>
+                                  <SelectItem key={p.id} value={p.name}>{p.name}</SelectItem>
                               ))
                              ) : (
                               <div className="p-2 text-sm text-muted-foreground">Store is empty.</div>
@@ -356,7 +372,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
              <div className="mt-auto flex justify-end pt-4 border-t">
                 <Button type="submit" form="bot-personality-form">
                   <Save className="mr-2 h-4 w-4" />
-                  Save All
+                  Save Changes
                 </Button>
             </div>
           </form>
