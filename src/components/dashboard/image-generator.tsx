@@ -138,17 +138,30 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
                     <p className="text-xs">This may take a moment.</p>
                 </div>
             ) : result?.images?.length ? (
-                <div className="w-full h-full grid grid-cols-2 gap-2">
-                    {result.images.map((img, index) => (
-                        <div key={index} className="relative group">
-                            <img src={img.image_resource_url} alt={`Generated image ${index + 1}`} className="w-full h-full object-cover rounded-md" />
-                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                <Button variant="outline" size="icon" onClick={() => handleViewImage(img.image_resource_url)}>
-                                    <ExternalLink className="h-4 w-4" />
-                                </Button>
-                            </div>
+                <div className="w-full h-full">
+                {result.images.length === 1 ? (
+                    <div className="relative group w-full h-full">
+                        <img src={result.images[0].image_resource_url} alt="Generated image" className="w-full h-full object-contain rounded-md" />
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <Button variant="outline" size="icon" onClick={() => handleViewImage(result.images[0].image_resource_url)}>
+                                <ExternalLink className="h-4 w-4" />
+                            </Button>
                         </div>
-                    ))}
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-2 gap-2 h-full">
+                        {result.images.map((img, index) => (
+                            <div key={index} className="relative group">
+                                <img src={img.image_resource_url} alt={`Generated image ${index + 1}`} className="w-full h-full object-cover rounded-md" />
+                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <Button variant="outline" size="icon" onClick={() => handleViewImage(img.image_resource_url)}>
+                                        <ExternalLink className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
                 </div>
             ) : (
                 <div className="text-center text-muted-foreground">
