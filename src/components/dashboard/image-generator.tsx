@@ -5,13 +5,12 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Wand2, GripVertical, EyeOff, Image as ImageIcon, Info, ExternalLink, Cpu } from 'lucide-react';
+import { Loader2, Wand2, GripVertical, EyeOff, Image as ImageIcon, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { PopOutButton } from './pop-out-button';
 import { useLogs } from '@/context/LogContext';
 import { generateImage } from '@/services/ai';
 import type { ImageGeneratorOutput } from '@/ai/types';
-import { Alert, AlertTitle, AlertDescription } from '../ui/alert';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 
@@ -34,7 +33,7 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
         setIsLoading(true);
         setResult(null);
 
-        const logDetails = `Initial Prompt: "${prompt.substring(0, 100)}..."`;
+        const logDetails = `Prompt: "${prompt.substring(0, 100)}..."`;
         addLog({ service: 'Image Generator', level: 'info', message: "User requested an image.", details: logDetails });
         
         try {
@@ -52,14 +51,14 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
 
             const response = await generateImage({ prompt });
             setResult(response);
-            addLog({ service: 'Image Generator', level: 'info', message: 'Image successfully generated.', details: `Provider: ${response.selectedProvider}, Enhanced Prompt: ${response.enhancedPrompt}` });
+            addLog({ service: 'Image Generator', level: 'info', message: 'Image successfully generated.', details: `Provider: ${response.selectedProvider}` });
 
         } catch (error) {
             console.error(error);
             const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
             toast({
                 title: "Image Generation Failed",
-                description: "An unexpected error occurred. Check the Captain's Log for details.",
+                description: errorMessage,
                 variant: "destructive"
             });
             addLog({ service: 'Image Generator', level: 'error', message: `Image generation failed: ${errorMessage}`, details: error instanceof Error ? error.stack : String(error) });
@@ -138,22 +137,6 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
             )}
         </div>
         
-        {result && (
-             <div className="space-y-2 shrink-0">
-                <Alert variant="default" className="text-xs">
-                    <Cpu className="h-4 w-4" />
-                    <AlertTitle>Provider Selected: <span className='font-bold capitalize'>{result.selectedProvider}</span></AlertTitle>
-                </Alert>
-                <Alert variant="default" className="text-xs">
-                    <Info className="h-4 w-4" />
-                    <AlertTitle>Enhanced Prompt Used</AlertTitle>
-                    <AlertDescription>
-                        {result.enhancedPrompt}
-                    </AlertDescription>
-                </Alert>
-             </div>
-        )}
-
         <div className="space-y-2 mt-auto shrink-0">
             <Textarea 
                 id="prompt" 
