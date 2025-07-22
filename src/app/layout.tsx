@@ -27,7 +27,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
         <meta name="theme-color" content="#1A1A1A" />
       </head>
-      <body className="font-body antialiased bg-transparent text-foreground">
+      <body className="font-body antialiased text-foreground">
         <div className="fixed top-0 left-0 w-full h-full starfield -z-10">
            <div className="planet"></div>
            <div className="shooting-star" style={{ top: '10vh', left: '40vw', animationDelay: '-1s' }}></div>
