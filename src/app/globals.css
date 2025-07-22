@@ -130,14 +130,14 @@
 
 @keyframes shooting-star-reverse-anim {
   0% {
-    transform: rotate(135deg) translateX(50vw);
+    transform: rotate(45deg) translateX(50vw);
     opacity: 1;
   }
   70% {
     opacity: 1;
   }
   100% {
-    transform: rotate(135deg) translateX(-50vw);
+    transform: rotate(45deg) translateX(-50vw);
     opacity: 0;
   }
 }
