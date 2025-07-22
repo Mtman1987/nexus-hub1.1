@@ -39,7 +39,7 @@ const ALL_MODULES_CONFIG = [
     { id: 'fallback', title: 'Intelligent Fallback', component: Fallback },
     { id: 'fallbackStrategy', title: 'Fallback Strategy', component: FallbackStrategy},
     { id: 'userRoles', title: 'Access Control', component: UserRoles },
-    // { id: 'websiteViewer', title: 'Website Viewer', component: WebsiteViewer },
+    { id: 'websiteViewer', title: 'Website Viewer', component: WebsiteViewer },
     { id: 'savedItems', title: 'Saved Items', component: SavedItems },
     { id: 'loreWeaver', title: 'Lore Weaver', component: LoreWeaver },
 ];
@@ -250,7 +250,7 @@ export default function DashboardPage() {
                             })}
                         </div>
                     </SortableContext>
-                     <DragOverlay>
+                     <DragOverlay style={{ zIndex: -1 }}>
                         {activeId && activeModule ? (
                           <Card className="h-full w-full bg-primary/50 flex items-center justify-center">
                             <CardHeader>

@@ -102,17 +102,19 @@ export function WebsiteViewer({ isPoppedOut = false, onPopOut, onHide, dragHandl
           </div>
         </CardHeader>
         <CardContent className="flex-grow p-0 overflow-hidden bg-card">
+          <div className="w-full h-full rounded-b-lg overflow-hidden">
             {siteKeys.map(key => (
               <TabsContent key={key} value={key} className="h-full mt-0">
                   <iframe
                     key={`${key}-${iframeKey}`}
                     src={currentUrl}
-                    className="w-full h-full border-0 rounded-b-lg"
+                    className="w-full h-full border-0"
                     title={`Live view of ${SITES[key as keyof typeof SITES].name}`}
                     sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
                   />
               </TabsContent>
             ))}
+          </div>
         </CardContent>
       </Tabs>
     </Card>
