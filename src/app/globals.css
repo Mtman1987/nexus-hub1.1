@@ -5,7 +5,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 0%;
+    --background: 262 52% 10%;
     --foreground: 0 0% 98%;
     --card: 262 52% 20% / 0.8;
     --card-foreground: 0 0% 98%;
@@ -41,7 +41,7 @@
 }
 
 .starfield {
-  background-color: hsl(262 52% 10%);
+  background-color: hsl(var(--background));
   background-image:
     radial-gradient(ellipse at center, rgba(255, 239, 186, 0.1) 0%, rgba(138, 43, 226, 0.1) 40%, transparent 70%), /* Yellow-to-purple nebula fog */
     radial-gradient(2px 2px at 20% 30%, hsla(0, 0%, 100%, 0.4), transparent), /* Stars layer 1 */
