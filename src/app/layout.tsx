@@ -28,15 +28,13 @@ export default function RootLayout({
         <meta name="theme-color" content="#1A1A1A" />
       </head>
       <body className="font-body antialiased text-foreground">
-        <div className="fixed top-0 left-0 w-full h-full -z-5">
-           <div className="planet"></div>
-           <div className="shooting-star" style={{ top: '10vh', left: '40vw', animationDelay: '-1s' }}></div>
-           <div className="shooting-star" style={{ top: '50vh', left: '60vw', animationDelay: '-3.4s' }}></div>
-           <div className="shooting-star" style={{ top: '80vh', left: '90vw', animationDelay: '-5.8s' }}></div>
-           <div className="shooting-star-reverse" style={{ top: '20vh', left: '10vw', animationDelay: '-2.2s' }}></div>
-           <div className="shooting-star-reverse" style={{ top: '60vh', left: '80vw', animationDelay: '-4.1s' }}></div>
-           <div className="shooting-star-reverse" style={{ top: '90vh', left: '30vw', animationDelay: '-0.5s' }}></div>
-        </div>
+        <div className="planet"></div>
+        <div className="shooting-star" style={{ top: '10vh', left: '40vw', animationDelay: '-1s' }}></div>
+        <div className="shooting-star" style={{ top: '50vh', left: '60vw', animationDelay: '-3.4s' }}></div>
+        <div className="shooting-star" style={{ top: '80vh', left: '90vw', animationDelay: '-5.8s' }}></div>
+        <div className="shooting-star-reverse" style={{ top: '20vh', left: '10vw', animationDelay: '-2.2s' }}></div>
+        <div className="shooting-star-reverse" style={{ top: '60vh', left: '80vw', animationDelay: '-4.1s' }}></div>
+        <div className="shooting-star-reverse" style={{ top: '90vh', left: '30vw', animationDelay: '-0.5s' }}></div>
         <LogProvider>
           <BotNameProvider>
             <SidebarProvider>
