@@ -152,7 +152,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
         'discordWebhook', 'streamerbotServerAddress', 'streamerbotServerPort', 
         'streamerbotRequestType', 'streamerbotActionName', 'streamerbotVariableName',
         'edenApiKey', 'googleApiKey', 'openaiApiKey', 'groqApiKey',
-        'edenAiModelName', 'googleModelName', 'openaiModelName', 'groqModelName',
+        'edenAiModel', 'googleModelName', 'openaiModelName', 'groqModelName',
         'providerStatus', 'fallbackStrategy', 'botPersonalityPrompt', 'botName', 'botVoice',
         'remoteHubAddress', 'remoteAccessSecret'
       ];
@@ -487,3 +487,5 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
 });
 
 UnifiedChat.displayName = 'UnifiedChat';
+
+    

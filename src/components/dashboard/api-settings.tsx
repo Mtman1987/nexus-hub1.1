@@ -406,8 +406,17 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
 
   const timeFormatter = new Intl.DateTimeFormat('en', { minute: '2-digit', second: '2-digit' });
 
-  const edenProvider = settings.edenAiProvider || 'openai';
+  const getEdenProviderFromModel = () => {
+    const model = settings.edenAiModel || defaultModels.edenAiModel;
+    if (model.includes('/')) {
+        return model.split('/')[0];
+    }
+    return 'openai'; // Fallback
+  };
+
+  const edenProvider = getEdenProviderFromModel();
   const edenModelsForProvider = popularModels.eden[edenProvider as keyof typeof popularModels.eden] || [];
+
 
   return (
     <Card className="flex flex-col bg-card/80">
@@ -500,7 +509,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="eden-provider">Provider via Eden</Label>
-                                    <Select value={settings.edenAiProvider || 'openai'} onValueChange={(value) => handleInputChange('edenAiProvider', value)} disabled={isLocked}>
+                                    <Select value={edenProvider} onValueChange={(value) => handleInputChange('edenAiModel', `${value}/${popularModels.eden[value as keyof typeof popularModels.eden][0]}`)} disabled={isLocked}>
                                         <SelectTrigger><SelectValue placeholder="Select a provider..." /></SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="openai">OpenAI</SelectItem>
@@ -513,7 +522,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="eden-model">Model Name via Eden</Label>
-                                    <Select value={settings.edenAiModel} onValueChange={(value) => handleInputChange('edenAiModel', value)} disabled={isLocked}>
+                                    <Select value={settings.edenAiModel || defaultModels.edenAiModel} onValueChange={(value) => handleInputChange('edenAiModel', value)} disabled={isLocked}>
                                         <SelectTrigger><SelectValue placeholder="Select a model..." /></SelectTrigger>
                                         <SelectContent>
                                         {edenModelsForProvider.map(model => (
@@ -735,3 +744,5 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     </Card>
   );
 }
+
+    
