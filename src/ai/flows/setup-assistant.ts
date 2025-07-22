@@ -28,8 +28,7 @@ export async function setupAssistantFlow(input: SetupAssistantInput): Promise<{r
     const { text, logs } = await callEdenAiChat(
         input.config,
         [
-            { role: 'user', text: systemPrompt },
-            { role: 'assistant', text: 'Acknowledged. I will provide my answer in the requested JSON format.' },
+            { role: 'system', text: systemPrompt },
             { role: 'user', text: userPrompt }
         ],
         true

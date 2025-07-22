@@ -22,8 +22,7 @@ export async function loreWeaverFlow(input: LoreWeaverInput): Promise<{response:
     const { text, logs } = await callEdenAiChat(
         input.config,
         [
-            { role: 'user', text: systemPrompt },
-            { role: 'assistant', text: 'Acknowledged. I will provide my response in the requested JSON format.' },
+            { role: 'system', text: systemPrompt },
             { role: 'user', text: userPrompt }
         ],
         true

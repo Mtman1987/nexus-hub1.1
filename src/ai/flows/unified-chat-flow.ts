@@ -7,7 +7,7 @@
  * - unifiedChat - The main function to handle chat messages.
  */
 import type { UnifiedChatInput, UnifiedChatOutput, FlowLog } from '@/ai/types';
-import { callEdenAiChat } from '../utils/eden-ai';
+import { callEdenAiChat, EdenAiChatMessage } from '../utils/eden-ai';
 
 
 async function sendToDiscordWebhook(webhookUrl: string, message: string, username: string) {
@@ -192,11 +192,12 @@ export async function unifiedChatFlow(input: UnifiedChatInput): Promise<UnifiedC
     if (targets.includes('AI Bot')) {
         try {
             const systemPrompt = config?.botPersonalityPrompt || 'You are a helpful assistant.';
-            const botReply = await callEdenAiChat(config, [
-                { role: 'user', text: systemPrompt },
-                { role: 'assistant', text: 'Acknowledged. I will adopt this persona.'},
+            const history: EdenAiChatMessage[] = [
+                { role: 'system', text: systemPrompt },
                 { role: 'user', text: message }
-            ]);
+            ];
+
+            const botReply = await callEdenAiChat(config, history);
             
             uiReply = uiReply ? `${uiReply}\n${botReply.text}` : botReply.text;
             logs.push(...botReply.logs);

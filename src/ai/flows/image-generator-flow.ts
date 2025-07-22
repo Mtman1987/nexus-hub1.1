@@ -2,7 +2,7 @@
 'use server';
 /**
  * @fileOverview An AI flow for generating images from a text prompt.
- * It uses a direct call to the Eden AI API.
+ * It uses a direct call to the Eden AI API's image endpoint.
  */
 import type { ImageGeneratorInput, ImageGeneratorOutput, FlowLog } from '@/ai/types';
 import { AppConfig } from '@/ai/types';
@@ -29,7 +29,7 @@ async function callEdenAiImage(
         show_original_response: false,
         resolution: "1024x1024",
         num_images: 1,
-        providers: "openai", // Or other providers like 'replicate'
+        providers: "openai", // You can also parameterize this if needed e.g., 'replicate', 'stabilityai'
         text: prompt,
     };
 
@@ -48,7 +48,14 @@ async function callEdenAiImage(
         }
 
         const result = await response.json();
-        const imageUrl = result.openai.items[0].image_resource_url;
+        
+        // The provider name is part of the response key
+        const providerResponse = result[payload.providers];
+        if (!providerResponse || !providerResponse.items || providerResponse.items.length === 0) {
+            throw new Error(`Unexpected response format from Eden AI Image API. Provider: ${payload.providers}. Response: ${JSON.stringify(result)}`);
+        }
+
+        const imageUrl = providerResponse.items[0].image_resource_url;
         
         logs.push({ service: 'Eden', level: 'info', message: 'Successfully generated image via Eden AI.' });
         return { imageUrl, logs };
@@ -64,11 +71,12 @@ async function callEdenAiImage(
 export async function imageGeneratorFlow(input: ImageGeneratorInput): Promise<ImageGeneratorOutput> {
     const logs: FlowLog[] = [];
     const config: AppConfig = {
+        // We can get the primary key directly. This assumes image generation is always on if the key exists.
         edenApiKey: localStorage.getItem('edenApiKey'),
     };
     
-    // For image generation, we can directly use the user's prompt
-    // or keep the enhancement step if preferred. For simplicity, let's use it directly for now.
+    // For now, we'll use the user's prompt directly. 
+    // An enhancement step could be added here later if desired.
     
     try {
         const { imageUrl, logs: imageLogs } = await callEdenAiImage(config, input.prompt);
@@ -76,13 +84,13 @@ export async function imageGeneratorFlow(input: ImageGeneratorInput): Promise<Im
 
         return {
             imageUrl: imageUrl,
-            enhancedPrompt: input.prompt, // Since we're not enhancing, just return the original.
+            // Since we aren't enhancing the prompt in this version, we'll just return the original.
+            enhancedPrompt: input.prompt, 
         };
 
     } catch (error) {
-        if (error instanceof Error) {
-            logs.push({ service: 'Eden', level: 'error', message: error.message, details: error.stack });
-        }
+        // The error is already logged in the callEdenAiImage function.
+        // We re-throw it so the UI layer can catch it and display a toast.
         throw error;
     }
 }

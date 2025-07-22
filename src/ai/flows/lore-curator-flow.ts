@@ -22,7 +22,9 @@ Return a valid JSON object with two keys:
 2. "personalityPrompt": The concise, 4-sentence summary of the new timeline.
 
 Do not include any other text or markdown formatting.
+`;
 
+const getUserPrompt = (existingTimeline: any[], newLore: any) => `
 Existing Timeline:
 ${existingTimeline.length > 0 ? existingTimeline.map(item => `- ${item.prompt}: ${item.response}`).join('\n') : '(The timeline is currently empty)'}
 
@@ -37,11 +39,13 @@ export async function loreCuratorFlow(input: LoreCuratorInput): Promise<LoreCura
         edenApiKey: localStorage.getItem('edenApiKey'),
     };
 
-    const prompt = getSystemPrompt(input.existingTimeline, input.newLore);
+    const systemPrompt = getSystemPrompt(input.existingTimeline, input.newLore);
+    const userPrompt = getUserPrompt(input.existingTimeline, input.newLore);
     
     const { text, logs } = await callEdenAiChat(config, 
         [
-             { role: 'user', text: prompt }
+             { role: 'system', text: systemPrompt },
+             { role: 'user', text: userPrompt }
         ], 
         true);
 

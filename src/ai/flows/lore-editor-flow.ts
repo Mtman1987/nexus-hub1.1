@@ -25,13 +25,10 @@ export async function loreEditorFlow(input: LoreEditorInput): Promise<LoreEditor
     
     const { text, logs } = await callEdenAiChat(config, 
         [
-            { role: 'user', text: systemPrompt },
-            { role: 'assistant', text: 'Acknowledged. I will provide my suggestion in the requested JSON format.' },
+            { role: 'system', text: systemPrompt },
             { role: 'user', text: userPrompt }
         ], 
         true);
-    
-    // The main service function will handle logging
     
     const parsed = JSON.parse(text);
     return parsed;

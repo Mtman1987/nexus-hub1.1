@@ -3,13 +3,14 @@
 
 import type { FlowLog, AppConfig } from "../types";
 
-type EdenAiChatMessage = {
-    role: 'user' | 'assistant';
+export type EdenAiChatMessage = {
+    role: 'user' | 'assistant' | 'system';
     text: string;
 };
 
 /**
  * A helper function to make chat completion calls to the Eden AI API.
+ * This is designed to be more robust and handle different message structures.
  */
 export async function callEdenAiChat(
     config: AppConfig,
@@ -29,20 +30,45 @@ export async function callEdenAiChat(
 
     const url = "https://api.edenai.run/v2/llm/chat";
     
+    // Default to a capable model, allow override from config
     const provider = config.edenAiProvider || 'google';
     const model = config.edenAiModel || 'gemini-1.5-flash-latest';
 
-    const payload = {
+    // Transform our simple history into the structure Eden AI expects
+    const messages = history.map(msg => ({
+        role: msg.role,
+        content: [{ type: 'text', text: msg.text }]
+    }));
+    
+    // Eden AI's API is a bit particular. The 'system' role is often passed at the top level.
+    let system_prompt = '';
+    const chat_messages = messages.filter(msg => {
+        if (msg.role === 'system') {
+            system_prompt = msg.content[0].text;
+            return false; // Don't include system messages in the main array
+        }
+        return true;
+    });
+
+
+    const payload: any = {
         response_as_dict: true,
         attributes_as_list: false,
         show_original_response: false,
         temperature: 0.7,
-        max_tokens: 1000,
+        max_tokens: 2000,
         providers: provider,
         model: model,
-        messages: history,
-        json_response_format: json_response,
+        messages: chat_messages,
     };
+    
+    if (system_prompt) {
+        payload.system_prompt = system_prompt;
+    }
+
+    if (json_response) {
+        payload.json_response_format = true;
+    }
 
     try {
         logs.push({ service: 'Eden', level: 'info', message: `Calling Eden AI chat with provider: ${provider}, model: ${model}`, details: `History length: ${history.length}` });
@@ -59,7 +85,18 @@ export async function callEdenAiChat(
         }
 
         const result = await response.json();
-        const text = result[provider]['message'][0]['content'];
+        
+        // Handle potential variations in the response structure
+        const responseProvider = result[provider];
+        if (!responseProvider) {
+             throw new Error(`Provider '${provider}' not found in Eden AI response. Full response: ${JSON.stringify(result)}`);
+        }
+
+        const text = responseProvider.generated_text;
+        
+        if (typeof text !== 'string') {
+             throw new Error(`Unexpected response format from Eden AI. Expected 'generated_text' string. Got: ${JSON.stringify(responseProvider)}`);
+        }
         
         logs.push({ service: 'Eden', level: 'info', message: 'Successfully received response from Eden AI.' });
         return { text, logs };

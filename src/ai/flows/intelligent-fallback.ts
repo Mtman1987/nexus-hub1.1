@@ -34,8 +34,7 @@ export async function intelligentFallbackFlow(
     const { text, logs } = await callEdenAiChat(
         input.config, 
         [
-            { role: 'user', text: systemPrompt },
-            { role: 'assistant', text: 'Acknowledged. I will provide my recommendation in the requested JSON format.' },
+            { role: 'system', text: systemPrompt },
             { role: 'user', text: userPrompt }
         ],
         true // Request JSON response format
