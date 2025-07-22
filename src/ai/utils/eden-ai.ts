@@ -15,7 +15,9 @@ export type EdenAiChatMessage = {
 export async function callEdenAiChat(
     config: AppConfig,
     history: EdenAiChatMessage[],
-    json_response: boolean = false
+    json_response: boolean = false,
+    overrideProvider?: string,
+    overrideModel?: string
 ): Promise<{ text: string, logs: FlowLog[] }> {
 
     const logs: FlowLog[] = [];
@@ -30,9 +32,9 @@ export async function callEdenAiChat(
 
     const url = "https://api.edenai.run/v2/llm/chat";
     
-    // Default to a capable model, allow override from config
-    const provider = config.edenAiProvider || 'google';
-    const model = config.edenAiModel || 'gemini-1.5-flash-latest';
+    // Use overrides if provided, otherwise use settings from config
+    const provider = overrideProvider || config.edenAiProvider || 'google';
+    const model = overrideModel || (config.edenAiModel ? config.edenAiModel.split('/')[1] : 'gemini-1.5-flash-latest');
 
     // Transform our simple history into the structure Eden AI expects
     const messages = history.map(msg => ({
@@ -67,7 +69,7 @@ export async function callEdenAiChat(
     }
 
     if (json_response) {
-        payload.json_response_format = true;
+        payload.response_format = { type: "json_object" };
     }
 
     try {

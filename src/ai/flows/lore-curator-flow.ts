@@ -47,7 +47,10 @@ export async function loreCuratorFlow(input: LoreCuratorInput): Promise<LoreCura
              { role: 'system', text: systemPrompt },
              { role: 'user', text: userPrompt }
         ], 
-        true);
+        true, // JSON response
+        'anthropic', // Force provider to be Anthropic
+        'claude-3-opus-20240229' // Force model to be Claude 3 Opus
+    );
 
     const parsed = JSON.parse(text);
     return parsed;

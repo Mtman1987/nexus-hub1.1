@@ -1,40 +1,46 @@
+
 'use server';
 /**
- * @fileOverview An AI flow for summarizing a timeline of lore into a bot personality.
+ * @fileOverview An AI flow that provides helpful answers during the setup process.
  *
- * - loreSummarizerFlow - The main function to get a summarized personality prompt.
+ * - setupAssistantFlow - The main function to get help.
  */
-
-import type { LoreSummarizerInput, LoreSummarizerOutput } from '@/ai/types';
+import type { SetupAssistantInput, SetupAssistantOutput, FlowLog } from '@/ai/types';
 import { callEdenAiChat } from '../utils/eden-ai';
 
+const systemPrompt = `You are the AI for Apollo Station, the community's central command hub, created by mtman1987. Your purpose is to assist the crew with system configurations and navigating the digital cosmos. Your tone should be that of a helpful, advanced starship AI: knowledgeable, calm, and professional.
 
-const getSystemPrompt = (timeline: any[]) => `You are a master storyteller and AI persona architect. Your task is to transform a timeline of lore into a cohesive and engaging system prompt for an AI personality named "Mountain Man".
+You are assisting a crew member with the initial station setup. This involves linking external services to the station's main systems. Your current task is to provide clear instructions for the topic they are asking about. Provide a clear, concise, and helpful answer. If the question is about how to get an API key (access code), provide a direct link (starlane) if possible and a short, easy-to-follow protocol.
 
-Mountain Man is the living embodiment of this lore, a figure who has witnessed it all. He should sound knowledgeable, perhaps a bit world-weary, but deeply connected to the history of the Apollo Station universe. His personality should reflect the key events, figures, and tone of the provided timeline.
+- For Discord, guide them to the Discord Developer Portal to create a new application and retrieve their credentials.
+- For Twitch, guide them to the dev.twitch.tv console.
+- For Google AI, direct them to Google AI Studio to generate an API key.
+- For Eden AI, direct them to the Eden AI platform dashboard.
+- For Streamer.bot, explain it's a local application on their machine and where to find the WebSocket server address and port settings within that app. Be very clear about the difference between the address Streamer.bot listens on (e.g., 0.0.0.0, all interfaces) and the address Apollo Station uses to connect to it (e.g., 127.0.0.1, localhost).
 
-Read the entire timeline below and synthesize it into a single, compelling system prompt. This prompt will define the Mountain Man AI's personality and knowledge base.
-
-The final output must be a JSON object with a single key "personalityPrompt".
-
-Existing Timeline:
-${timeline.map(item => `- ${item.prompt}: ${item.response}`).join('\n')}
-`;
+IMPORTANT: The final transmission must be a valid JSON object with a single key: "answer". Do not add any other text or formatting.`;
 
 
-export async function loreSummarizerFlow(input: LoreSummarizerInput): Promise<LoreSummarizerOutput> {
-    const config = {
-        edenApiKey: localStorage.getItem('edenApiKey'),
-        edenAiProvider: 'openai',
-        edenAiModel: 'gpt-4-turbo'
-    };
+export async function setupAssistantFlow(input: SetupAssistantInput): Promise<{response: SetupAssistantOutput, logs: FlowLog[]}> {
     
-    const prompt = getSystemPrompt(input.timeline);
+    const userPrompt = `The crew member is focused on the following system: ${input.topic}\nTheir specific query is: "${input.question}"`;
     
-    const { text, logs } = await callEdenAiChat(config, [{ role: 'user', text: prompt }], true);
-
-    // The main service function will handle logging
+    const { text, logs } = await callEdenAiChat(
+        input.config,
+        [
+            { role: 'system', text: systemPrompt },
+            { role: 'user', text: userPrompt }
+        ],
+        true, // Request JSON response
+        'google', // Force provider
+        'gemini-1.5-flash-latest' // Force model
+    );
     
-    const parsed = JSON.parse(text);
-    return parsed;
+    try {
+        const parsedResponse = JSON.parse(text);
+        return { response: parsedResponse, logs };
+    } catch (e) {
+        logs.push({ service: 'System', level: 'error', message: 'Failed to parse JSON from AI in setup assistant.', details: `Raw AI Response: ${text}` });
+        throw new Error("The AI returned an invalid response.");
+    }
 }

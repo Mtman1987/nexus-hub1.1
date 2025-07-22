@@ -37,7 +37,9 @@ export async function intelligentFallbackFlow(
             { role: 'system', text: systemPrompt },
             { role: 'user', text: userPrompt }
         ],
-        true // Request JSON response format
+        true, // Request JSON response format
+        'google', // Force provider
+        'gemini-1.5-flash-latest' // Force model
     );
     
     try {
