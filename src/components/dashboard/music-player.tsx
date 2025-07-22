@@ -20,9 +20,10 @@ interface MusicPlayerProps {
     isPoppedOut?: boolean;
     onHide?: () => void;
     dragHandleProps?: any;
+    isPreview?: boolean;
 }
 
-export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleProps }: MusicPlayerProps) {
+export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleProps, isPreview }: MusicPlayerProps) {
     const { addLog } = useLogs();
     const [playlist, setPlaylist] = useState(initialPlaylist);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -35,6 +36,7 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     const audioRef = useRef<HTMLAudioElement>(null);
 
      useEffect(() => {
+        if (isPreview) return;
         const channel = new BroadcastChannel('apollo-station-music-player');
 
         const handleMessage = (event: MessageEvent) => {
@@ -63,7 +65,7 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
             channel.removeEventListener('message', handleMessage);
             channel.close();
         };
-    }, [addLog, playlist.length]);
+    }, [addLog, playlist.length, isPreview]);
 
     useEffect(() => {
         const audio = audioRef.current;
@@ -136,7 +138,7 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     return (
         <>
             <audio ref={audioRef} src={currentTrack?.type === 'audio' ? currentTrack.src : ''} onEnded={nextTrack} />
-            <Card className="h-full flex flex-col">
+            <Card className="h-full flex flex-col bg-card/80">
                 <CardHeader>
                     <div className="flex justify-between items-start">
                         <div className="flex items-center gap-2 flex-grow">

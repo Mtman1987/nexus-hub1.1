@@ -149,9 +149,10 @@ interface ApiSettingsProps {
     isPoppedOut?: boolean;
     onHide?: () => void;
     dragHandleProps?: any;
+    isPreview?: boolean;
 }
 
-export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleProps }: ApiSettingsProps) {
+export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleProps, isPreview }: ApiSettingsProps) {
   const { toast } = useToast();
   const [settings, setSettings] = useState<Settings>(defaultSettings);
   const [providerStatus, setProviderStatus] = useState<ProviderStatus>(defaultProviderStatus);
@@ -168,6 +169,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
   const [customModels, setCustomModels] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
+    if (isPreview) return;
     try {
         const loadedSettings: Partial<Settings> = {};
         const keysToLoad: SettingsObjectKey[] = settingKeys.filter((k): k is SettingsObjectKey => !['providerStatus', 'nexusConnectConnections'].includes(k));
@@ -225,7 +227,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
         console.error("Failed to load settings from local storage", error);
         addLog({ service: 'System', level: 'error', message: 'Failed to load settings from local storage.', details: error instanceof Error ? error.stack : String(error) });
     }
-  }, [addLog]);
+  }, [addLog, isPreview]);
   
   // Timer effect
   useEffect(() => {
@@ -393,7 +395,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
   const edenModelsForProvider = popularModels.eden[edenProvider as keyof typeof popularModels.eden] || [];
 
   return (
-    <Card className="h-full flex flex-col">
+    <Card className="h-full flex flex-col bg-card/80">
       <CardHeader>
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-2 flex-grow">

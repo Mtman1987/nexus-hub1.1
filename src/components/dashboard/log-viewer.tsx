@@ -19,6 +19,7 @@ interface LogViewerProps {
   isPoppedOut?: boolean;
   onHide?: () => void;
   dragHandleProps?: any;
+  isPreview?: boolean;
 }
 
 const serviceIcons: { [key: string]: React.ReactNode } = {
@@ -36,7 +37,7 @@ const levelColors = {
   error: 'destructive',
 } as const;
 
-export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandleProps }: LogViewerProps) {
+export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandleProps, isPreview }: LogViewerProps) {
   const { logs } = useLogs();
   const [selectedLog, setSelectedLog] = useState<LogEntry | null>(null);
   const { toast } = useToast();
@@ -78,7 +79,7 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
 
   return (
     <>
-      <Card className="h-full flex flex-col">
+      <Card className="h-full flex flex-col bg-card/80">
         <CardHeader className="shrink-0">
           <div className="flex justify-between items-start">
              <div className="flex items-center gap-2 flex-grow">

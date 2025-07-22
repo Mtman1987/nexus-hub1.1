@@ -15,15 +15,17 @@ interface WebsiteViewerProps {
   onPopOut?: () => void;
   onHide?: () => void;
   dragHandleProps?: any;
+  isPreview?: boolean;
 }
 
-export function WebsiteViewer({ isPoppedOut = false, onPopOut, onHide, dragHandleProps }: WebsiteViewerProps) {
+export function WebsiteViewer({ isPoppedOut = false, onPopOut, onHide, dragHandleProps, isPreview }: WebsiteViewerProps) {
   const [activeTab, setActiveTab] = useState(Object.keys(SITES)[0]);
   const [iframeKey, setIframeKey] = useState(Date.now());
   const [currentUrl, setCurrentUrl] = useState(SITES[activeTab as keyof typeof SITES].url);
   const { addLog } = useLogs();
 
   useEffect(() => {
+    if (isPreview) return;
     const channel = new BroadcastChannel('apollo-station-website-control');
 
     const handleMessage = (event: MessageEvent) => {
@@ -45,7 +47,7 @@ export function WebsiteViewer({ isPoppedOut = false, onPopOut, onHide, dragHandl
       channel.removeEventListener('message', handleMessage);
       channel.close();
     };
-  }, [addLog]);
+  }, [addLog, isPreview]);
 
   useEffect(() => {
       // When the active tab changes, reset the URL to that site's default
@@ -63,7 +65,7 @@ export function WebsiteViewer({ isPoppedOut = false, onPopOut, onHide, dragHandl
   const siteKeys = Object.keys(SITES);
 
   return (
-    <Card className="h-full flex flex-col">
+    <Card className="h-full flex flex-col bg-card/80">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
         <CardHeader>
           <div className="flex justify-between items-start">

@@ -43,9 +43,10 @@ interface BotPersonalityProps {
     isPoppedOut?: boolean;
     onHide?: () => void;
     dragHandleProps?: any;
+    isPreview?: boolean;
 }
 
-export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHandleProps }: BotPersonalityProps) {
+export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHandleProps, isPreview }: BotPersonalityProps) {
   const { toast } = useToast();
   const { addLog } = useLogs();
   const { setBotName } = useBotName();
@@ -66,6 +67,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
   }, []);
 
   useEffect(() => {
+    if (isPreview) return;
     try {
         const savedPersonalities = localStorage.getItem('botPersonalities');
         const loadedPersonalities = savedPersonalities ? JSON.parse(savedPersonalities) : defaultPersonalities;
@@ -86,7 +88,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
         console.error("Failed to load personality settings", error);
         addLog({ service: 'System', level: 'error', message: 'Failed to load personality settings from local storage.', details: error instanceof Error ? error.stack : String(error) });
     }
-  }, [setBotName, addLog, loadBotStore]);
+  }, [setBotName, addLog, loadBotStore, isPreview]);
   
   const handlePersonalityChange = (field: 'name' | 'prompt' | 'voice', value: string) => {
     if (!selectedPersonalityId) return;
@@ -226,7 +228,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
   const isSelectedPersonalityDefault = selectedPersonality?.isDefault === true;
 
   return (
-      <Card className="h-full flex flex-col">
+      <Card className="h-full flex flex-col bg-card/80">
         <CardHeader>
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-2 flex-grow">

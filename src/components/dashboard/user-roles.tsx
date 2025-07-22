@@ -56,9 +56,10 @@ interface UserRolesProps {
   onPopOut?: () => void;
   onHide?: () => void;
   dragHandleProps?: any;
+  isPreview?: boolean;
 }
 
-export function UserRoles({ isPoppedOut = false, onPopOut, onHide, dragHandleProps }: UserRolesProps) {
+export function UserRoles({ isPoppedOut = false, onPopOut, onHide, dragHandleProps, isPreview }: UserRolesProps) {
   const [users, setUsers] = useState(initialUsers);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -102,7 +103,7 @@ export function UserRoles({ isPoppedOut = false, onPopOut, onHide, dragHandlePro
 
   return (
     <>
-      <Card className="h-full flex flex-col">
+      <Card className="h-full flex flex-col bg-card/80">
         <CardHeader className='shrink-0'>
            <div className="flex justify-between items-start">
             <div className="flex items-center gap-2 flex-grow">

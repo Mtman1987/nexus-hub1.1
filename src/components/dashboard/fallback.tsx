@@ -22,9 +22,10 @@ interface FallbackProps {
   isPoppedOut?: boolean;
   onHide?: () => void;
   dragHandleProps?: any;
+  isPreview?: boolean;
 }
 
-export function Fallback({ onPopOut, isPoppedOut = false, onHide, dragHandleProps }: FallbackProps) {
+export function Fallback({ onPopOut, isPoppedOut = false, onHide, dragHandleProps, isPreview }: FallbackProps) {
     const [prompt, setPrompt] = useState('');
     const [goal, setGoal] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -96,7 +97,7 @@ export function Fallback({ onPopOut, isPoppedOut = false, onHide, dragHandleProp
   return (
     <>
     <SetupDialog open={showSetup} onOpenChange={setShowSetup} />
-    <Card className="h-full flex flex-col">
+    <Card className="h-full flex flex-col bg-card/80">
       <CardHeader>
         <div className="flex justify-between items-start">
              <div className="flex items-center gap-2 flex-grow">

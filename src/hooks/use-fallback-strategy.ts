@@ -21,7 +21,7 @@ const ALL_PROVIDERS: Omit<Provider, 'priority'>[] = [
     { id: 'groq', name: 'Groq', description: 'Llama models via Groq', keyName: 'groqApiKey' },
 ];
 
-export function useFallbackStrategy() {
+export function useFallbackStrategy(isPreview?: boolean) {
   const [providers, setProviders] = useState<Provider[]>([]);
   const { toast } = useToast();
   const { addLog } = useLogs();
@@ -29,9 +29,9 @@ export function useFallbackStrategy() {
   const availableProviderCount = providers.length;
 
   const loadStrategy = useCallback(() => {
+    if (typeof window === 'undefined' || isPreview) return;
+    
     try {
-        if (typeof window === 'undefined') return;
-        
         const providerStatus = JSON.parse(localStorage.getItem('providerStatus') || '{}');
 
         // Only include providers that have an API key AND are enabled
@@ -60,7 +60,7 @@ export function useFallbackStrategy() {
         console.error("Could not load fallback strategy", e);
         addLog({ service: 'System', level: 'error', message: 'Failed to load fallback strategy from local storage.', details: e instanceof Error ? e.stack : String(e) });
     }
-  }, [addLog]);
+  }, [addLog, isPreview]);
 
   useEffect(() => {
     loadStrategy();

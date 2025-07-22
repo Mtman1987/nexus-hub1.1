@@ -44,9 +44,10 @@ interface UnifiedChatProps {
   isPoppedOut?: boolean;
   onHide?: () => void;
   dragHandleProps?: any;
+  isPreview?: boolean;
 }
 
-export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onPopOut, isPoppedOut = false, onHide, dragHandleProps }, ref) => {
+export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onPopOut, isPoppedOut = false, onHide, dragHandleProps, isPreview }, ref) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingAudio, setLoadingAudio] = useState<string | null>(null);
@@ -66,6 +67,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
   });
   
   useEffect(() => {
+    if (isPreview) return;
     try {
         const savedConnections = localStorage.getItem('nexusConnectConnections');
         if(savedConnections) {
@@ -82,7 +84,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
     }
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
-  }, [])
+  }, [isPreview]);
 
   const getFormTargets = useCallback(() => form.getValues('targets'), [form]);
 
@@ -246,6 +248,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
   }, [messages]);
 
   useEffect(() => {
+    if (isPreview) return;
     const channel = new BroadcastChannel('apollo-station-chat');
 
     const handleMessage = (event: MessageEvent) => {
@@ -279,7 +282,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
       channel.close();
       addLog({ service: 'System', level: 'info', message: 'Unified Chat BroadcastChannel listener detached.' });
     };
-  }, [addLog, getFormTargets, performSubmit]);
+  }, [addLog, getFormTargets, performSubmit, isPreview]);
 
 
   const targetOptions = [
@@ -299,7 +302,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
   const isNexusConnectChecked = form.watch('targets').includes('Nexus Connect');
 
   return (
-    <Card className="h-full flex flex-col">
+    <Card className="h-full flex flex-col bg-card/80">
       <CardHeader>
         <div className="flex justify-between items-start">
              <div className="flex items-center gap-2 flex-grow">

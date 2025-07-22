@@ -38,13 +38,14 @@ interface SavedItemsProps {
   isPoppedOut?: boolean;
   onHide?: () => void;
   dragHandleProps?: any;
+  isPreview?: boolean;
 }
 
 const SAVED_ITEMS_KEY = 'apollo-station-saved-items';
 const TIMELINE_KEY = 'apollo-station-timeline';
 
 
-export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandleProps }: SavedItemsProps) {
+export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandleProps, isPreview }: SavedItemsProps) {
   const [savedItems, setSavedItems] = useState<SavedItem[]>([]);
   const [timeline, setTimeline] = useState<TimelineItem[]>([]);
   const { toast } = useToast();
@@ -58,6 +59,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
 
 
   const loadItems = useCallback(() => {
+    if (isPreview) return;
     try {
       const storedItems = localStorage.getItem(SAVED_ITEMS_KEY);
       if (storedItems) setSavedItems(JSON.parse(storedItems));
@@ -69,7 +71,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
       console.error("Failed to load saved items from localStorage", error);
       toast({ title: "Error", description: "Could not load saved items.", variant: "destructive" });
     }
-  }, [toast]);
+  }, [toast, isPreview]);
 
   useEffect(() => {
     loadItems();
@@ -195,7 +197,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
   
   return (
     <>
-    <Card className="h-full flex flex-col">
+    <Card className="h-full flex flex-col bg-card/80">
       <CardHeader>
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-2 flex-grow">

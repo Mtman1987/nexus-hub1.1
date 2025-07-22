@@ -15,13 +15,14 @@ interface FallbackStrategyProps {
   isPoppedOut?: boolean;
   onHide?: () => void;
   dragHandleProps?: any;
+  isPreview?: boolean;
 }
 
-export function FallbackStrategy({ onPopOut, isPoppedOut = false, onHide, dragHandleProps }: FallbackStrategyProps) {
-  const { providers, handlePriorityChange, saveStrategy, availableProviderCount } = useFallbackStrategy();
+export function FallbackStrategy({ onPopOut, isPoppedOut = false, onHide, dragHandleProps, isPreview }: FallbackStrategyProps) {
+  const { providers, handlePriorityChange, saveStrategy, availableProviderCount } = useFallbackStrategy(isPreview);
   
   return (
-    <Card className="h-full flex flex-col">
+    <Card className="h-full flex flex-col bg-card/80">
       <CardHeader>
         <div className="flex justify-between items-start">
             <div className="flex items-center gap-2 flex-grow">

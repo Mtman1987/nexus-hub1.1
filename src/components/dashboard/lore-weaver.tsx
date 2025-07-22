@@ -19,9 +19,10 @@ interface LoreWeaverProps {
   isPoppedOut?: boolean;
   onHide?: () => void;
   dragHandleProps?: any;
+  isPreview?: boolean;
 }
 
-export function LoreWeaver({ onPopOut, isPoppedOut = false, onHide, dragHandleProps }: LoreWeaverProps) {
+export function LoreWeaver({ onPopOut, isPoppedOut = false, onHide, dragHandleProps, isPreview }: LoreWeaverProps) {
     const [prompt, setPrompt] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [result, setResult] = useState<LoreWeaverOutput | null>(null);
@@ -117,7 +118,7 @@ export function LoreWeaver({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
     };
 
   return (
-    <Card className="h-full flex flex-col">
+    <Card className="h-full flex flex-col bg-card/80">
       <CardHeader>
         <div className="flex justify-between items-start">
              <div className="flex items-center gap-2 flex-grow">

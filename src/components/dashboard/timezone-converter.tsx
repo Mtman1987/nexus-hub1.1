@@ -19,9 +19,10 @@ interface TimeZoneConverterProps {
   isPoppedOut?: boolean;
   onHide?: () => void;
   dragHandleProps?: any;
+  isPreview?: boolean;
 }
 
-export function TimeZoneConverter({ onPopOut, isPoppedOut = false, onHide, dragHandleProps }: TimeZoneConverterProps) {
+export function TimeZoneConverter({ onPopOut, isPoppedOut = false, onHide, dragHandleProps, isPreview }: TimeZoneConverterProps) {
   const [timezones, setTimezones] = useState<string[]>([]);
   const [fromTz, setFromTz] = useState('');
   const [toTz, setToTz] = useState('');
@@ -34,6 +35,7 @@ export function TimeZoneConverter({ onPopOut, isPoppedOut = false, onHide, dragH
   const [toOpen, setToOpen] = useState(false)
 
   useEffect(() => {
+    if (isPreview) return;
     // Intl.supportedValuesOf is a modern API, check for existence for older browsers
     if (typeof Intl.supportedValuesOf === 'function') {
       const supportedTimezones = Intl.supportedValuesOf('timeZone');
@@ -48,7 +50,7 @@ export function TimeZoneConverter({ onPopOut, isPoppedOut = false, onHide, dragH
         setFromTz(userTz);
         setToTz('UTC');
     }
-  }, []);
+  }, [isPreview]);
 
   useEffect(() => {
     if (date && time && fromTz && toTz) {
@@ -144,7 +146,7 @@ export function TimeZoneConverter({ onPopOut, isPoppedOut = false, onHide, dragH
   }
 
   return (
-    <Card className="h-full flex flex-col">
+    <Card className="h-full flex flex-col bg-card/80">
       <CardHeader>
         <div className="flex justify-between items-start">
             <div className="flex items-center gap-2 flex-grow">
