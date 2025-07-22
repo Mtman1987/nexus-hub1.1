@@ -6,37 +6,69 @@
  * - intelligentFallbackFlow - The main function to get a code snippet.
  */
 import type { CodeGeneratorInput, CodeGeneratorOutput, FlowLog } from '@/ai/types';
-import { callEdenAiChat } from '../utils/eden-ai';
+import { AppConfig } from '@/ai/types';
 
-const getSystemPrompt = (language: string) => `You are an expert code generation AI. Your task is to write a clean, efficient, and well-documented code snippet based on the user's instruction. The code should be written in ${language}.
 
-IMPORTANT: Your response MUST be a valid JSON object with a single key: "generated_code". The value should be the code snippet as a string. Do not include any other text, markdown formatting like \`\`\`, or explanations.
-`;
+async function callEdenAiCodeGeneration(
+    config: AppConfig,
+    input: CodeGeneratorInput
+): Promise<{ result: CodeGeneratorOutput, logs: FlowLog[] }> {
+    const logs: FlowLog[] = [];
+    if (!config.edenApiKey) {
+        throw new Error("Eden AI API key is not configured.");
+    }
+    
+    logs.push({ service: 'Eden CodeGen', level: 'info', message: `Generating code for language: ${input.language}...` });
+    
+    const url = "https://api.edenai.run/v2/text/code_generation";
+    const payload = {
+        providers: input.config.edenAiProvider || 'openai',
+        prompt: input.prompt || '',
+        instruction: input.instruction,
+        temperature: 0.1,
+        max_tokens: 1500,
+        // The model can be specified if the provider supports it, e.g., 'gpt-4o' for openai
+        ...(input.config.edenAiModel && { model: input.config.edenAiModel.split('/')[1] })
+    };
+    const headers = { 
+        "Authorization": `Bearer ${config.edenApiKey}`,
+        "Content-Type": "application/json"
+    };
+
+    try {
+        const response = await fetch(url, { method: 'POST', body: JSON.stringify(payload), headers: headers });
+        if (!response.ok) {
+            const errorBody = await response.text();
+            throw new Error(`Code Generation failed with status ${response.status}: ${errorBody}`);
+        }
+        const result = await response.json();
+        const provider = payload.providers;
+        const providerResponse = result[provider];
+        
+        if (!providerResponse || providerResponse.status !== 'success') {
+           throw new Error(providerResponse?.error?.message || "An unknown error occurred during code generation.");
+        }
+
+        logs.push({ service: 'Eden CodeGen', level: 'info', message: 'Successfully generated code.' });
+        // The API returns the code in 'generated_text'. We map it to our 'generated_code' field.
+        return { result: { generated_code: providerResponse.generated_text }, logs };
+
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "An unknown error occurred during code generation.";
+        logs.push({ service: 'Eden CodeGen', level: 'error', message: errorMessage, details: error instanceof Error ? error.stack : undefined });
+        throw error;
+    }
+}
 
 
 export async function intelligentFallbackFlow(
   input: CodeGeneratorInput
 ): Promise<{response: CodeGeneratorOutput, logs: FlowLog[]}> {
     
-    const systemPrompt = getSystemPrompt(input.language);
-    const userPrompt = `Instruction: "${input.instruction}"\n\nPrompt/Context: "${input.prompt || 'No additional context provided.'}"`;
+    const { result, logs } = await callEdenAiCodeGeneration(input.config, input);
 
-    const { text, logs } = await callEdenAiChat(
-        input.config, 
-        [
-            { role: 'system', text: systemPrompt },
-            { role: 'user', text: userPrompt }
-        ],
-        true, // Request JSON response format
-        input.config.edenAiProvider || 'openai',
-        (input.config.edenAiModel ? input.config.edenAiModel.split('/')[1] : undefined) || 'gpt-4o'
-    );
-    
-    try {
-        const parsedResponse = JSON.parse(text);
-        return { response: parsedResponse, logs };
-    } catch (error) {
-        logs.push({ service: 'System', level: 'error', message: 'Failed to parse JSON response from AI for code generation.', details: `Raw AI response: ${text}` });
-        throw new Error("AI returned an invalid JSON object.");
-    }
+    return {
+        response: result,
+        logs: logs,
+    };
 }

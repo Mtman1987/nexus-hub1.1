@@ -141,8 +141,8 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
         const errorMessage = error instanceof Error ? error.message : "An unknown error occurred."
         setAiResult({ answer: `Sorry, there was an error: ${errorMessage}` });
         toast({
-            title: "AI Assistant Error",
-            description: "Could not get a response from the AI. Check your primary Eden AI key if provided.",
+            title: "COSMO Error",
+            description: "Could not get a response from COSMO. Check your primary Eden AI key if provided.",
             variant: "destructive",
         });
         addLog({ service: 'System', level: 'error', message: `Setup Assistant failed: ${errorMessage}` });
@@ -229,13 +229,13 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
                 <AccordionTrigger disabled={isAssistantDisabled}>
                     <div className="flex items-center gap-2 text-sm">
                         <Wand2 className="h-4 w-4" />
-                        {isAssistantDisabled ? "Enter Eden AI key to enable assistant" : "Need help from the AI Assistant?"}
+                        {isAssistantDisabled ? "Enter Eden AI key to enable COSMO" : "Need help from COSMO?"}
                     </div>
                 </AccordionTrigger>
                 <AccordionContent>
                     <div className="space-y-4 pt-2">
                        <div className="space-y-2">
-                         <Label htmlFor="ai-question">Ask the AI Assistant</Label>
+                         <Label htmlFor="ai-question">Ask COSMO</Label>
                          <div className="flex items-center gap-2">
                             <Input id="ai-question" placeholder={`e.g., "How do I get a ${steps[currentStep].topic} key?"`} value={aiQuestion} onChange={e => setAiQuestion(e.target.value)} />
                             <Button onClick={handleAiHelp} disabled={aiIsLoading} size="icon">
@@ -246,7 +246,7 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
                        {aiResult && (
                            <Alert variant="default">
                                <Terminal className="h-4 w-4" />
-                               <AlertTitle>AI Assistant Says:</AlertTitle>
+                               <AlertTitle>COSMO Says:</AlertTitle>
                                <AlertDescription>
                                    {aiResult.answer}
                                </AlertDescription>
