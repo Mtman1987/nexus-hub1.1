@@ -1,0 +1,40 @@
+'use server';
+/**
+ * @fileOverview An AI flow for generating code snippets from an instruction.
+ */
+import type { CodeGeneratorInput, CodeGeneratorOutput, FlowLog } from '@/ai/types';
+import { callEdenAiChat } from '../utils/eden-ai';
+
+
+const getSystemPrompt = (language: string) => `You are an expert code generation AI. Your task is to write a clean, efficient, and well-documented code snippet based on the user's instruction. The code should be written in ${language}.
+
+IMPORTANT: Your response MUST be a valid JSON object with a single key: "generated_code". The value should be the code snippet as a string. Do not include any other text, markdown formatting like \`\`\`, or explanations.
+`;
+
+
+export async function codeGeneratorFlow(
+  input: CodeGeneratorInput
+): Promise<{response: CodeGeneratorOutput, logs: FlowLog[]}> {
+    
+    const systemPrompt = getSystemPrompt(input.language);
+    const userPrompt = `Instruction: "${input.instruction}"\n\nPrompt/Context: "${input.prompt || 'No additional context provided.'}"`;
+
+    const { text, logs } = await callEdenAiChat(
+        input.config, 
+        [
+            { role: 'system', text: systemPrompt },
+            { role: 'user', text: userPrompt }
+        ],
+        true, // Request JSON response format
+        input.config.edenAiProvider || 'openai',
+        (input.config.edenAiModel ? input.config.edenAiModel.split('/')[1] : undefined) || 'gpt-4o'
+    );
+    
+    try {
+        const parsedResponse = JSON.parse(text);
+        return { response: parsedResponse, logs };
+    } catch (error) {
+        logs.push({ service: 'System', level: 'error', message: 'Failed to parse JSON response from AI for code generation.', details: `Raw AI response: ${text}` });
+        throw new Error("AI returned an invalid JSON object.");
+    }
+}

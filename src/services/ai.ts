@@ -17,6 +17,7 @@ import { resumeParserFlow } from '@/ai/flows/resume-parser-flow';
 import { translationFlow } from '@/ai/flows/translation-flow';
 import { speechToTextFlow } from '@/ai/flows/speech-to-text-flow';
 import { ttsFlow } from '@/ai/flows/tts-flow';
+import { codeGeneratorFlow } from '@/ai/flows/code-generator-flow';
 
 import type { FlowLog, IntelligentFallbackInput, IntelligentFallbackOutput, SetupAssistantInput, SetupAssistantOutput, UnifiedChatInput, UnifiedChatOutput } from '@/ai/types';
 import type { LoreWeaverInput, LoreWeaverOutput } from '@/ai/types';
@@ -27,6 +28,7 @@ import type { LoreSummarizerInput, LoreSummarizerOutput } from '@/ai/types';
 import type { TtsInput, TtsOutput } from '@/ai/types';
 import type { ResumeParserInput, ResumeParserOutput } from '@/ai/types';
 import type { TranslationInput, TranslationOutput, SpeechToTextInput, SpeechToTextOutput } from '@/ai/types';
+import type { CodeGeneratorInput, CodeGeneratorOutput } from '@/ai/types';
 
 
 /**
@@ -111,4 +113,11 @@ export async function getTranslation(input: TranslationInput): Promise<{response
  */
 export async function getTranscription(input: SpeechToTextInput): Promise<{response: SpeechToTextOutput, logs: FlowLog[]}> {
     return speechToTextFlow(input);
+}
+
+/**
+ * Service function to generate code.
+ */
+export async function getCodeGeneration(input: CodeGeneratorInput): Promise<{response: CodeGeneratorOutput, logs: FlowLog[]}> {
+    return codeGeneratorFlow(input);
 }

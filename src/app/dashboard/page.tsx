@@ -28,6 +28,7 @@ import { MusicPlayer } from '@/components/dashboard/music-player';
 import { ResumeParser } from '@/components/dashboard/resume-parser';
 import { AudioTranscription } from '@/components/dashboard/audio-transcription';
 import { Translator } from '@/components/dashboard/translator';
+import { CodeHelper } from '@/components/dashboard/code-helper';
 
 
 // Define all modules with their components
@@ -38,11 +39,12 @@ const ALL_MODULES_CONFIG = [
     { id: 'logViewer', title: 'Captain\'s Log', component: LogViewer, defaultSize: 'col-span-1 lg:col-span-2' },
     { id: 'musicPlayer', title: 'Subspace Comms & Music', component: MusicPlayer, defaultSize: 'col-span-1' },
     { id: 'imageGenerator', title: 'Stargate Imagery', component: ImageGenerator, defaultSize: 'col-span-1' },
+    { id: 'codeHelper', title: 'Code Helper', component: CodeHelper, defaultSize: 'col-span-1' },
     { id: 'resumeParser', title: 'Resume Parser', component: ResumeParser, defaultSize: 'col-span-1' },
     { id: 'audioTranscription', title: 'Audio Transcription', component: AudioTranscription, defaultSize: 'col-span-1' },
     { id: 'translator', title: 'Translator', component: Translator, defaultSize: 'col-span-1' },
     { id: 'timeZoneConverter', title: 'Time Zone Converter', component: TimeZoneConverter, defaultSize: 'col-span-1' },
-    { id: 'fallback', title: 'Intelligent Fallback', component: Fallback, defaultSize: 'col-span-1' },
+    { id: 'fallback', title: 'AI Provider Recommender', component: Fallback, defaultSize: 'col-span-1' },
     { id: 'fallbackStrategy', title: 'Fallback Strategy', component: FallbackStrategy, defaultSize: 'col-span-1'},
     { id: 'userRoles', title: 'Access Control', component: UserRoles, defaultSize: 'col-span-1' },
     { id: 'websiteViewer', title: 'Website Viewer', component: WebsiteViewer, defaultSize: 'col-span-1 lg:col-span-2' },

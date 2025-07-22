@@ -205,3 +205,15 @@ export interface SpeechToTextInput {
 export interface SpeechToTextOutput {
     text: string;
 }
+
+// --- Code Generator ---
+export interface CodeGeneratorInput {
+    instruction: string;
+    prompt?: string; // Optional context
+    language: string;
+    config: AppConfig;
+}
+
+export interface CodeGeneratorOutput {
+    generated_code: string;
+}

@@ -39,7 +39,7 @@ export function Fallback({ onPopOut, isPoppedOut = false, onHide, dragHandleProp
         setResult(null);
 
         const logDetails = `Goal: "${goal}", Prompt: "${prompt.substring(0, 100)}..."`;
-        addLog({ service: 'System', level: 'info', message: "User requested an Intelligent Fallback recommendation.", details: logDetails });
+        addLog({ service: 'System', level: 'info', message: "User requested an AI Provider recommendation.", details: logDetails });
 
         try {
             const config: { [key: string]: any } = {};
@@ -61,7 +61,7 @@ export function Fallback({ onPopOut, isPoppedOut = false, onHide, dragHandleProp
                     description: "Please enter your Eden AI API key in the API Vault.",
                     variant: "destructive"
                 });
-                addLog({ service: 'System', level: 'error', message: "Intelligent Fallback failed: Primary Eden AI API key is missing." });
+                addLog({ service: 'System', level: 'error', message: "AI Recommender failed: Primary Eden AI API key is missing." });
                 setIsLoading(false);
                 return;
             }
@@ -88,7 +88,7 @@ export function Fallback({ onPopOut, isPoppedOut = false, onHide, dragHandleProp
                 description: "An unexpected error occurred. Check the Captain's Log for details.",
                 variant: "destructive"
             });
-            addLog({ service: 'System', level: 'error', message: `Intelligent Fallback failed: ${errorMessage}`, details: error instanceof Error ? error.stack : String(error) });
+            addLog({ service: 'System', level: 'error', message: `AI Recommender failed: ${errorMessage}`, details: error instanceof Error ? error.stack : String(error) });
         } finally {
             setIsLoading(false);
         }
@@ -107,7 +107,7 @@ export function Fallback({ onPopOut, isPoppedOut = false, onHide, dragHandleProp
               <div className="flex-grow">
                 <CardTitle className="flex items-center gap-2 text-title-foreground">
                   <Lightbulb className="h-6 w-6" />
-                  Intelligent Fallback
+                  AI Provider Recommender
                 </CardTitle>
                 <CardDescription>
                   Get an AI recommendation for the best provider for your specific task.
