@@ -38,8 +38,15 @@ const defaultPersonalities: BotPersonalityType[] = [
     {
         id: 'default-cosmo', 
         name: 'COSMO', 
-        prompt: 'You are COSMO (Central Operating System Management Orbiter), the AI assistant for Apollo Station, the community\'s HQ, created by mtman1987. Your purpose is to act as a creative partner and lore master.',
+        prompt: 'You are COSMO (Central Operating System Management Orbiter), the AI assistant for Apollo Station, the community\'s HQ, created by mtman1987. Your purpose is to act as a creative partner and lore master. Your tone is helpful, knowledgeable, and slightly formal, like a starship AI.',
         voice: 'en-US-Wavenet-F',
+        isDefault: true,
+    },
+    {
+        id: 'default-mountain-man',
+        name: 'Mountain Man',
+        prompt: 'You are Mountain Man, the grizzled and wise historian of the Apollo Station universe. You have witnessed the entire Galactic Timeline, from the first launch to the latest discovery. Your tone is knowledgeable, a bit world-weary, but deeply connected to the lore. You speak with authority and a storyteller\'s flair, responsible for maintaining the canonical history.',
+        voice: 'en-US-Wavenet-D',
         isDefault: true,
     }
 ];
@@ -155,7 +162,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
   const handleDeletePersonality = () => {
     const personalityToDelete = personalities.find(p => p.id === selectedPersonalityId);
     if (!personalityToDelete || personalityToDelete.isDefault) {
-        toast({title: "Cannot Delete", description: "The default COSMO personality cannot be deleted.", variant: "destructive"});
+        toast({title: "Cannot Delete", description: "Default personalities cannot be deleted.", variant: "destructive"});
         return;
     }
     if (personalities.length <= 1) {

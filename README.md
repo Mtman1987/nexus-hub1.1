@@ -1,9 +1,22 @@
+<div align="center">
+  <img src="https://firebasestudio.com/static/images/projects/apollo-station/community-logo.png" alt="Apollo Station Community Logo" width="128"/>
+</div>
 
 # Apollo Station
 
-Apollo Station is a powerful, local-first, modular mission control center for all your online services and AI tools. Built with Next.js, it features a customizable dashboard that connects to external services like Discord and Streamer.bot, and integrates with a wide range of AI providers via Eden AI for tasks like chat, code generation, image creation, and more.
+Welcome to Apollo Station, a powerful, local-first, modular mission control center for all your online services and AI tools. Built with Next.js, it features a customizable dashboard that connects to external services like Discord and Streamer.bot, and integrates with a wide range of AI providers for tasks like chat, code generation, image creation, and more.
 
-![Apollo Station Screenshot](https://firebasestudio.com/static/images/projects/apollo-station/screenshot1.png)
+## Acknowledgment
+
+This project was a collaborative effort between **mtman1987** and Google's AI assistant, **Gemini**.
+
+## Connect with the Creator
+
+- **Website**: [YOUR_WEBSITE_HERE](https://your-website.com)
+- **Discord**: [YOUR_DISCORD_INVITE_HERE](https://discord.gg/your-invite)
+- **Twitch**: [YOUR_TWITCH_CHANNEL_HERE](https://twitch.tv/your-channel)
+
+---
 
 ## Core Features
 
@@ -13,7 +26,7 @@ Apollo Station is a powerful, local-first, modular mission control center for al
 - **Bot Personality Store**: Create, save, and switch between different AI personas. Share and import personalities from a shared community store powered by Firebase.
 - **Secure API Key Vault**: A local, password-protected vault to securely store all your API keys and credentials. Features an optional file-based lock for enhanced local security.
 - **Modular Component System**:
-  - **Code Helper**: Generate code snippets in various languages from natural language instructions.
+  - **Cipher (Code Helper)**: Generate code snippets in various languages from natural language instructions.
   - **Stargate Imagery**: Create images from text prompts using providers like OpenAI's DALL-E or Stability AI.
   - **Translator**: A multi-tool for text translation, text-to-speech, and speech-to-text transcription.
   - **And more...**: Including a Website Viewer, Log Viewer, Resume Parser, and Access Control panel.

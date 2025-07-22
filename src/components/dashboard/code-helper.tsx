@@ -39,7 +39,7 @@ export function CodeHelper({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
         setResult(null);
 
         const logDetails = `Instruction: "${instruction.substring(0, 100)}...", Language: ${language}`;
-        addLog({ service: 'Code Helper', level: 'info', message: "User requested code generation.", details: logDetails });
+        addLog({ service: 'Cipher', level: 'info', message: "User requested code generation.", details: logDetails });
 
         try {
             const config: { [key: string]: any } = {};
@@ -61,7 +61,7 @@ export function CodeHelper({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                     description: "Please enter your Eden AI API key in the API Vault.",
                     variant: "destructive"
                 });
-                addLog({ service: 'System', level: 'error', message: "Code Helper failed: Primary Eden AI API key is missing." });
+                addLog({ service: 'System', level: 'error', message: "Cipher failed: Primary Eden AI API key is missing." });
                 setIsLoading(false);
                 return;
             }
@@ -87,7 +87,7 @@ export function CodeHelper({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                 description: "An unexpected error occurred. Check the Captain's Log for details.",
                 variant: "destructive"
             });
-            addLog({ service: 'System', level: 'error', message: `Code Helper failed: ${errorMessage}`, details: error instanceof Error ? error.stack : String(error) });
+            addLog({ service: 'System', level: 'error', message: `Cipher failed: ${errorMessage}`, details: error instanceof Error ? error.stack : String(error) });
         } finally {
             setIsLoading(false);
         }
@@ -113,7 +113,7 @@ export function CodeHelper({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
               <div className="flex-grow">
                 <CardTitle className="flex items-center gap-2 text-title-foreground">
                   <Code className="h-6 w-6" />
-                  Code Helper
+                  Cipher (Code Helper)
                 </CardTitle>
                 <CardDescription>
                   Generate code snippets from natural language instructions.

@@ -5,7 +5,6 @@ import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import { LogViewer } from '@/components/dashboard/log-viewer';
-import { Fallback } from '@/components/dashboard/fallback';
 import { ApiSettings } from '@/components/dashboard/api-settings';
 import { UnifiedChat } from '@/components/dashboard/unified-chat';
 import { UserRoles } from '@/components/dashboard/user-roles';
@@ -19,6 +18,7 @@ import { ImageGenerator } from '@/components/dashboard/image-generator';
 import { MusicPlayer } from '@/components/dashboard/music-player';
 import { ResumeParser } from '@/components/dashboard/resume-parser';
 import { Translator } from '@/components/dashboard/translator';
+import { CodeHelper } from '@/components/dashboard/code-helper';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { LogProvider } from '@/context/LogContext';
@@ -27,7 +27,6 @@ import { SidebarProvider } from '@/context/SidebarContext';
 
 const moduleMap: { [key: string]: React.ComponentType<any> } = {
   logViewer: LogViewer,
-  fallback: Fallback,
   apiSettings: ApiSettings,
   unifiedChat: UnifiedChat,
   userRoles: UserRoles,
@@ -41,6 +40,7 @@ const moduleMap: { [key: string]: React.ComponentType<any> } = {
   musicPlayer: MusicPlayer,
   resumeParser: ResumeParser,
   translator: Translator,
+  codeHelper: CodeHelper,
 };
 
 function PopoutContent({ slug }: { slug: string }) {

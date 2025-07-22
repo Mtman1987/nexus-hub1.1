@@ -71,7 +71,7 @@ You might wonder why the Discord message relay isn't built directly into the Nex
 -   **API Key Vault**: Test the lock/unlock functionality. Use the password you set during setup. Does it automatically lock after 5 minutes?
 -   **Bot Personality**: Create a new personality. Save it. Switch back to COSMO. Does the correct prompt load each time?
 -   **Unified Chat**: Send a message to "AI Bot". Does the chat history update correctly?
--   **Code Helper**: Enter an instruction (e.g., "create a JavaScript function to get a random number") and verify code is generated.
+-   **Cipher (Code Helper)**: Enter an instruction (e.g., "create a JavaScript function to get a random number") and verify code is generated.
 -   **Image Generator**: Enter a prompt and verify an image is generated.
 -   **Translator**: Test all three tabs: text translation, text-to-speech, and audio file transcription.
 -   **Log Viewer**: Check that logs from various actions appear correctly. Click a log to see details.
