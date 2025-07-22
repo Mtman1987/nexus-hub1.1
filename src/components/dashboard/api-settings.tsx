@@ -71,7 +71,7 @@ const popularModels = {
 const serviceProviders = {
     tts: ['google', 'openai', 'elevenlabs', 'microsoft', 'amazon', 'lovoai'],
     stt: ['deepgram', 'openai', 'gladia', 'assemblyai', 'microsoft', 'google', 'amazon', 'speechmatics', 'symblai'],
-    translation: ['google', 'deepl', 'microsoft', 'amazon', 'ibm']
+    translation: ['google', 'deepl', 'microsoft', 'amazon', 'openai', 'modernmt']
 };
 
 
