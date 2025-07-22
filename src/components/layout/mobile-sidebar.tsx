@@ -23,7 +23,7 @@ export function MobileSidebar() {
          <div className="flex h-14 items-center border-b px-4 lg:h-[60px]">
             <div className="flex items-center gap-2 font-semibold text-primary">
                 <CommunityLogo className="h-8 w-8" />
-                <span>Space Mountain</span>
+                <span>Apollo Station</span>
             </div>
         </div>
         <SidebarNav isMobile={true} />
