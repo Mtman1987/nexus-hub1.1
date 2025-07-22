@@ -154,18 +154,6 @@
   }
 }
 
-@keyframes a-shining {
-  0% {
-    width: 0;
-  }
-  50% {
-    width: 30px;
-  }
-  100% {
-    width: 0;
-  }
-}
-
 @keyframes pulse-star-anim {
   from {
     background-size: 100% 100%, 200px 200px, 200px 200px, 300px 300px, 300px 300px;

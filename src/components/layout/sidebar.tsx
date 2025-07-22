@@ -19,7 +19,7 @@ export function Sidebar() {
         <div className="flex h-14 items-center border-b px-4 lg:h-[60px] justify-between">
             <div className="flex items-center gap-2 font-semibold text-primary overflow-hidden">
                 <CommunityLogo className="h-8 w-8 flex-shrink-0" />
-                {!isCollapsed && <span className="text-lg whitespace-nowrap">Space Mountain</span>}
+                {!isCollapsed && <span className="text-lg whitespace-nowrap">Apollo Station</span>}
             </div>
             <Button variant="ghost" size="icon" onClick={() => setCollapsed(!isCollapsed)}>
                 {isCollapsed ? <PanelRightClose className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}

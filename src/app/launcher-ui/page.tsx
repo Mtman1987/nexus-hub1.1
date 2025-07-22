@@ -40,7 +40,7 @@ export default function LauncherPage() {
            </div>
           
           <div className="space-y-2">
-             <h1 className="text-4xl font-bold tracking-tighter">Space Mountain HQ</h1>
+             <h1 className="text-4xl font-bold tracking-tighter text-title-foreground">Space Mountain: Apollo Station</h1>
              <p className="text-muted-foreground">
                 {botName}'s command center is standing by. All systems ready for launch.
              </p>
