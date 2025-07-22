@@ -304,7 +304,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
         <div className="flex justify-between items-start">
              <div className="flex items-center gap-2 flex-grow">
                {dragHandleProps && (
-                <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab">
+                <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto">
                   <GripVertical />
                 </Button>
               )}

@@ -254,15 +254,11 @@ export default function DashboardPage() {
                                 {visibleModuleIds.map(id => {
                                     const moduleConfig = ALL_MODULES_CONFIG.find(m => m.id === id);
                                     if (!moduleConfig) return null;
-                                    const ModuleComponent = moduleConfig.component;
+                                    
                                     return (
                                         <SortableModule key={id} id={id}>
                                             <div className="relative h-[400px] xl:h-[450px]">
-                                                <ModuleComponent 
-                                                    onPopOut={() => handlePopOut(id, moduleConfig.title)}
-                                                    onHide={() => handleHideModule(id)}
-                                                    isPoppedOut={false}
-                                                />
+                                                {/* The ModuleComponent is the child that receives dragHandleProps via cloneElement */}
                                             </div>
                                         </SortableModule>
                                     );
