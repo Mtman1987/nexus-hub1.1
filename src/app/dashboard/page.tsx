@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent, DragOverlay, DragStartEvent } from '@dnd-kit/core';
-import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { arrayMove, SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
 import { DraggableModule } from '@/components/dashboard/draggable-module';
 
 import { LogViewer } from '@/components/dashboard/log-viewer';
@@ -231,7 +231,7 @@ export default function DashboardPage() {
         </div>
 
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-            <SortableContext items={visibleModuleIds} strategy={verticalListSortingStrategy}>
+            <SortableContext items={visibleModuleIds} strategy={rectSortingStrategy}>
                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                     {visibleModuleIds.map(id => {
                         const moduleConfig = ALL_MODULES_CONFIG.find(m => m.id === id);
@@ -283,7 +283,5 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    
 
     

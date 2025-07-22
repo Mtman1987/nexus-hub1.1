@@ -65,7 +65,7 @@ export function WebsiteViewer({ isPoppedOut = false, onPopOut, onHide, dragHandl
   const siteKeys = Object.keys(SITES);
 
   return (
-    <Card className="flex flex-col bg-card/80" style={{ height: '480px' }}>
+    <Card className="flex flex-col bg-card/80">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
         <CardHeader>
           <div className="flex justify-between items-start">
@@ -122,3 +122,5 @@ export function WebsiteViewer({ isPoppedOut = false, onPopOut, onHide, dragHandl
     </Card>
   );
 }
+
+    

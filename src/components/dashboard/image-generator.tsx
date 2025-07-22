@@ -167,3 +167,5 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
     </Card>
   );
 }
+
+    

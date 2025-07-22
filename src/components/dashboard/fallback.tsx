@@ -162,3 +162,5 @@ export function Fallback({ onPopOut, isPoppedOut = false, onHide, dragHandleProp
     </>
   );
 }
+
+    

@@ -364,3 +364,5 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
       </Card>
   );
 }
+
+    

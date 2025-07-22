@@ -302,7 +302,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
   const isNexusConnectChecked = form.watch('targets').includes('Nexus Connect');
 
   return (
-    <Card className="flex flex-col bg-card/80" style={{ height: '480px' }}>
+    <Card className="flex flex-col bg-card/80">
       <CardHeader>
         <div className="flex justify-between items-start">
              <div className="flex items-center gap-2 flex-grow">
@@ -472,3 +472,5 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
 });
 
 UnifiedChat.displayName = 'UnifiedChat';
+
+    

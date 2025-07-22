@@ -40,6 +40,9 @@ export default function RootLayout({
             <SidebarProvider>
               <div className="flex min-h-screen w-full">
                 <Sidebar />
+                <div className="md:hidden p-4">
+                  <MobileSidebar />
+                </div>
                 <main className="flex-1 flex flex-col overflow-auto">
                   {children}
                 </main>
@@ -52,3 +55,5 @@ export default function RootLayout({
     </html>
   );
 }
+
+    
