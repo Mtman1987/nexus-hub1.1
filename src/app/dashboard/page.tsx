@@ -48,7 +48,7 @@ const ALL_MODULES_CONFIG = [
 const defaultModuleOrder = ALL_MODULES_CONFIG.map(m => m.id);
 
 // Wrapper component to make modules sortable
-const SortableModule = ({ id, onHide, onPopOut, isPoppedOut, children }: { id: string, onHide: () => void, onPopOut: () => void, isPoppedOut: boolean, children: React.ReactElement }) => {
+const SortableModule = ({ id, children }: { id: string, children: React.ReactElement }) => {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ 
       id,
     });
@@ -62,12 +62,7 @@ const SortableModule = ({ id, onHide, onPopOut, isPoppedOut, children }: { id: s
     return React.cloneElement(children, {
         ref: setNodeRef,
         style: style,
-        ...attributes,
-        ...listeners,
         dragHandleProps: { ...attributes, ...listeners },
-        onHide,
-        onPopOut,
-        isPoppedOut
     });
 };
 
@@ -219,8 +214,8 @@ export default function DashboardPage() {
     <>
       <div className="flex min-h-screen w-full">
         <Sidebar />
-        <main className="flex-1 flex flex-col overflow-auto bg-background">
-            <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 md:hidden">
+        <main className="flex-1 flex flex-col overflow-auto bg-transparent">
+            <header className="flex h-14 items-center gap-4 border-b bg-card/80 px-4 md:hidden">
               <MobileSidebar />
               <h1 className="text-lg font-bold">Dashboard</h1>
             </header>
@@ -270,11 +265,11 @@ export default function DashboardPage() {
                                         <SortableModule 
                                           key={id} 
                                           id={id} 
-                                          onHide={() => handleHideModule(id)} 
-                                          onPopOut={() => handlePopOut(id, moduleConfig.title)}
-                                          isPoppedOut={false}
                                         >
-                                          <ModuleComponent />
+                                          <ModuleComponent 
+                                            onHide={() => handleHideModule(id)} 
+                                            onPopOut={() => handlePopOut(id, moduleConfig.title)}
+                                          />
                                         </SortableModule>
                                     );
                                 })}
@@ -307,3 +302,5 @@ export default function DashboardPage() {
     </>
   );
 }
+
+    
