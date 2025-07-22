@@ -234,7 +234,7 @@ export default function DashboardPage() {
             <div className="flex-grow rounded-lg">
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                     <SortableContext items={visibleModuleIds} strategy={verticalListSortingStrategy}>
-                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 h-full overflow-y-auto">
+                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 h-full">
                             {visibleModuleIds.map(id => {
                                 const moduleConfig = ALL_MODULES_CONFIG.find(m => m.id === id);
                                 if (!moduleConfig) return null;
@@ -252,7 +252,7 @@ export default function DashboardPage() {
                     </SortableContext>
                      <DragOverlay>
                         {activeId && activeModule ? (
-                          <Card className="h-full w-full bg-primary/50 flex items-center justify-center">
+                          <Card className="h-full w-full flex items-center justify-center">
                             <CardHeader>
                               <CardTitle>{activeModule.title}</CardTitle>
                             </CardHeader>
