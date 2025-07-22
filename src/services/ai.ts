@@ -93,9 +93,16 @@ export async function getSummarizedPersonality(input: LoreSummarizerInput): Prom
 
 /**
  * Service function to convert text to speech.
+ * This now reads from localStorage on the client-side and passes config to the flow.
  */
-export async function getTTSAudio(input: TtsInput): Promise<TtsOutput> {
-    return ttsFlow(input);
+export async function getTTSAudio(input: Omit<TtsInput, 'config'>): Promise<TtsOutput> {
+    const config = {
+        edenApiKey: localStorage.getItem('edenApiKey'),
+        botVoice: localStorage.getItem('botVoice'),
+        ttsProvider: localStorage.getItem('ttsProvider'),
+    };
+    
+    return ttsFlow({ ...input, config });
 }
 
 /**

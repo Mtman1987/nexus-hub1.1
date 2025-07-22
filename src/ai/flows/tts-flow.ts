@@ -86,15 +86,10 @@ async function callEdenAiTts(
 
 
 export async function ttsFlow(input: TtsInput): Promise<TtsOutput> {
-    const config: AppConfig = {
-        edenApiKey: localStorage.getItem('edenApiKey'),
-        botVoice: localStorage.getItem('botVoice'),
-        ttsProvider: localStorage.getItem('ttsProvider'),
-    };
+    const { text, voice, config } = input;
     
-    const { text, voice } = input;
     // Use the voice passed in the call, fallback to the globally set bot voice, then to a default.
-    const voiceToUse = voice || config.botVoice || 'en-US-Wavenet-F';
+    const voiceToUse = voice || config?.botVoice || 'en-US-Wavenet-F';
 
     try {
         const { audio, logs } = await callEdenAiTts(config, text, voiceToUse);

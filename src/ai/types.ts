@@ -124,6 +124,7 @@ export interface LoreSummarizerOutput {
 export const TtsInputSchema = z.object({
   text: z.string(),
   voice: z.string().optional(),
+  config: z.any(),
 });
 export type TtsInput = z.infer<typeof TtsInputSchema>;
 
