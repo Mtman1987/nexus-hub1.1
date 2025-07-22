@@ -32,7 +32,7 @@ export default function LauncherPage() {
     <>
       <SetupDialog open={showSetup} onOpenChange={setShowSetup} />
       <div className="flex h-screen w-screen items-center justify-center text-foreground">
-        <div className="flex flex-col items-center gap-6 text-center p-8 rounded-lg max-w-md mx-auto">
+        <div className="relative flex flex-col items-center gap-6 text-center p-8 rounded-lg max-w-md mx-auto">
            <div 
              className="w-48 h-24 flex items-center justify-center"
             >
