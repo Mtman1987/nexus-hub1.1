@@ -48,22 +48,20 @@ const ALL_MODULES_CONFIG = [
 const defaultModuleOrder = ALL_MODULES_CONFIG.map(m => m.id);
 
 // Wrapper component to make modules sortable
-const SortableModule = ({ id, children }: { id: string, children: React.ReactElement }) => {
-    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ 
-      id,
-    });
-    const style: React.CSSProperties = {
+const SortableModule = ({ id, children }: { id: string, children: React.ReactNode }) => {
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+    const style = {
         transform: CSS.Transform.toString(transform),
-        transition: transition || 'transform 0.25s ease',
-        opacity: isDragging ? 0.8 : 1,
+        transition,
         zIndex: isDragging ? 10 : 'auto',
+        opacity: isDragging ? 0.75 : 1,
     };
 
-    return React.cloneElement(children, {
-        ref: setNodeRef,
-        style: style,
-        dragHandleProps: { ...attributes, ...listeners },
-    });
+    return (
+        <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+            {children}
+        </div>
+    );
 };
 
 
@@ -262,11 +260,8 @@ export default function DashboardPage() {
                                     
                                     const ModuleComponent = moduleConfig.component;
                                     return (
-                                        <SortableModule 
-                                          key={id} 
-                                          id={id} 
-                                        >
-                                          <ModuleComponent 
+                                        <SortableModule key={id} id={id}>
+                                          <ModuleComponent
                                             onHide={() => handleHideModule(id)} 
                                             onPopOut={() => handlePopOut(id, moduleConfig.title)}
                                           />
@@ -302,5 +297,3 @@ export default function DashboardPage() {
     </>
   );
 }
-
-    
