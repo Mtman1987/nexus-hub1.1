@@ -73,6 +73,7 @@ export interface ImageGeneratorInput {
 export interface ImageGeneratorOutput {
     imageUrl: string;
     enhancedPrompt: string;
+    selectedProvider?: string;
 }
 
 

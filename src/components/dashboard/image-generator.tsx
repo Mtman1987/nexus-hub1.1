@@ -5,14 +5,12 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Wand2, GripVertical, EyeOff, Image as ImageIcon, Save, Info, ExternalLink } from 'lucide-react';
+import { Loader2, Wand2, GripVertical, EyeOff, Image as ImageIcon, Info, ExternalLink, Cpu } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { PopOutButton } from './pop-out-button';
 import { useLogs } from '@/context/LogContext';
 import { generateImage } from '@/services/ai';
 import type { ImageGeneratorOutput } from '@/ai/types';
-import Image from 'next/image';
-import { Skeleton } from '../ui/skeleton';
 import { Alert, AlertTitle, AlertDescription } from '../ui/alert';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -54,7 +52,7 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
 
             const response = await generateImage({ prompt });
             setResult(response);
-            addLog({ service: 'Image Generator', level: 'info', message: 'Image successfully generated.', details: `Enhanced Prompt: ${response.enhancedPrompt}` });
+            addLog({ service: 'Image Generator', level: 'info', message: 'Image successfully generated.', details: `Provider: ${response.selectedProvider}, Enhanced Prompt: ${response.enhancedPrompt}` });
 
         } catch (error) {
             console.error(error);
@@ -141,13 +139,19 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
         </div>
         
         {result && (
-             <Alert variant="default" className="text-xs shrink-0">
-                <Info className="h-4 w-4" />
-                <AlertTitle>Enhanced Prompt Used</AlertTitle>
-                <AlertDescription>
-                    {result.enhancedPrompt}
-                </AlertDescription>
-            </Alert>
+             <div className="space-y-2 shrink-0">
+                <Alert variant="default" className="text-xs">
+                    <Cpu className="h-4 w-4" />
+                    <AlertTitle>Provider Selected: <span className='font-bold capitalize'>{result.selectedProvider}</span></AlertTitle>
+                </Alert>
+                <Alert variant="default" className="text-xs">
+                    <Info className="h-4 w-4" />
+                    <AlertTitle>Enhanced Prompt Used</AlertTitle>
+                    <AlertDescription>
+                        {result.enhancedPrompt}
+                    </AlertDescription>
+                </Alert>
+             </div>
         )}
 
         <div className="space-y-2 mt-auto shrink-0">
