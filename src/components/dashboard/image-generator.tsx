@@ -9,7 +9,7 @@ import { Loader2, Wand2, GripVertical, EyeOff, Image as ImageIcon, Save, Info, E
 import { useToast } from '@/hooks/use-toast';
 import { PopOutButton } from './pop-out-button';
 import { useLogs } from '@/context/LogContext';
-import { imageGeneratorFlow } from '@/ai/flows/image-generator-flow';
+import { generateImage } from '@/services/ai';
 import type { ImageGeneratorOutput } from '@/ai/types';
 import Image from 'next/image';
 import { Skeleton } from '../ui/skeleton';
@@ -40,19 +40,19 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
         addLog({ service: 'Image Generator', level: 'info', message: "User requested an image.", details: logDetails });
         
         try {
-            const apiKey = localStorage.getItem('googleApiKey');
+            const apiKey = localStorage.getItem('edenApiKey');
             if (!apiKey) {
                  toast({
-                    title: "Missing Google API Key",
-                    description: "Please enter your Google API key in the API Vault. The Image Generator uses a Google model.",
+                    title: "Missing Eden AI Key",
+                    description: "Please enter your Eden AI API key in the API Vault.",
                     variant: "destructive"
                 });
-                addLog({ service: 'System', level: 'error', message: "Image Generator failed: Google API key is missing." });
+                addLog({ service: 'System', level: 'error', message: "Image Generator failed: Eden AI API key is missing." });
                 setIsLoading(false);
                 return;
             }
 
-            const response = await imageGeneratorFlow({ prompt });
+            const response = await generateImage({ prompt });
             setResult(response);
             addLog({ service: 'Image Generator', level: 'info', message: 'Image successfully generated.', details: `Enhanced Prompt: ${response.enhancedPrompt}` });
 
@@ -123,7 +123,7 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
                 </div>
             ) : result?.imageUrl ? (
                 <div className="w-full space-y-2">
-                    <Label htmlFor="image-url">Image URL (Data URI)</Label>
+                    <Label htmlFor="image-url">Image URL</Label>
                     <div className="flex gap-2">
                          <Input id="image-url" readOnly value={result.imageUrl} className="text-xs" />
                          <Button variant="outline" size="icon" onClick={handleViewImage}>

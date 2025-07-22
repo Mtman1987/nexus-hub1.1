@@ -6,7 +6,7 @@
  */
 
 import { intelligentFallbackFlow } from '@/ai/flows/intelligent-fallback';
-import { setupAssistantFlow } from '@/ai/flows/setup-assistant';
+import { setupAssistantFlow } from '@/ai/flows/setup-assistant-flow';
 import { unifiedChatFlow } from '@/ai/flows/unified-chat-flow';
 import { loreWeaverFlow } from '@/ai/flows/lore-weaver';
 import { imageGeneratorFlow } from '@/ai/flows/image-generator-flow';
