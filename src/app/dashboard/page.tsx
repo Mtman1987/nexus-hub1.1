@@ -2,10 +2,9 @@
 "use client";
 
 import * as React from 'react';
-import { useState, useEffect, useCallback } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
-import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { DraggableModule } from '@/components/dashboard/draggable-module';
 
 import { LogViewer } from '@/components/dashboard/log-viewer';
 import { ApiSettings } from '@/components/dashboard/api-settings';
@@ -46,42 +45,22 @@ const ALL_MODULES_CONFIG = [
 ];
 const defaultModuleOrder = ALL_MODULES_CONFIG.map(m => m.id);
 
-// Wrapper component to make modules sortable
-const SortableModule = ({ id, children }: { id: string, children: React.ReactNode }) => {
-    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ 
-        id
-    });
-    const style = {
-        transform: CSS.Transform.toString(transform),
-        transition,
-        opacity: isDragging ? 0.5 : 1,
-        gridRow: 'span 1 / span 1',
-        gridColumn: 'span 1 / span 1',
-    };
-
-    return (
-        <div ref={setNodeRef} style={style} {...attributes} >
-             {React.cloneElement(children as React.ReactElement, { dragHandleProps: listeners })}
-        </div>
-    );
-};
-
 
 export default function DashboardPage() {
   const { toast } = useToast();
   const { addLog } = useLogs();
   
-  const [moduleOrder, setModuleOrder] = useState<string[]>(defaultModuleOrder);
-  const [hiddenModules, setHiddenModules] = useState<string[]>([]);
+  const [moduleOrder, setModuleOrder] = React.useState<string[]>(defaultModuleOrder);
+  const [hiddenModules, setHiddenModules] = React.useState<string[]>([]);
   
   const openPopoutsRef = React.useRef<Map<string, Window>>(new Map());
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+    useSensor(KeyboardSensor)
   );
 
-  const setupWindowCloseWatcher = useCallback((win: Window, id: string, title: string) => {
+  const setupWindowCloseWatcher = React.useCallback((win: Window, id: string, title: string) => {
     const checkWindow = setInterval(() => {
       if (win.closed) {
         clearInterval(checkWindow);
@@ -92,7 +71,7 @@ export default function DashboardPage() {
     }, 500);
   }, [addLog]);
 
- const openPopoutWindow = useCallback((componentId: string, title: string) => {
+ const openPopoutWindow = React.useCallback((componentId: string, title: string) => {
       const { availWidth, availHeight, availLeft, availTop } = window.screen;
       const popoutWidth = Math.floor(availWidth / 2);
       const popoutHeight = Math.floor(availHeight / 2) - 60; 
@@ -101,7 +80,7 @@ export default function DashboardPage() {
       return window.open(url, `popout-${componentId}-${Date.now()}`, features);
   }, []);
 
- const handlePopOut = useCallback((componentId: string, title: string) => {
+ const handlePopOut = React.useCallback((componentId: string, title: string) => {
     if (openPopoutsRef.current.has(componentId)) {
         openPopoutsRef.current.get(componentId)?.focus();
         toast({ title: "Window already open", description: "That module is already in a separate window." });
@@ -121,7 +100,7 @@ export default function DashboardPage() {
     }
   }, [toast, openPopoutWindow, setupWindowCloseWatcher, addLog]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     try {
         const savedOrder = localStorage.getItem('moduleOrder');
         if (savedOrder) {
@@ -212,7 +191,7 @@ export default function DashboardPage() {
 
   return (
     <>
-        <div className="flex-1 flex flex-col p-4 md:p-6 space-y-6 h-full">
+        <div className="flex-1 flex flex-col p-4 md:p-6 space-y-6 h-full bg-background/90">
             <div className="flex items-center justify-between flex-shrink-0">
                 <h1 className="text-xl md:text-3xl font-bold tracking-tight">Dashboard</h1>
                 <div className="flex items-center gap-2">
@@ -245,7 +224,7 @@ export default function DashboardPage() {
                 </div>
             </div>
 
-            <div className="flex-grow overflow-hidden bg-background/90 p-4 rounded-lg">
+            <div className="flex-grow overflow-hidden p-4 rounded-lg">
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                     <SortableContext items={visibleModuleIds} strategy={verticalListSortingStrategy}>
                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 h-full overflow-y-auto">
@@ -255,12 +234,12 @@ export default function DashboardPage() {
                                 
                                 const ModuleComponent = moduleConfig.component;
                                 return (
-                                    <SortableModule key={id} id={id}>
+                                    <DraggableModule key={id} id={id}>
                                       <ModuleComponent
                                         onHide={() => handleHideModule(id)} 
                                         onPopOut={() => handlePopOut(id, moduleConfig.title)}
                                       />
-                                    </SortableModule>
+                                    </DraggableModule>
                                 );
                             })}
                         </div>
@@ -290,4 +269,3 @@ export default function DashboardPage() {
     </>
   );
 }
-
