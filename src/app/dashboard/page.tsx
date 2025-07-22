@@ -264,7 +264,7 @@ export default function DashboardPage() {
             </div>
             
             {trulyHiddenModules.length > 0 && (
-                <Card className="mt-auto">
+                <Card className="mt-auto bg-card/80">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <LayoutGrid className="h-5 w-5" />
