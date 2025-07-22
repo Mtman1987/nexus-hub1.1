@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Wand2, GripVertical, EyeOff, Video, Settings, ChevronDown, Sparkles, Image as ImageIcon } from 'lucide-react';
+import { Loader2, Wand2, GripVertical, EyeOff, Video, Settings, ChevronDown, Sparkles, Image as ImageIcon, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { PopOutButton } from './pop-out-button';
 import { useLogs } from '@/context/LogContext';
