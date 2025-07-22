@@ -46,6 +46,18 @@ const SAVED_ITEMS_KEY = 'apollo-station-saved-items';
 const TIMELINE_KEY = 'apollo-station-timeline';
 const PERSONALITIES_KEY = 'botPersonalities';
 
+const defaultLore: SavedItem[] = [
+    {
+        id: 'lore-1',
+        type: 'lore',
+        content: {
+            prompt: 'The beginning',
+            response: "The Commander got his first glimpse of the station, and he couldn't help but smile. As he walked around the new station and watched as the most dedicated AI maticulay worked on polishing the fine details. He couldnt wait to finally be pulling out of the lot. All his hard work etched into every corner, his dreams were coming true."
+        },
+        savedAt: new Date().toISOString()
+    }
+];
+
 
 export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandleProps, isPreview }: SavedItemsProps) {
   const [savedItems, setSavedItems] = useState<SavedItem[]>([]);
@@ -64,7 +76,11 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
     if (isPreview) return;
     try {
       const storedItems = localStorage.getItem(SAVED_ITEMS_KEY);
-      if (storedItems) setSavedItems(JSON.parse(storedItems));
+      if (storedItems) {
+        setSavedItems(JSON.parse(storedItems));
+      } else {
+        setSavedItems(defaultLore);
+      }
 
       const storedTimeline = localStorage.getItem(TIMELINE_KEY);
       if(storedTimeline) setTimeline(JSON.parse(storedTimeline));
@@ -96,8 +112,9 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
   };
   
   const clearAllItems = () => {
-    localStorage.removeItem(SAVED_ITEMS_KEY);
-    setSavedItems([]);
+    const newItems = savedItems.filter(item => item.type === 'lore');
+    localStorage.setItem(SAVED_ITEMS_KEY, JSON.stringify(newItems));
+    setSavedItems(newItems);
     toast({ title: "All Pinned Items Cleared", variant: "destructive" });
   };
 
