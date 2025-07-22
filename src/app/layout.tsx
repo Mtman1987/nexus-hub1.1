@@ -42,7 +42,7 @@ export default function RootLayout({
             <SidebarProvider>
               <div className="flex min-h-screen w-full">
                 <Sidebar />
-                <main className="flex-1 flex flex-col overflow-auto bg-background/80">
+                <main className="flex-1 flex flex-col overflow-auto bg-background/50">
                   {children}
                 </main>
               </div>
