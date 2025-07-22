@@ -199,7 +199,7 @@ export function UserRoles({ isPoppedOut = false, onPopOut, onHide, dragHandlePro
         <Dialog open={!!selectedUser} onOpenChange={(isOpen) => !isOpen && handleCloseDialog()}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-3">
+              <DialogTitle className="flex items-center gap-3 text-title-foreground">
                  <Avatar>
                   <AvatarImage src={`https://placehold.co/40x40.png`} data-ai-hint="avatar abstract" alt={selectedUser.name} />
                   <AvatarFallback>{getInitials(selectedUser.name)}</AvatarFallback>

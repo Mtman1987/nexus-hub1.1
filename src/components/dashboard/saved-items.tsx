@@ -311,7 +311,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
     <Dialog open={!!editingLore} onOpenChange={(isOpen) => !isOpen && setEditingLore(null)}>
         <EditDialogContent className="max-w-2xl">
             <EditDialogHeader>
-                <EditDialogTitle>Finalize Lore Entry</EditDialogTitle>
+                <EditDialogTitle className="text-title-foreground">Finalize Lore Entry</EditDialogTitle>
                 <EditDialogDescription>Refine your lore, ask COSMO for help, and then finalize it to add it to the official timeline.</EditDialogDescription>
             </EditDialogHeader>
             <div className="space-y-4 py-4 max-h-[70vh] overflow-y-auto pr-2">
