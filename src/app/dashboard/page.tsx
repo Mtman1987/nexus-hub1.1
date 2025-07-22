@@ -3,10 +3,9 @@
 
 import * as React from 'react';
 import { useState, useEffect, useCallback } from 'react';
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent, DragOverlay, DragStartEvent } from '@dnd-kit/core';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { createPortal } from 'react-dom';
 
 import { LogViewer } from '@/components/dashboard/log-viewer';
 import { ApiSettings } from '@/components/dashboard/api-settings';
@@ -50,18 +49,19 @@ const defaultModuleOrder = ALL_MODULES_CONFIG.map(m => m.id);
 // Wrapper component to make modules sortable
 const SortableModule = ({ id, children }: { id: string, children: React.ReactNode }) => {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ 
-        id,
+        id
     });
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
         opacity: isDragging ? 0.5 : 1,
-        height: '100%',
+        gridRow: 'span 1 / span 1',
+        gridColumn: 'span 1 / span 1',
     };
 
     return (
-        <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-            {children}
+        <div ref={setNodeRef} style={style} {...attributes} >
+             {React.cloneElement(children as React.ReactElement, { dragHandleProps: listeners })}
         </div>
     );
 };
@@ -73,7 +73,6 @@ export default function DashboardPage() {
   
   const [moduleOrder, setModuleOrder] = useState<string[]>(defaultModuleOrder);
   const [hiddenModules, setHiddenModules] = useState<string[]>([]);
-  const [activeId, setActiveId] = useState<string | null>(null);
   
   const openPopoutsRef = React.useRef<Map<string, Window>>(new Map());
 
@@ -141,10 +140,6 @@ export default function DashboardPage() {
     }
   }, [addLog]);
 
-  const handleDragStart = (event: DragStartEvent) => {
-    setActiveId(event.active.id as string);
-  }
-
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
@@ -154,7 +149,6 @@ export default function DashboardPage() {
         return arrayMove(items, oldIndex, newIndex);
       });
     }
-    setActiveId(null);
   };
   
   const handleSaveLayout = () => {
@@ -216,9 +210,6 @@ export default function DashboardPage() {
   const visibleModuleIds = moduleOrder.filter(id => !hiddenModules.includes(id));
   const trulyHiddenModules = ALL_MODULES_CONFIG.filter(m => hiddenModules.includes(m.id));
 
-  const activeModule = activeId ? ALL_MODULES_CONFIG.find(m => m.id === activeId) : null;
-  const ActiveModuleComponent = activeModule?.component;
-
   return (
     <>
         <div className="flex-1 flex flex-col p-4 md:p-6 space-y-6 h-full">
@@ -255,9 +246,9 @@ export default function DashboardPage() {
             </div>
 
             <div className="flex-grow overflow-hidden bg-background/90 p-4 rounded-lg">
-                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                     <SortableContext items={visibleModuleIds} strategy={verticalListSortingStrategy}>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 h-full">
+                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 h-full overflow-y-auto">
                             {visibleModuleIds.map(id => {
                                 const moduleConfig = ALL_MODULES_CONFIG.find(m => m.id === id);
                                 if (!moduleConfig) return null;
@@ -274,20 +265,6 @@ export default function DashboardPage() {
                             })}
                         </div>
                     </SortableContext>
-                    
-                    {typeof document !== 'undefined' && createPortal(
-                      <DragOverlay style={{ zIndex: 100 }}>
-                        {activeId && ActiveModuleComponent && (
-                             <ActiveModuleComponent 
-                                isPoppedOut={true} // Simplified for overlay
-                                onHide={() => {}} 
-                                onPopOut={() => {}}
-                             />
-                        )}
-                      </DragOverlay>,
-                      document.body
-                    )}
-
                 </DndContext>
             </div>
             
@@ -313,3 +290,4 @@ export default function DashboardPage() {
     </>
   );
 }
+
