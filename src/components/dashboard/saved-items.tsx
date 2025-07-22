@@ -229,7 +229,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                 {/* TIMELINE */}
                 <div className="space-y-3">
                     <div className="flex justify-between items-center">
-                        <h4 className="font-semibold text-lg text-accent">Galactic Timeline</h4>
+                        <h4 className="font-semibold text-lg text-title-foreground">Galactic Timeline</h4>
                         {timeline.length > 0 && (
                              <AlertDialog>
                                 <AlertDialogTrigger asChild><Button variant="destructive" size="sm">Clear Timeline</Button></AlertDialogTrigger>
@@ -259,7 +259,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                 
                 {/* DRAFTS */}
                 <div className="space-y-3">
-                     <h4 className="font-semibold text-lg">Idea Drafts</h4>
+                     <h4 className="font-semibold text-lg text-title-foreground">Idea Drafts</h4>
                      {loreDrafts.length > 0 ? (
                         loreDrafts.map(item => (
                             <div key={item.id} className="flex items-center gap-2 rounded-lg border p-3">
@@ -278,7 +278,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                 {/* OTHER ITEMS */}
                  <div className="space-y-3">
                      <div className="flex justify-between items-center">
-                        <h4 className="font-semibold text-lg">Pinned Items</h4>
+                        <h4 className="font-semibold text-lg text-title-foreground">Pinned Items</h4>
                          {otherItems.length > 0 && (
                             <AlertDialog>
                                 <AlertDialogTrigger asChild><Button variant="destructive" size="sm">Clear Items</Button></AlertDialogTrigger>
