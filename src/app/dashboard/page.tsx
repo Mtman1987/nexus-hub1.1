@@ -25,6 +25,7 @@ import { BotPersonality } from '@/components/dashboard/bot-personality';
 import { Fallback } from '@/components/dashboard/fallback';
 import { ImageGenerator } from '@/components/dashboard/image-generator';
 import { MusicPlayer } from '@/components/dashboard/music-player';
+import { cn } from '@/lib/utils';
 
 
 // Define all modules with their components
@@ -231,7 +232,7 @@ export default function DashboardPage() {
                 </div>
             </div>
 
-            <div className="flex-grow rounded-lg overflow-hidden">
+            <div className="flex-grow rounded-lg overflow-hidden bg-background/80 p-6">
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                     <SortableContext items={visibleModuleIds} strategy={verticalListSortingStrategy}>
                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 h-full">
@@ -264,7 +265,7 @@ export default function DashboardPage() {
             </div>
             
             {trulyHiddenModules.length > 0 && (
-                <Card className="mt-auto bg-card/80">
+                <Card className="mt-auto bg-card">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <LayoutGrid className="h-5 w-5" />

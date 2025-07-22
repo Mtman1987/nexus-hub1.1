@@ -195,7 +195,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
   
   return (
     <>
-    <Card className="h-full flex flex-col bg-card/80">
+    <Card className="h-full flex flex-col">
       <CardHeader>
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-2 flex-grow">
@@ -260,7 +260,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                      <h4 className="font-semibold text-lg">Idea Drafts</h4>
                      {loreDrafts.length > 0 ? (
                         loreDrafts.map(item => (
-                            <div key={item.id} className="flex items-center gap-2 rounded-lg border p-3 bg-card/80">
+                            <div key={item.id} className="flex items-center gap-2 rounded-lg border p-3">
                                 <div className="flex-grow">{renderItemContent(item)}</div>
                                 <Button variant="outline" size="sm" onClick={() => handleEdit(item)}><Edit className="mr-2 h-4 w-4"/>Finalize</Button>
                                 <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={() => removeItem(item.id)}><Trash2 className="h-4 w-4" /></Button>
@@ -289,7 +289,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                      </div>
                     {otherItems.length > 0 ? (
                         otherItems.map(item => (
-                            <div key={item.id} className="flex items-start gap-2 rounded-lg border p-3 bg-card/80">
+                            <div key={item.id} className="flex items-start gap-2 rounded-lg border p-3">
                                 <div className="flex-grow">{renderItemContent(item)}</div>
                                 <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={() => removeItem(item.id)}>
                                     <Trash2 className="h-4 w-4" />
