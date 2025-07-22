@@ -130,7 +130,7 @@ export function UserRoles({ isPoppedOut = false, onPopOut, onHide, dragHandlePro
           </div>
         </CardHeader>
         <CardContent className="flex-grow flex flex-col overflow-hidden">
-          <ScrollArea className="flex-grow pr-1">
+          <ScrollArea className="flex-grow pr-1 bg-transparent">
             <Table>
                 <TableHeader>
                   <TableRow>

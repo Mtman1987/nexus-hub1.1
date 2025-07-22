@@ -101,7 +101,7 @@ export function WebsiteViewer({ isPoppedOut = false, onPopOut, onHide, dragHandl
               </Button>
           </div>
         </CardHeader>
-        <CardContent className="flex-grow p-0">
+        <CardContent className="flex-grow p-0 overflow-hidden">
             {siteKeys.map(key => (
               <TabsContent key={key} value={key} className="h-full mt-0">
                   <iframe

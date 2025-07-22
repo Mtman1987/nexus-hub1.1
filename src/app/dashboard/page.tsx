@@ -49,32 +49,21 @@ const ALL_MODULES_CONFIG = [
 const defaultModuleOrder = ALL_MODULES_CONFIG.map(m => m.id);
 
 // Wrapper component to make modules sortable
-const SortableModule = ({ id, children, dragHandleProps }: { id: string, children: React.ReactNode, dragHandleProps: any }) => {
+const SortableModule = ({ id, children }: { id: string, children: React.ReactNode }) => {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
-        opacity: isDragging ? 0 : 1, // Hide the original when dragging
-        gridColumn: 'span 1 / span 1'
-    };
-    
-    // Combine listeners from useSortable with the specific handle listeners
-    const combinedListeners = {
-        ...listeners,
-        ...dragHandleProps.listeners
+        opacity: isDragging ? 0.5 : 1,
+        gridColumn: 'span 1 / span 1',
     };
 
     return (
-        <div ref={setNodeRef} style={style} {...attributes} {...combinedListeners}>
-            {React.cloneElement(children as React.ReactElement, { dragHandleProps: { listeners: combinedListeners, attributes } })}
+        <div ref={setNodeRef} style={style} {...attributes}>
+            {React.cloneElement(children as React.ReactElement, { dragHandleProps: { ...listeners } })}
         </div>
     );
 };
-
-const ModuleContainer = ({ children }: { children: React.ReactNode }) => {
-    // This is just a static container for the DragOverlay
-    return <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">{children}</div>;
-}
 
 
 export default function DashboardPage() {
@@ -271,7 +260,7 @@ export default function DashboardPage() {
                     </div>
                 </div>
 
-                <div className="flex-grow flex flex-col gap-6 overflow-hidden">
+                <div className="flex-grow flex flex-col gap-6 overflow-hidden bg-background/90 p-4 rounded-lg">
                     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                         <SortableContext items={visibleModuleIds}>
                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -281,7 +270,7 @@ export default function DashboardPage() {
                                     
                                     const ModuleComponent = moduleConfig.component;
                                     return (
-                                        <SortableModule key={id} id={id} dragHandleProps={{}}>
+                                        <SortableModule key={id} id={id}>
                                           <ModuleComponent
                                             onHide={() => handleHideModule(id)} 
                                             onPopOut={() => handlePopOut(id, moduleConfig.title)}
@@ -295,13 +284,10 @@ export default function DashboardPage() {
                         {typeof document !== 'undefined' && createPortal(
                           <DragOverlay>
                             {activeId && ActiveModuleComponent && (
-                              <ModuleContainer>
                                 <ActiveModuleComponent 
-                                  isPoppedOut={false}
                                   onHide={() => {}} 
                                   onPopOut={() => {}}
                                 />
-                              </ModuleContainer>
                             )}
                           </DragOverlay>,
                           document.body
@@ -334,5 +320,3 @@ export default function DashboardPage() {
     </>
   );
 }
-
-    
