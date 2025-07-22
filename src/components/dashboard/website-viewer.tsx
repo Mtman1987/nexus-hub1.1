@@ -74,7 +74,7 @@ export function WebsiteViewer({ isPoppedOut = false, onPopOut, onHide, dragHandl
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2 text-title-foreground">
+                <CardTitle className="flex items-center gap-2 text-primary">
                   <Monitor className="h-6 w-6 text-accent" />
                   Live Website Viewer
                 </CardTitle>

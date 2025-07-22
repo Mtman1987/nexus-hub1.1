@@ -310,7 +310,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2 text-title-foreground">
+                <CardTitle className="flex items-center gap-2 text-primary">
                   <MessageSquare className="h-6 w-6 text-accent" />
                   Unified Chat
                 </CardTitle>

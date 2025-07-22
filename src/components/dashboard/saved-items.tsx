@@ -205,7 +205,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                 <GripVertical />
               </Button>
             <div className="flex-grow">
-              <CardTitle className="flex items-center gap-2 text-title-foreground">
+              <CardTitle className="flex items-center gap-2 text-primary">
                 <Save className="h-6 w-6 text-accent" />
                 Saved Items
               </CardTitle>
@@ -229,7 +229,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                 {/* TIMELINE */}
                 <div className="space-y-3">
                     <div className="flex justify-between items-center">
-                        <h4 className="font-semibold text-lg text-title-foreground">Galactic Timeline</h4>
+                        <h4 className="font-semibold text-lg text-primary">Galactic Timeline</h4>
                         {timeline.length > 0 && (
                              <AlertDialog>
                                 <AlertDialogTrigger asChild><Button variant="destructive" size="sm">Clear Timeline</Button></AlertDialogTrigger>
@@ -259,7 +259,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                 
                 {/* DRAFTS */}
                 <div className="space-y-3">
-                     <h4 className="font-semibold text-lg text-title-foreground">Idea Drafts</h4>
+                     <h4 className="font-semibold text-lg text-primary">Idea Drafts</h4>
                      {loreDrafts.length > 0 ? (
                         loreDrafts.map(item => (
                             <div key={item.id} className="flex items-center gap-2 rounded-lg border p-3">
@@ -278,7 +278,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                 {/* OTHER ITEMS */}
                  <div className="space-y-3">
                      <div className="flex justify-between items-center">
-                        <h4 className="font-semibold text-lg text-title-foreground">Pinned Items</h4>
+                        <h4 className="font-semibold text-lg text-primary">Pinned Items</h4>
                          {otherItems.length > 0 && (
                             <AlertDialog>
                                 <AlertDialogTrigger asChild><Button variant="destructive" size="sm">Clear Items</Button></AlertDialogTrigger>
@@ -311,7 +311,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
     <Dialog open={!!editingLore} onOpenChange={(isOpen) => !isOpen && setEditingLore(null)}>
         <EditDialogContent className="max-w-2xl">
             <EditDialogHeader>
-                <EditDialogTitle className="text-title-foreground">Finalize Lore Entry</EditDialogTitle>
+                <EditDialogTitle className="text-primary">Finalize Lore Entry</EditDialogTitle>
                 <EditDialogDescription>Refine your lore, ask COSMO for help, and then finalize it to add it to the official timeline.</EditDialogDescription>
             </EditDialogHeader>
             <div className="space-y-4 py-4 max-h-[70vh] overflow-y-auto pr-2">

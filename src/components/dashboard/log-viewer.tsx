@@ -89,7 +89,7 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2 text-title-foreground">
+                <CardTitle className="flex items-center gap-2 text-primary">
                   <BookText className="h-6 w-6 text-accent" />
                   Captain's Log
                 </CardTitle>
@@ -184,7 +184,7 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
         <Dialog open={!!selectedLog} onOpenChange={(isOpen) => !isOpen && handleCloseDialog()}>
           <DialogContent className="sm:max-w-2xl">
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-3 text-title-foreground">
+              <DialogTitle className="flex items-center gap-3 text-primary">
                 {serviceIcons[selectedLog.service] || <Info className="h-6 w-6" />}
                 Log Details
               </DialogTitle>

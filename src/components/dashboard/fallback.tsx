@@ -105,7 +105,7 @@ export function Fallback({ onPopOut, isPoppedOut = false, onHide, dragHandleProp
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2 text-title-foreground">
+                <CardTitle className="flex items-center gap-2 text-primary">
                   <Lightbulb className="h-6 w-6 text-accent" />
                   Intelligent Fallback
                 </CardTitle>

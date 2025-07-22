@@ -111,7 +111,7 @@ export function UserRoles({ isPoppedOut = false, onPopOut, onHide, dragHandlePro
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2 text-title-foreground">
+                <CardTitle className="flex items-center gap-2 text-primary">
                   <Users className="h-6 w-6 text-accent" />
                   Access Control
                 </CardTitle>
@@ -199,7 +199,7 @@ export function UserRoles({ isPoppedOut = false, onPopOut, onHide, dragHandlePro
         <Dialog open={!!selectedUser} onOpenChange={(isOpen) => !isOpen && handleCloseDialog()}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-3 text-title-foreground">
+              <DialogTitle className="flex items-center gap-3 text-primary">
                  <Avatar>
                   <AvatarImage src={`https://placehold.co/40x40.png`} data-ai-hint="avatar abstract" alt={selectedUser.name} />
                   <AvatarFallback>{getInitials(selectedUser.name)}</AvatarFallback>
