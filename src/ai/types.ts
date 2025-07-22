@@ -180,3 +180,28 @@ export interface ResumeParserOutput {
         }
     }
 }
+
+
+// --- Translation ---
+export interface TranslationInput {
+    text: string;
+    provider: string;
+    sourceLang: string;
+    targetLang: string;
+}
+
+export interface TranslationOutput {
+    text: string;
+    status: string;
+}
+
+// --- Speech to Text ---
+export interface SpeechToTextInput {
+    file: File;
+    provider: string;
+    language: string;
+}
+
+export interface SpeechToTextOutput {
+    text: string;
+}

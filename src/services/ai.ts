@@ -14,6 +14,9 @@ import { loreEditorFlow } from '@/ai/flows/lore-editor-flow';
 import { loreCuratorFlow } from '@/ai/flows/lore-curator-flow';
 import { loreSummarizerFlow } from '@/ai/flows/lore-summarizer-flow';
 import { resumeParserFlow } from '@/ai/flows/resume-parser-flow';
+import { translationFlow } from '@/ai/flows/translation-flow';
+import { speechToTextFlow } from '@/ai/flows/speech-to-text-flow';
+import { ttsFlow } from '@/ai/flows/tts-flow';
 
 import type { FlowLog, IntelligentFallbackInput, IntelligentFallbackOutput, SetupAssistantInput, SetupAssistantOutput, UnifiedChatInput, UnifiedChatOutput } from '@/ai/types';
 import type { LoreWeaverInput, LoreWeaverOutput } from '@/ai/types';
@@ -21,9 +24,10 @@ import type { ImageGeneratorInput, ImageGeneratorOutput } from '@/ai/types';
 import type { LoreEditorInput, LoreEditorOutput } from '@/ai/types';
 import type { LoreCuratorInput, LoreCuratorOutput } from '@/ai/types';
 import type { LoreSummarizerInput, LoreSummarizerOutput } from '@/ai/types';
-import { ttsFlow } from '@/ai/flows/tts-flow';
 import type { TtsInput, TtsOutput } from '@/ai/types';
 import type { ResumeParserInput, ResumeParserOutput } from '@/ai/types';
+import type { TranslationInput, TranslationOutput, SpeechToTextInput, SpeechToTextOutput } from '@/ai/types';
+
 
 /**
  * Main service function to handle unified chat requests.
@@ -93,4 +97,18 @@ export async function getTTSAudio(input: TtsInput): Promise<TtsOutput> {
  */
 export async function getParsedResume(input: ResumeParserInput): Promise<{response: ResumeParserOutput, logs: FlowLog[]}> {
     return resumeParserFlow(input);
+}
+
+/**
+ * Service function to translate text.
+ */
+export async function getTranslation(input: TranslationInput): Promise<{response: TranslationOutput, logs: FlowLog[]}> {
+    return translationFlow(input);
+}
+
+/**
+ * Service function to transcribe an audio file.
+ */
+export async function getTranscription(input: SpeechToTextInput): Promise<{response: SpeechToTextOutput, logs: FlowLog[]}> {
+    return speechToTextFlow(input);
 }

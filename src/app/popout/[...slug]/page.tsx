@@ -18,7 +18,6 @@ import { BotPersonality } from '@/components/dashboard/bot-personality';
 import { ImageGenerator } from '@/components/dashboard/image-generator';
 import { MusicPlayer } from '@/components/dashboard/music-player';
 import { ResumeParser } from '@/components/dashboard/resume-parser';
-import { AudioTranscription } from '@/components/dashboard/audio-transcription';
 import { Translator } from '@/components/dashboard/translator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
@@ -41,7 +40,6 @@ const moduleMap: { [key: string]: React.ComponentType<any> } = {
   imageGenerator: ImageGenerator,
   musicPlayer: MusicPlayer,
   resumeParser: ResumeParser,
-  audioTranscription: AudioTranscription,
   translator: Translator,
 };
 
@@ -94,5 +92,3 @@ export default function PopoutPage({ params }: { params: { slug: string[] } }) {
         </Suspense>
     );
 }
-
-    
