@@ -2,11 +2,6 @@
 // src/app/api/streamerbot-relay/route.ts
 import { type NextRequest, NextResponse } from 'next/server';
 
-// This is an experimental feature and requires the right environment flags.
-// It allows us to get a BroadcastChannel instance that can communicate
-// with browser tabs.
-// @ts-ignore
-import { unstable_getServerSession } from 'next-auth/next';
 // @ts-ignore
 import { BroadcastChannel } from 'next/dist/server/web/spec-extension/broadcast-channel';
 

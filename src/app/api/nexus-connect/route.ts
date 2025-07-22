@@ -2,11 +2,6 @@
 // src/app/api/nexus-connect/route.ts
 import { type NextRequest, NextResponse } from 'next/server';
 
-// This is an experimental feature and requires the right environment flags.
-// It allows us to get a BroadcastChannel instance that can communicate
-// with browser tabs.
-// @ts-ignore
-import { unstable_getServerSession } from 'next-auth/next';
 // @ts-ignore
 import { BroadcastChannel } from 'next/dist/server/web/spec-extension/broadcast-channel';
 
@@ -19,7 +14,7 @@ export async function POST(req: NextRequest) {
     }
     
     // Security Check: Ensure the incoming request has the correct secret key
-    const localSecret = process.env.REMOTE_ACCESS_SECRET || localStorage.getItem('remoteAccessSecret');
+    const localSecret = process.env.REMOTE_ACCESS_SECRET;
     const authHeader = req.headers.get('Authorization');
     const providedKey = authHeader?.split('Bearer ')[1];
 
@@ -46,7 +41,7 @@ export async function POST(req: NextRequest) {
 
 
     return NextResponse.json({ success: true, message: 'Message broadcasted via BroadcastChannel.' });
-  } catch (error)
+  } catch (error) {
     console.error('Failed to relay Nexus Connect message:', error);
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     return NextResponse.json({ error: 'Internal Server Error', details: errorMessage }, { status: 500 });
