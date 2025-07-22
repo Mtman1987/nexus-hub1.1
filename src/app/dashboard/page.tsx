@@ -2,8 +2,9 @@
 "use client";
 
 import * as React from 'react';
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
-import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent, DragOverlay, DragStartEvent } from '@dnd-kit/core';
+import { arrayMove, SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { DraggableModule } from '@/components/dashboard/draggable-module';
 
 import { LogViewer } from '@/components/dashboard/log-viewer';
@@ -52,6 +53,7 @@ export default function DashboardPage() {
   
   const [moduleOrder, setModuleOrder] = React.useState<string[]>(defaultModuleOrder);
   const [hiddenModules, setHiddenModules] = React.useState<string[]>([]);
+  const [activeId, setActiveId] = React.useState<string | null>(null);
   
   const openPopoutsRef = React.useRef<Map<string, Window>>(new Map());
 
@@ -119,7 +121,12 @@ export default function DashboardPage() {
     }
   }, [addLog]);
 
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
+    setActiveId(null);
     const { active, over } = event;
     if (over && active.id !== over.id) {
       setModuleOrder((items) => {
@@ -188,6 +195,7 @@ export default function DashboardPage() {
   
   const visibleModuleIds = moduleOrder.filter(id => !hiddenModules.includes(id));
   const trulyHiddenModules = ALL_MODULES_CONFIG.filter(m => hiddenModules.includes(m.id));
+  const activeModule = activeId ? ALL_MODULES_CONFIG.find(({ id }) => id === activeId) : null;
 
   return (
     <>
@@ -224,18 +232,17 @@ export default function DashboardPage() {
                 </div>
             </div>
 
-            <div className="flex-grow overflow-hidden p-4 rounded-lg">
-                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <div className="flex-grow overflow-hidden p-4 rounded-lg bg-black/20">
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                     <SortableContext items={visibleModuleIds} strategy={verticalListSortingStrategy}>
                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 h-full overflow-y-auto">
                             {visibleModuleIds.map(id => {
                                 const moduleConfig = ALL_MODULES_CONFIG.find(m => m.id === id);
                                 if (!moduleConfig) return null;
                                 
-                                const ModuleComponent = moduleConfig.component;
                                 return (
-                                    <DraggableModule key={id} id={id}>
-                                      <ModuleComponent
+                                    <DraggableModule key={id} id={id} activeId={activeId}>
+                                      <moduleConfig.component
                                         onHide={() => handleHideModule(id)} 
                                         onPopOut={() => handlePopOut(id, moduleConfig.title)}
                                       />
@@ -244,6 +251,18 @@ export default function DashboardPage() {
                             })}
                         </div>
                     </SortableContext>
+                     <DragOverlay>
+                        {activeModule ? (
+                            <Card className="h-full w-full bg-card/80 opacity-75">
+                                <CardHeader>
+                                    <CardTitle>{activeModule.title}</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p>Moving...</p>
+                                </CardContent>
+                            </Card>
+                        ) : null}
+                    </DragOverlay>
                 </DndContext>
             </div>
             

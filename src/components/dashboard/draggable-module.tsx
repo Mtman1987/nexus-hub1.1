@@ -7,24 +7,25 @@ import { CSS } from '@dnd-kit/utilities';
 
 interface DraggableModuleProps {
   id: string;
+  activeId: string | null;
   children: React.ReactNode;
 }
 
-export function DraggableModule({ id, children }: DraggableModuleProps) {
+export function DraggableModule({ id, activeId, children }: DraggableModuleProps) {
   const {
     attributes,
     listeners,
     setNodeRef,
     transform,
     transition,
-    isDragging,
   } = useSortable({ id });
+  
+  const isDragging = activeId === id;
 
   const style: React.CSSProperties = {
     transform: CSS.Translate.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
-    zIndex: isDragging ? 10 : 'auto',
+    opacity: isDragging ? 0 : 1, // Hide the original component when dragging
   };
 
   // Clone the children and pass down the listeners for the drag handle
