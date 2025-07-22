@@ -1,4 +1,5 @@
 
+
 import type { LogEntry } from "@/context/LogContext";
 import { z } from 'zod';
 
@@ -71,7 +72,7 @@ export interface ImageGeneratorInput {
     provider: string;
     resolution: string;
     numImages: number;
-    optimizePrompt: boolean;
+    optimize: boolean;
 }
 
 export interface ImageGeneratorOutput {
@@ -129,3 +130,51 @@ export const TtsOutputSchema = z.object({
   media: z.string().describe("The audio data URI."),
 });
 export type TtsOutput = z.infer<typeof TtsOutputSchema>;
+
+// --- Resume Parser ---
+export interface ResumeParserInput {
+    fileUrl: string;
+}
+
+export interface ResumeParserOutput {
+    status: string;
+    extracted_data: {
+        personal_infos: {
+            name: {
+                raw_name: string;
+            };
+            address: {
+                raw_address: string;
+            };
+            self_summary: string;
+            phones: string[];
+            mails: string[];
+            websites: string[];
+            skills: { name: string, type: string }[];
+        },
+        education: {
+            entries: {
+                title: string | null;
+                start_date: string;
+                end_date: string;
+                location: {
+                    raw_location: string;
+                },
+                establishment: string;
+                description: string | null;
+            }[]
+        },
+        work_experience: {
+            entries: {
+                title: string | null;
+                start_date: string;
+                end_date: string;
+                company: string;
+                location: {
+                    raw_location: string;
+                },
+                description: string | null;
+            }[]
+        }
+    }
+}

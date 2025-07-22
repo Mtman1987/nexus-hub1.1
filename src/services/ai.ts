@@ -13,6 +13,7 @@ import { imageGeneratorFlow } from '@/ai/flows/image-generator-flow';
 import { loreEditorFlow } from '@/ai/flows/lore-editor-flow';
 import { loreCuratorFlow } from '@/ai/flows/lore-curator-flow';
 import { loreSummarizerFlow } from '@/ai/flows/lore-summarizer-flow';
+import { resumeParserFlow } from '@/ai/flows/resume-parser-flow';
 
 import type { FlowLog, IntelligentFallbackInput, IntelligentFallbackOutput, SetupAssistantInput, SetupAssistantOutput, UnifiedChatInput, UnifiedChatOutput } from '@/ai/types';
 import type { LoreWeaverInput, LoreWeaverOutput } from '@/ai/types';
@@ -22,6 +23,7 @@ import type { LoreCuratorInput, LoreCuratorOutput } from '@/ai/types';
 import type { LoreSummarizerInput, LoreSummarizerOutput } from '@/ai/types';
 import { ttsFlow } from '@/ai/flows/tts-flow';
 import type { TtsInput, TtsOutput } from '@/ai/types';
+import type { ResumeParserInput, ResumeParserOutput } from '@/ai/types';
 
 /**
  * Main service function to handle unified chat requests.
@@ -84,4 +86,11 @@ export async function getSummarizedPersonality(input: LoreSummarizerInput): Prom
  */
 export async function getTTSAudio(input: TtsInput): Promise<TtsOutput> {
     return ttsFlow(input);
+}
+
+/**
+ * Service function to parse a resume from a URL.
+ */
+export async function getParsedResume(input: ResumeParserInput): Promise<{response: ResumeParserOutput, logs: FlowLog[]}> {
+    return resumeParserFlow(input);
 }

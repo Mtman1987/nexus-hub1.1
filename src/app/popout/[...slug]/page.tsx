@@ -17,6 +17,7 @@ import { TimeZoneConverter } from '@/components/dashboard/timezone-converter';
 import { BotPersonality } from '@/components/dashboard/bot-personality';
 import { ImageGenerator } from '@/components/dashboard/image-generator';
 import { MusicPlayer } from '@/components/dashboard/music-player';
+import { ResumeParser } from '@/components/dashboard/resume-parser';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { LogProvider } from '@/context/LogContext';
@@ -37,6 +38,7 @@ const moduleMap: { [key: string]: React.ComponentType<any> } = {
   botPersonality: BotPersonality,
   imageGenerator: ImageGenerator,
   musicPlayer: MusicPlayer,
+  resumeParser: ResumeParser,
 };
 
 function PopoutContent({ slug }: { slug: string }) {

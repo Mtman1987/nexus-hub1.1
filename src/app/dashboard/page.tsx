@@ -25,6 +25,7 @@ import { BotPersonality } from '@/components/dashboard/bot-personality';
 import { Fallback } from '@/components/dashboard/fallback';
 import { ImageGenerator } from '@/components/dashboard/image-generator';
 import { MusicPlayer } from '@/components/dashboard/music-player';
+import { ResumeParser } from '@/components/dashboard/resume-parser';
 
 
 // Define all modules with their components
@@ -35,6 +36,7 @@ const ALL_MODULES_CONFIG = [
     { id: 'logViewer', title: 'Captain\'s Log', component: LogViewer, defaultSize: 'col-span-1 lg:col-span-2' },
     { id: 'musicPlayer', title: 'Subspace Comms & Music', component: MusicPlayer, defaultSize: 'col-span-1' },
     { id: 'imageGenerator', title: 'Stargate Imagery', component: ImageGenerator, defaultSize: 'col-span-1' },
+    { id: 'resumeParser', title: 'Resume Parser', component: ResumeParser, defaultSize: 'col-span-1' },
     { id: 'timeZoneConverter', title: 'Time Zone Converter', component: TimeZoneConverter, defaultSize: 'col-span-1' },
     { id: 'fallback', title: 'Intelligent Fallback', component: Fallback, defaultSize: 'col-span-1' },
     { id: 'fallbackStrategy', title: 'Fallback Strategy', component: FallbackStrategy, defaultSize: 'col-span-1'},
