@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { ShieldCheck, Save, LifeBuoy, Power, Bot, PlusCircle, Trash2, Link, Copy, Server, KeyRound, RefreshCw, Radio, GripVertical, EyeOff, Lock, Unlock, Cpu, Share2, Star } from 'lucide-react';
+import { ShieldCheck, Save, LifeBuoy, Power, Bot, PlusCircle, Trash2, Link, Copy, Server, KeyRound, RefreshCw, Radio, GripVertical, EyeOff, Lock, Unlock, Cpu, Share2, Star, Languages, AudioLines } from 'lucide-react';
 import React, { useState, useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useLogs } from '@/context/LogContext';
@@ -26,7 +26,8 @@ export const settingKeys = [
   'openaiApiKey', 'openaiModelName', 'groqApiKey', 'groqModelName',
   'discordToken', 'discordWebhook', 'twitchToken', 'providerStatus',
   'streamerbotServerAddress', 'streamerbotServerPort', 'streamerbotRequestType', 'streamerbotActionName', 'streamerbotVariableName', 'streamerbotWebhookUrl',
-  'nexusConnectWebhookUrl', 'nexusConnectConnections', 'remoteHubAddress', 'remoteAccessSecret'
+  'nexusConnectWebhookUrl', 'nexusConnectConnections', 'remoteHubAddress', 'remoteAccessSecret',
+  'ttsProvider', 'sttProvider', 'translationProvider'
 ] as const;
 
 export type SettingKey = typeof settingKeys[number];
@@ -67,6 +68,13 @@ const popularModels = {
     }
 };
 
+const serviceProviders = {
+    tts: ['google', 'openai', 'elevenlabs', 'microsoft', 'amazon'],
+    stt: ['deepgram', 'openai', 'gladia', 'assemblyai', 'microsoft', 'google', 'amazon', 'speechmatics', 'symblai'],
+    translation: ['google', 'deepl', 'microsoft', 'amazon', 'ibm']
+};
+
+
 const defaultProviderStatus: ProviderStatus = {
     google: 'enabled',
     openai: 'enabled',
@@ -88,6 +96,9 @@ const defaultSettings: Partial<Settings> = {
   nexusConnectConnections: [],
   remoteHubAddress: '',
   remoteAccessSecret: '',
+  ttsProvider: 'google',
+  sttProvider: 'openai',
+  translationProvider: 'google',
 }
 
 const PROVIDER_CONFIG = {
@@ -568,6 +579,46 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                         </div>
                     </AccordionContent>
                 </AccordionItem>
+                <AccordionItem value="audio-language">
+                    <AccordionTrigger className="text-lg font-semibold hover:no-underline">
+                        <div className="flex items-center gap-2">
+                            <AudioLines className="h-5 w-5"/>
+                            Audio & Language
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="space-y-4 pt-4 pl-2 border-l-2 border-primary/20">
+                        <div className="space-y-4 p-3 border rounded-md">
+                            <h4 className="font-semibold">Provider Selection</h4>
+                            <div className="space-y-2">
+                                <Label htmlFor="tts-provider">Text-to-Speech Provider</Label>
+                                <Select value={settings.ttsProvider || 'google'} onValueChange={(value) => handleInputChange('ttsProvider', value)} disabled={isLocked}>
+                                    <SelectTrigger><SelectValue placeholder="Select a provider..." /></SelectTrigger>
+                                    <SelectContent>
+                                        {serviceProviders.tts.map(p => <SelectItem key={p} value={p} className="capitalize">{p}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="stt-provider">Speech-to-Text Provider</Label>
+                                <Select value={settings.sttProvider || 'openai'} onValueChange={(value) => handleInputChange('sttProvider', value)} disabled={isLocked}>
+                                    <SelectTrigger><SelectValue placeholder="Select a provider..." /></SelectTrigger>
+                                    <SelectContent>
+                                        {serviceProviders.stt.map(p => <SelectItem key={p} value={p} className="capitalize">{p}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="translation-provider">Translation Provider</Label>
+                                <Select value={settings.translationProvider || 'google'} onValueChange={(value) => handleInputChange('translationProvider', value)} disabled={isLocked}>
+                                    <SelectTrigger><SelectValue placeholder="Select a provider..." /></SelectTrigger>
+                                    <SelectContent>
+                                        {serviceProviders.translation.map(p => <SelectItem key={p} value={p} className="capitalize">{p}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
                  <AccordionItem value="connectivity">
                     <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                         <div className="flex items-center gap-2">
@@ -654,3 +705,5 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     </Card>
   );
 }
+
+    
