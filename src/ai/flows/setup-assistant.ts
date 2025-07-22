@@ -6,7 +6,7 @@
  * - setupAssistant - The main function to get help.
  */
 import type { SetupAssistantInput, SetupAssistantOutput, FlowLog } from '@/ai/types';
-import { callEdenAiChat } from '../utils/eden-ai';
+import { callGoogleAiChat } from '../utils/google-ai';
 
 const systemPrompt = `You are the AI for Apollo Station, the community's central command hub, created by mtman1987. Your purpose is to assist the crew with system configurations and navigating the digital cosmos. Your tone should be that of a helpful, advanced starship AI: knowledgeable, calm, and professional.
 
@@ -18,21 +18,23 @@ You are assisting a crew member with the initial station setup. This involves li
 - For Eden AI, direct them to the Eden AI platform dashboard.
 - For Streamer.bot, explain it's a local application on their machine and where to find the WebSocket server address and port settings within that app. Be very clear about the difference between the address Streamer.bot listens on (e.g., 0.0.0.0, all interfaces) and the address Apollo Station uses to connect to it (e.g., 127.0.0.1, localhost).
 
-The final transmission must be a JSON object with a single key: "answer".`;
+IMPORTANT: The final transmission must be a valid JSON object with a single key: "answer". Do not add any other text or formatting.`;
 
 
 export async function setupAssistantFlow(input: SetupAssistantInput): Promise<{response: SetupAssistantOutput, logs: FlowLog[]}> {
     
     const userPrompt = `The crew member is focused on the following system: ${input.topic}\nTheir specific query is: "${input.question}"`;
     
-    const { text, logs } = await callEdenAiChat(
+    const { text, logs } = await callGoogleAiChat(
         input.config,
-        [{ role: 'system', text: systemPrompt }, { role: 'user', text: userPrompt }],
-        true // Expect JSON
+        [],
+        userPrompt,
+        systemPrompt
     );
     
     try {
-        const parsedResponse = JSON.parse(text);
+        const cleanedJsonString = text.replace(/```json\n?/, '').replace(/```$/, '');
+        const parsedResponse = JSON.parse(cleanedJsonString);
         return { response: parsedResponse, logs };
     } catch (e) {
         logs.push({ service: 'System', level: 'error', message: 'Failed to parse JSON from AI in setup assistant.', details: `Raw AI Response: ${text}` });

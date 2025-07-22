@@ -1,5 +1,6 @@
 
 import type { LogEntry } from "@/context/LogContext";
+import { z } from 'zod';
 
 export type AiProviderId = 'eden' | 'google' | 'openai' | 'groq';
 
@@ -34,7 +35,7 @@ export interface UnifiedChatOutput {
 export interface IntelligentFallbackInput {
     goal: string;
     prompt: string;
-    config: App-Config;
+    config: AppConfig;
 }
 
 export interface IntelligentFallbackOutput {
@@ -111,3 +112,15 @@ export interface LoreSummarizerInput {
 export interface LoreSummarizerOutput {
   personalityPrompt: string;
 }
+
+// --- TTS ---
+export const TtsInputSchema = z.object({
+  text: z.string(),
+  voice: z.string().optional(),
+});
+export type TtsInput = z.infer<typeof TtsInputSchema>;
+
+export const TtsOutputSchema = z.object({
+  media: z.string().describe("The audio data URI."),
+});
+export type TtsOutput = z.infer<typeof TtsOutputSchema>;

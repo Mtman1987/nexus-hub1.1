@@ -20,6 +20,8 @@ import type { ImageGeneratorInput, ImageGeneratorOutput } from '@/ai/types';
 import type { LoreEditorInput, LoreEditorOutput } from '@/ai/types';
 import type { LoreCuratorInput, LoreCuratorOutput } from '@/ai/types';
 import type { LoreSummarizerInput, LoreSummarizerOutput } from '@/ai/types';
+import { ttsFlow } from '@/ai/flows/tts-flow';
+import type { TtsInput, TtsOutput } from '@/ai/types';
 
 /**
  * Main service function to handle unified chat requests.
@@ -75,4 +77,11 @@ export async function getCuratedTimeline(input: LoreCuratorInput): Promise<LoreC
  */
 export async function getSummarizedPersonality(input: LoreSummarizerInput): Promise<LoreSummarizerOutput> {
     return loreSummarizerFlow(input);
+}
+
+/**
+ * Service function to convert text to speech.
+ */
+export async function getTTSAudio(input: TtsInput): Promise<TtsOutput> {
+    return ttsFlow(input);
 }

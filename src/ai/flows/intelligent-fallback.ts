@@ -6,13 +6,17 @@
  * - intelligentFallbackFlow - The main function to get a recommendation.
  */
 import type { IntelligentFallbackInput, IntelligentFallbackOutput, FlowLog } from '@/ai/types';
-import { callEdenAiChat } from '../utils/eden-ai';
+import { callGoogleAiChat } from '../utils/google-ai';
 
 const getSystemPrompt = (providers: string[]) => `You are an expert AI routing system. Your job is to recommend the best AI provider for a specific task based on the user's prompt and goal.
 
 You have been configured with the following providers: ${providers.join(', ')}.
 
-Analyze the prompt and goal. Based on the available providers, recommend the single best one for this task. Your recommendation should be based on the general strengths of the providers (e.g., Google Gemini for general knowledge and speed, Groq for fastest response, EdenAI for access to high-end models like Claude/GPT-4 for creative and complex writing). Output your response as a JSON object with two keys: "recommendation" and "reasoning".`;
+Analyze the prompt and goal. Based on the available providers, recommend the single best one for this task. Your recommendation should be based on the general strengths of the providers (e.g., Google Gemini for general knowledge and speed, Groq for fastest response, OpenAI for creative and complex writing). 
+
+IMPORTANT: Your response MUST be a valid JSON object with two keys: "recommendation" and "reasoning". Do not include any other text or formatting.
+Example: {"recommendation": "Google AI", "reasoning": "This task requires up-to-date information, which Google's model excels at."}
+`;
 
 
 export async function intelligentFallbackFlow(
@@ -27,14 +31,16 @@ export async function intelligentFallbackFlow(
     const systemPrompt = getSystemPrompt(enabledProviders);
     const userPrompt = `User's Goal: "${input.goal}"\nUser's Prompt: "${input.prompt}"`;
 
-    const { text, logs } = await callEdenAiChat(
+    const { text, logs } = await callGoogleAiChat(
         input.config, 
-        [{ role: 'system', text: systemPrompt }, { role: 'user', text: userPrompt }],
-        true // Expect a JSON response
+        [],
+        userPrompt,
+        systemPrompt
     );
     
     try {
-        const parsedResponse = JSON.parse(text) as IntelligentFallbackOutput;
+        const cleanedJsonString = text.replace(/```json\n?/, '').replace(/```$/, '');
+        const parsedResponse = JSON.parse(cleanedJsonString) as IntelligentFallbackOutput;
         return { response: parsedResponse, logs };
     } catch (error) {
         logs.push({ service: 'System', level: 'error', message: 'Failed to parse JSON response from AI for fallback.', details: `Raw AI response: ${text}` });
