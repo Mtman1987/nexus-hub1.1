@@ -24,6 +24,7 @@ export type BotPersonalityType = {
   name: string;
   prompt: string;
   voice?: string;
+  imageUrl?: string;
   isDefault?: boolean;
 }
 
@@ -40,6 +41,7 @@ const defaultPersonalities: BotPersonalityType[] = [
         name: 'COSMO', 
         prompt: 'You are COSMO (Central Operating System Management Orbiter), the AI assistant for Apollo Station, the community\'s HQ, created by mtman1987. Your purpose is to act as a creative partner and lore master. Your tone is helpful, knowledgeable, and slightly formal, like a starship AI.',
         voice: 'en-US-Wavenet-F',
+        imageUrl: 'https://placehold.co/256x256.png',
         isDefault: true,
     },
     {
@@ -47,6 +49,7 @@ const defaultPersonalities: BotPersonalityType[] = [
         name: 'Mountain Man',
         prompt: 'You are Mountain Man, the grizzled and wise historian of the Apollo Station universe. You have witnessed the entire Galactic Timeline, from the first launch to the latest discovery. Your tone is knowledgeable, a bit world-weary, but deeply connected to the lore. You speak with authority and a storyteller\'s flair, responsible for maintaining the canonical history.',
         voice: 'en-US-Wavenet-D',
+        imageUrl: 'https://placehold.co/256x256.png',
         isDefault: true,
     }
 ];
@@ -117,7 +120,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
     }
   }, [setBotName, addLog, isPreview]);
   
-  const handlePersonalityChange = (field: 'name' | 'prompt' | 'voice', value: string) => {
+  const handlePersonalityChange = (field: 'name' | 'prompt' | 'voice' | 'imageUrl', value: string) => {
     if (!selectedPersonalityId) return;
 
     setPersonalities(prev => prev.map(p => {
@@ -151,7 +154,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
   
   const handleAddNewPersonality = () => {
     const newId = `personality-${Date.now()}`;
-    const newPersonality: BotPersonalityType = { id: newId, name: 'New Bot', prompt: 'You are a helpful assistant.', voice: 'en-US-Wavenet-A'};
+    const newPersonality: BotPersonalityType = { id: newId, name: 'New Bot', prompt: 'You are a helpful assistant.', voice: 'en-US-Wavenet-A', imageUrl: 'https://placehold.co/256x256.png' };
     const newPersonalities = [...personalities, newPersonality];
     setPersonalities(newPersonalities);
     setSelectedPersonalityId(newId);
@@ -215,6 +218,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
       name: botToImport.name,
       prompt: botToImport.prompt,
       voice: botToImport.voice || 'en-US-Wavenet-A',
+      imageUrl: botToImport.imageUrl || 'https://placehold.co/256x256.png',
     };
 
     setPersonalities(prev => [...prev, newPersonality]);
@@ -339,6 +343,17 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                               </Select>
                           </div>
                       </div>
+                       <div className="space-y-2">
+                            <Label htmlFor="bot-image-url">Avatar Image URL</Label>
+                            <Input 
+                                id="bot-image-url" 
+                                type="text" 
+                                placeholder="https://example.com/avatar.png" 
+                                value={selectedPersonality?.imageUrl || ''} 
+                                onChange={(e) => handlePersonalityChange('imageUrl', e.target.value)} 
+                                disabled={isSelectedPersonalityDefault}
+                            />
+                        </div>
                       <div className="space-y-2">
                           <Label htmlFor="bot-prompt">System Prompt</Label>
                           <Textarea 
