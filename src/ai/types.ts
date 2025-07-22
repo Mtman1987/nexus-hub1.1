@@ -121,7 +121,8 @@ export const LoreCuratorInputSchema = z.object({
 export type LoreCuratorInput = z.infer<typeof LoreCuratorInputSchema>;
 
 export const LoreCuratorOutputSchema = z.object({
-  sortedTimeline: z.array(LoreEntrySchema).describe("The complete, re-sorted timeline including the new entry in its correct chronological position.")
+  sortedTimeline: z.array(LoreEntrySchema).describe("The complete, re-sorted timeline including the new entry in its correct chronological position."),
+  personalityPrompt: z.string().describe("A concise summary of the timeline to be used as a bot personality prompt.")
 });
 export type LoreCuratorOutput = z.infer<typeof LoreCuratorOutputSchema>;
 

@@ -1,9 +1,9 @@
 
 'use server';
 /**
- * @fileOverview An AI flow for intelligently curating and sorting a timeline of lore entries.
+ * @fileOverview An AI flow for intelligently curating a timeline and summarizing it into a bot personality.
  *
- * - loreCuratorFlow - The main function to add a new entry and get a sorted timeline.
+ * - loreCuratorFlow - The main function to add a new entry, get a sorted timeline, and a personality prompt.
  */
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
@@ -14,17 +14,21 @@ import {
   type LoreCuratorOutput,
 } from '@/ai/types';
 
-const curatorPrompt = ai.definePrompt({
-  name: 'loreCuratorPrompt',
+const timelineManagerPrompt = ai.definePrompt({
+  name: 'timelineManagerPrompt',
   input: { schema: LoreCuratorInputSchema },
   output: { schema: LoreCuratorOutputSchema },
-  prompt: `You are a meticulous historian and storyteller for the Apollo Station universe. Your task is to maintain the canonical "Galactic Timeline".
+  prompt: `You are Mountain Man, the meticulous historian and storyteller for the Apollo Station universe. Your task is to maintain the canonical "Galactic Timeline" and embody its history.
 
-You will be given the existing timeline, which is an array of lore entries, already in chronological order. You will also receive a new lore entry to be added.
+You will be given the existing timeline (already in chronological order) and a new lore entry.
 
-Analyze the content of the new entry and determine its correct chronological position within the existing timeline. The new entry could fit at the beginning, the end, or somewhere in the middle.
+First, determine the correct chronological position for the new entry within the existing timeline.
 
-Return the complete, re-sorted timeline including the new entry. The output must be a JSON object containing a single key "sortedTimeline", which is an array of all lore items (both old and new) in their correct chronological order.
+Second, using the complete, newly sorted timeline, write a compelling summary of no more than 4 sentences. This summary will be your own personality prompt, allowing you to "live" the lore.
+
+Return a JSON object with two keys:
+1. "sortedTimeline": The complete, re-sorted array of all lore items.
+2. "personalityPrompt": The concise, 4-sentence summary of the new timeline.
 
 Existing Timeline:
 {{#if existingTimeline}}
@@ -48,9 +52,9 @@ const loreCuratorFlowBare = ai.defineFlow(
     outputSchema: LoreCuratorOutputSchema,
   },
   async (input) => {
-    const { output } = await curatorPrompt(input);
+    const { output } = await timelineManagerPrompt(input);
     if (!output) {
-      throw new Error('The Lore Curator AI failed to return a sorted timeline.');
+      throw new Error('The Lore Curator AI failed to return a sorted timeline and prompt.');
     }
     return output;
   }

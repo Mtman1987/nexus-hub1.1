@@ -15,7 +15,7 @@ import { Dialog, DialogContent as EditDialogContent, DialogHeader as EditDialogH
 import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
-import { getLoreEditorSuggestion, getCuratedTimeline, getSummarizedPersonality } from '@/services/ai';
+import { getLoreEditorSuggestion, getCuratedTimeline } from '@/services/ai';
 import { Alert, AlertTitle as UiAlertTitle, AlertDescription as UiAlertDescription } from '@/components/ui/alert';
 import type { BotPersonalityType } from './bot-personality';
 
@@ -132,8 +132,8 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
   const handleFinalize = async () => {
     setIsFinalizing(true);
     try {
-        // Step 1: Get the new sorted timeline
-        const { sortedTimeline } = await getCuratedTimeline({
+        // Step 1: Get the new sorted timeline and the summarized personality in one call
+        const { sortedTimeline, personalityPrompt } = await getCuratedTimeline({
             existingTimeline: timeline,
             newLore: draftContent
         });
@@ -141,12 +141,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
         setTimeline(sortedTimeline);
         localStorage.setItem(TIMELINE_KEY, JSON.stringify(sortedTimeline));
         
-        // Step 2: Summarize the new timeline for the Mountain Man personality
-        const { personalityPrompt } = await getSummarizedPersonality({
-            timeline: sortedTimeline
-        });
-
-        // Step 3: Update or create the Mountain Man personality
+        // Step 2: Update or create the Mountain Man personality
         const existingPersonalities: BotPersonalityType[] = JSON.parse(localStorage.getItem(PERSONALITIES_KEY) || '[]');
         const mountainManIndex = existingPersonalities.findIndex(p => p.name === 'Mountain Man');
 
@@ -168,7 +163,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
         if(editingLore) removeItem(editingLore.id);
 
         setEditingLore(null);
-        toast({title: "Timeline Updated", description: "COSMO has placed the new lore into the Galactic Timeline and updated the Mountain Man's memory."});
+        toast({title: "Timeline Updated", description: "Mountain Man has placed the new lore into the Galactic Timeline and updated his memory."});
         window.dispatchEvent(new Event('storage')); // Notify bot personality module of change
 
     } catch(e) {
