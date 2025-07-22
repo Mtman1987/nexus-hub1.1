@@ -32,9 +32,21 @@ export async function callEdenAiChat(
 
     const url = "https://api.edenai.run/v2/llm/chat";
     
-    // Use overrides if provided, otherwise use settings from config
-    const provider = overrideProvider || config.edenAiProvider || 'google';
-    const model = overrideModel || (config.edenAiModel ? config.edenAiModel.split('/')[1] : 'gemini-1.5-flash-latest');
+    // Determine provider and model from settings or overrides
+    let provider: string;
+    let model: string;
+
+    if (overrideProvider && overrideModel) {
+        provider = overrideProvider;
+        model = overrideModel;
+    } else if (config.edenAiModel && typeof config.edenAiModel === 'string' && config.edenAiModel.includes('/')) {
+        [provider, model] = config.edenAiModel.split('/');
+    } else {
+        // Fallback to older settings or defaults if the new format isn't present
+        provider = config.edenAiProvider || 'openai'; // Default to a common provider
+        model = config.edenAiModel || 'gpt-4o'; // Default to a common model
+    }
+    
 
     // Transform our simple history into the structure Eden AI expects
     const messages = history.map(msg => ({
