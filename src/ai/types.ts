@@ -1,5 +1,4 @@
 
-
 import type { LogEntry } from "@/context/LogContext";
 import { z } from "zod";
 
@@ -125,6 +124,18 @@ export const LoreCuratorOutputSchema = z.object({
   sortedTimeline: z.array(LoreEntrySchema).describe("The complete, re-sorted timeline including the new entry in its correct chronological position.")
 });
 export type LoreCuratorOutput = z.infer<typeof LoreCuratorOutputSchema>;
+
+// --- Lore Summarizer ---
+export const LoreSummarizerInputSchema = z.object({
+  timeline: z.array(LoreEntrySchema).describe("The complete, up-to-date timeline of lore entries."),
+});
+export type LoreSummarizerInput = z.infer<typeof LoreSummarizerInputSchema>;
+
+export const LoreSummarizerOutputSchema = z.object({
+  personalityPrompt: z.string().describe("The generated system prompt for the Mountain Man AI personality, based on the provided lore.")
+});
+export type LoreSummarizerOutput = z.infer<typeof LoreSummarizerOutputSchema>;
+
 
 // --- Text to Speech (TTS) ---
 export const TtsInputSchema = z.object({

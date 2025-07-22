@@ -13,6 +13,7 @@ import { loreWeaverFlow } from '@/ai/flows/lore-weaver';
 import { imageGeneratorFlow } from '@/ai/flows/image-generator-flow';
 import { loreEditorFlow } from '@/ai/flows/lore-editor-flow';
 import { loreCuratorFlow } from '@/ai/flows/lore-curator-flow';
+import { loreSummarizerFlow } from '@/ai/flows/lore-summarizer-flow';
 import { ttsFlow } from '@/ai/flows/tts-flow';
 
 
@@ -21,6 +22,7 @@ import type { LoreWeaverInput, LoreWeaverOutput } from '@/ai/types';
 import type { ImageGeneratorInput, ImageGeneratorOutput } from '@/ai/types';
 import type { LoreEditorInput, LoreEditorOutput } from '@/ai/types';
 import type { LoreCuratorInput, LoreCuratorOutput } from '@/ai/types';
+import type { LoreSummarizerInput, LoreSummarizerOutput } from '@/ai/types';
 import type { TtsInput, TtsOutput } from '@/ai/types';
 
 /**
@@ -70,6 +72,13 @@ export async function getLoreEditorSuggestion(input: LoreEditorInput): Promise<L
  */
 export async function getCuratedTimeline(input: LoreCuratorInput): Promise<LoreCuratorOutput> {
     return loreCuratorFlow(input);
+}
+
+/**
+ * Service function to summarize the timeline into a bot personality.
+ */
+export async function getSummarizedPersonality(input: LoreSummarizerInput): Promise<LoreSummarizerOutput> {
+    return loreSummarizerFlow(input);
 }
 
 /**
