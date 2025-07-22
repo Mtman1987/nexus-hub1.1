@@ -29,6 +29,7 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased bg-transparent text-foreground">
         <div className="fixed top-0 left-0 w-full h-full starfield -z-10">
+           <div className="planet"></div>
            <div className="shooting-star" style={{ top: '10vh', left: '40vw', animationDelay: '-1s' }}></div>
            <div className="shooting-star" style={{ top: '50vh', left: '60vw', animationDelay: '-3.4s' }}></div>
            <div className="shooting-star" style={{ top: '80vh', left: '90vw', animationDelay: '-5.8s' }}></div>
@@ -38,7 +39,7 @@ export default function RootLayout({
             <SidebarProvider>
               <div className="flex min-h-screen w-full">
                 <Sidebar />
-                <main className="flex-1 flex flex-col overflow-auto bg-background">
+                <main className="flex-1 flex flex-col overflow-auto bg-transparent">
                   <header className="flex h-14 items-center gap-4 border-b bg-card/80 px-4 md:hidden">
                     <MobileSidebar />
                     <h1 className="text-lg font-bold">Apollo Station</h1>

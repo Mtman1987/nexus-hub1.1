@@ -41,21 +41,41 @@
 }
 
 .starfield {
+  background-color: hsl(262 52% 10%);
   background-image:
-      radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
-      radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
-      radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px),
-      radial-gradient(rgba(255,255,255,.4), rgba(255,255,255,.1) 2px, transparent 30px);
-  background-size: 550px 550px, 350px 350px, 250px 250px, 150px 150px; 
-  background-position: 0 0, 40px 60px, 130px 270px, 70px 100px;
-  /* animation: stars-scroll 200s linear infinite; */
-  background-color: hsl(0 0% 8%);
+    radial-gradient(ellipse at center, rgba(255, 239, 186, 0.1) 0%, rgba(138, 43, 226, 0.1) 40%, transparent 70%), /* Yellow-to-purple nebula fog */
+    radial-gradient(2px 2px at 20% 30%, hsla(0, 0%, 100%, 0.4), transparent), /* Stars layer 1 */
+    radial-gradient(2px 2px at 80% 60%, hsla(0, 0%, 100%, 0.4), transparent),
+    radial-gradient(3px 3px at 50% 80%, hsla(0, 0%, 100%, 0.3), transparent), /* Larger stars layer 2 */
+    radial-gradient(3px 3px at 10% 90%, hsla(0, 0%, 100%, 0.3), transparent);
+  background-size: 100% 100%, 200px 200px, 200px 200px, 300px 300px, 300px 300px;
+  background-position: 0 0, 10px 20px, 150px 100px, 50px 250px, 250px 50px;
 }
 
-/* @keyframes stars-scroll {
-  from { transform: translateY(0px); }
-  to { transform: translateY(-2000px); }
-} */
+.planet {
+    position: absolute;
+    top: 20vh;
+    right: 15vw;
+    width: 60px;
+    height: 60px;
+    background-color: hsl(200 80% 70% / 0.5); /* Icy blue planet */
+    border-radius: 50%;
+    box-shadow: 0 0 20px hsl(200 80% 70% / 0.5);
+}
+
+.planet::before { /* Ring */
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 150%;
+    height: 150%;
+    margin-left: -75%;
+    margin-top: -75%;
+    border-radius: 50%;
+    border: 3px solid hsl(0 0% 100% / 0.2);
+    transform: rotateX(75deg);
+}
 
 .shooting-star {
   position: absolute;
