@@ -126,7 +126,7 @@ export function LoreWeaver({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-title-foreground">
                   <ScrollText className="h-6 w-6 text-accent" />
                   Lore Weaver
                 </CardTitle>
@@ -176,7 +176,7 @@ export function LoreWeaver({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
           )}
         </div>
 
-        <div className="flex justify-end mt-4 pt-4 border-t">
+        <div className="flex justify-end mt-auto pt-4 border-t">
             <Button onClick={handleGetIdea} disabled={isLoading || !prompt}>
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
                 Weave Idea

@@ -6,7 +6,8 @@
 @layer base {
   :root {
     --background: 262 52% 10%;
-    --foreground: 0 0% 98%;
+    --foreground: 0 0% 100%;
+    --title-foreground: 38 92% 50%;
     --card: 262 52% 14%;
     --card-foreground: 0 0% 98%;
     --popover: 174 100% 34% / 0.8;
@@ -36,7 +37,6 @@
     @apply border-border;
   }
   body {
-    @apply text-foreground;
     background-color: transparent;
     position: relative;
     overflow: hidden;

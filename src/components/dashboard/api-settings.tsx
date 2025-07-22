@@ -403,7 +403,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
               <GripVertical />
             </Button>
             <div className='flex-grow'>
-              <CardTitle className="flex items-center gap-2 text-2xl">
+              <CardTitle className="flex items-center gap-2 text-2xl text-title-foreground">
                 <ShieldCheck className="h-6 w-6 text-accent" />
                 API Key Vault
               </CardTitle>
@@ -662,7 +662,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
             </Accordion>
           </form>
         </ScrollArea>
-        <div className="mt-4 flex justify-end pt-4 border-t">
+        <div className="mt-auto flex justify-end pt-4 border-t">
           <Button type="submit" form="api-settings-form" disabled={isLocked}>
             <Save className="mr-2 h-4 w-4" />
             Save Configuration

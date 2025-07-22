@@ -310,7 +310,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-title-foreground">
                   <MessageSquare className="h-6 w-6 text-accent" />
                   Unified Chat
                 </CardTitle>
@@ -371,7 +371,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
           </div>
         </ScrollArea>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(performSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(performSubmit)} className="space-y-4 mt-auto">
             <FormField
               control={form.control}
               name="message"
