@@ -146,6 +146,11 @@ export async function unifiedChatFlow(input: UnifiedChatInput): Promise<UnifiedC
     
     const botName = config?.botName || "Apollo";
     const remoteHubAddress = config?.remoteHubAddress;
+
+    // URL Matching Logic
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const matchedUrls = message.match(urlRegex);
+    const primaryUrl = matchedUrls ? matchedUrls[0] : null;
     
     // If a remote address is configured, forward the entire request to the local hub.
     if (remoteHubAddress && !config.isLocalExecution) {
@@ -182,6 +187,18 @@ export async function unifiedChatFlow(input: UnifiedChatInput): Promise<UnifiedC
             const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
             logs.push({ service: 'Remote Hub', level: 'error', message: `Failed to forward request to remote hub: ${errorMessage}`, details: error instanceof Error ? error.stack : undefined });
             return { reply: `Error connecting to Remote Hub: ${errorMessage}`, logs, websiteAction: null };
+        }
+    }
+
+    // Handle Website Control URL logic
+    if (primaryUrl && targets.includes('Website')) {
+        websiteAction = { action: 'load_url', payload: primaryUrl };
+        uiReply = `Loading URL in Website Viewer: ${primaryUrl}`;
+        logs.push({ service: 'Website Control', level: 'info', message: 'URL detected and sent to Website Viewer.', details: `URL: ${primaryUrl}` });
+        
+        // If the only target was 'Website', we can return early.
+        if (targets.length === 1) {
+            return { reply: uiReply, logs, websiteAction };
         }
     }
 

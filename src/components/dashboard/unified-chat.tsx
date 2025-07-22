@@ -116,13 +116,23 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
 
 
   const performSubmit = useCallback(async (values: z.infer<typeof formSchema>) => {
-    if (!values.message.trim() || values.targets.length === 0) return;
+    if (!values.message.trim()) return;
+    
+    // Only require targets if the message doesn't contain a URL
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const hasUrl = urlRegex.test(values.message);
+
+    if (values.targets.length === 0 && !hasUrl) {
+        toast({ title: "No Target Selected", description: "Please select at least one target to send the message to.", variant: "destructive"});
+        return;
+    }
+
 
     setLoading(true);
     addLog({ 
       service: 'System', 
       level: 'info', 
-      message: `User sent message from Unified Chat to: ${values.targets.join(', ')}`,
+      message: `User sent message from Unified Chat to: ${values.targets.join(', ') || 'URL implicit target'}`,
       details: `Message content: "${values.message}"`
     });
 
@@ -154,10 +164,13 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
             allConfig[key] = item;
         }
       });
+      
+      const targetsToSend = hasUrl && values.targets.length === 0 ? ['Website'] : values.targets;
+
 
       const input: UnifiedChatInput = {
         message: values.message,
-        targets: values.targets,
+        targets: targetsToSend,
         config: allConfig,
         nexusConnectTargets: selectedNexusTargets
       };
@@ -166,15 +179,17 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
       response.logs.forEach(log => addLog(log as Omit<LogEntry, 'timestamp'>));
       
       if (response.websiteAction) {
+          const webChannel = new BroadcastChannel('apollo-station-website-control');
           if (response.websiteAction.action === 'youtube_search') {
-            const webChannel = new BroadcastChannel('apollo-station-website-control');
             webChannel.postMessage({ action: 'youtube_search', query: response.websiteAction.payload });
-            webChannel.close();
           } else if (response.websiteAction.action === 'add_youtube_song') {
             const musicChannel = new BroadcastChannel('apollo-station-music-player');
             musicChannel.postMessage({ action: 'add_youtube_song', payload: response.websiteAction.payload });
             musicChannel.close();
+          } else if (response.websiteAction.action === 'load_url') {
+            webChannel.postMessage({ action: 'load_url', payload: response.websiteAction.payload });
           }
+          webChannel.close();
       }
 
       if (response.reply) {

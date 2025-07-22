@@ -29,15 +29,28 @@ export function WebsiteViewer({ isPoppedOut = false, onPopOut, onHide, dragHandl
     const channel = new BroadcastChannel('apollo-station-website-control');
 
     const handleMessage = (event: MessageEvent) => {
-      if (event.data && event.data.action === 'youtube_search' && event.data.query) {
+      const { action, query, payload } = event.data || {};
+      
+      if (action === 'youtube_search' && query) {
         addLog({
             service: 'Website Control',
             level: 'info',
-            message: `Received command to search for: "${event.data.query}"`,
+            message: `Received command to search YouTube for: "${query}"`,
         });
-        const newUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(event.data.query)}`;
+        const newUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
         setCurrentUrl(newUrl);
         setIframeKey(Date.now()); // Force iframe reload
+        setActiveTab('main'); // Switch to the main viewer tab
+      } else if (action === 'load_url' && payload) {
+        addLog({
+            service: 'Website Control',
+            level: 'info',
+            message: `Received command to load URL: "${payload}"`,
+        });
+        setCurrentUrl(payload);
+        setIframeKey(Date.now());
+        // You might want to switch to a 'custom' or 'main' tab here as well
+        setActiveTab('main');
       }
     };
 
@@ -79,7 +92,7 @@ export function WebsiteViewer({ isPoppedOut = false, onPopOut, onHide, dragHandl
                   Live Website Viewer
                 </CardTitle>
                 <CardDescription>
-                  Currently viewing: <a href={currentUrl} target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">{currentSite.name}</a>
+                  Currently viewing: <a href={currentUrl} target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">{currentUrl}</a>
                 </CardDescription>
               </div>
             </div>
