@@ -34,7 +34,7 @@ export default function LauncherPage() {
       <div className="flex h-screen w-screen items-center justify-center text-foreground">
         <div className="flex flex-col items-center gap-6 text-center p-8 rounded-lg max-w-md mx-auto">
            <div 
-             className="w-48 h-32 flex items-center justify-center"
+             className="w-48 h-24 flex items-center justify-center"
             >
                 <CommunityLogo className="w-full h-full" />
            </div>
