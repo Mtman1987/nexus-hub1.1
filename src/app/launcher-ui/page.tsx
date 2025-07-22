@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { SetupDialog } from '@/components/dashboard/setup-dialog';
 import { Rocket, Settings } from 'lucide-react';
 import { useBotName } from '@/context/BotNameContext';
+import { CommunityLogo } from '@/components/icons/community-logo';
 
 export default function LauncherPage() {
   const router = useRouter();
@@ -33,16 +34,13 @@ export default function LauncherPage() {
       <div className="flex h-screen w-screen items-center justify-center text-foreground">
         <div className="flex flex-col items-center gap-6 text-center p-8 rounded-lg max-w-md mx-auto">
            <div 
-             className="w-32 h-32 rounded-full bg-primary/20 flex items-center justify-center border-4 border-primary/50"
-             style={{
-                boxShadow: '0 0 20px hsl(var(--primary)), 0 0 40px hsl(var(--accent))'
-             }}
+             className="w-48 h-32 flex items-center justify-center"
             >
-                <Rocket className="w-16 h-16 text-primary" />
+                <CommunityLogo className="w-full h-full" />
            </div>
           
           <div className="space-y-2">
-             <h1 className="text-4xl font-bold tracking-tighter">Apollo Station</h1>
+             <h1 className="text-4xl font-bold tracking-tighter">Space Mountain HQ</h1>
              <p className="text-muted-foreground">
                 {botName}'s command center is standing by. All systems ready for launch.
              </p>
