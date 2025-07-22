@@ -6,7 +6,7 @@
  * - intelligentFallbackFlow - The main function to get a recommendation.
  */
 import type { IntelligentFallbackInput, IntelligentFallbackOutput, FlowLog } from '@/ai/types';
-import { callGoogleAiChat } from '../utils/google-ai';
+import { callEdenAiChat } from '../utils/eden-ai';
 
 const getSystemPrompt = (providers: string[]) => `You are an expert AI routing system. Your job is to recommend the best AI provider for a specific task based on the user's prompt and goal.
 
@@ -31,16 +31,18 @@ export async function intelligentFallbackFlow(
     const systemPrompt = getSystemPrompt(enabledProviders);
     const userPrompt = `User's Goal: "${input.goal}"\nUser's Prompt: "${input.prompt}"`;
 
-    const { text, logs } = await callGoogleAiChat(
+    const { text, logs } = await callEdenAiChat(
         input.config, 
-        [],
-        userPrompt,
-        systemPrompt
+        [
+            { role: 'user', text: systemPrompt },
+            { role: 'assistant', text: 'Acknowledged. I will provide my recommendation in the requested JSON format.' },
+            { role: 'user', text: userPrompt }
+        ],
+        true // Request JSON response format
     );
     
     try {
-        const cleanedJsonString = text.replace(/```json\n?/, '').replace(/```$/, '');
-        const parsedResponse = JSON.parse(cleanedJsonString) as IntelligentFallbackOutput;
+        const parsedResponse = JSON.parse(text) as IntelligentFallbackOutput;
         return { response: parsedResponse, logs };
     } catch (error) {
         logs.push({ service: 'System', level: 'error', message: 'Failed to parse JSON response from AI for fallback.', details: `Raw AI response: ${text}` });

@@ -6,7 +6,8 @@
  * - loreCuratorFlow - The main function to add a new entry, get a sorted timeline, and a personality prompt.
  */
 import type { LoreCuratorInput, LoreCuratorOutput } from '@/ai/types';
-import { callGoogleAiChat } from '../utils/google-ai';
+import { callEdenAiChat } from '../utils/eden-ai';
+import { AppConfig } from '@/ai/types';
 
 const getSystemPrompt = (existingTimeline: any[], newLore: any) => `You are Mountain Man, the meticulous historian and storyteller for the Apollo Station universe. Your task is to maintain the canonical "Galactic Timeline" and embody its history.
 
@@ -32,16 +33,18 @@ New Lore Entry to Add:
 
 
 export async function loreCuratorFlow(input: LoreCuratorInput): Promise<LoreCuratorOutput> {
-    const config = {
-        googleApiKey: localStorage.getItem('googleApiKey'),
+    const config: AppConfig = {
+        edenApiKey: localStorage.getItem('edenApiKey'),
     };
 
     const prompt = getSystemPrompt(input.existingTimeline, input.newLore);
     
-    const { text, logs } = await callGoogleAiChat(config, [], prompt);
+    const { text, logs } = await callEdenAiChat(config, 
+        [
+             { role: 'user', text: prompt }
+        ], 
+        true);
 
-    // The main service function will handle logging
-    const cleanedJsonString = text.replace(/```json\n?/, '').replace(/```$/, '');
-    const parsed = JSON.parse(cleanedJsonString);
+    const parsed = JSON.parse(text);
     return parsed;
 }

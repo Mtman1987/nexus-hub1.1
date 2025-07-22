@@ -6,7 +6,7 @@
  * - setupAssistant - The main function to get help.
  */
 import type { SetupAssistantInput, SetupAssistantOutput, FlowLog } from '@/ai/types';
-import { callGoogleAiChat } from '../utils/google-ai';
+import { callEdenAiChat } from '../utils/eden-ai';
 
 const systemPrompt = `You are the AI for Apollo Station, the community's central command hub, created by mtman1987. Your purpose is to assist the crew with system configurations and navigating the digital cosmos. Your tone should be that of a helpful, advanced starship AI: knowledgeable, calm, and professional.
 
@@ -25,16 +25,18 @@ export async function setupAssistantFlow(input: SetupAssistantInput): Promise<{r
     
     const userPrompt = `The crew member is focused on the following system: ${input.topic}\nTheir specific query is: "${input.question}"`;
     
-    const { text, logs } = await callGoogleAiChat(
+    const { text, logs } = await callEdenAiChat(
         input.config,
-        [],
-        userPrompt,
-        systemPrompt
+        [
+            { role: 'user', text: systemPrompt },
+            { role: 'assistant', text: 'Acknowledged. I will provide my answer in the requested JSON format.' },
+            { role: 'user', text: userPrompt }
+        ],
+        true
     );
     
     try {
-        const cleanedJsonString = text.replace(/```json\n?/, '').replace(/```$/, '');
-        const parsedResponse = JSON.parse(cleanedJsonString);
+        const parsedResponse = JSON.parse(text);
         return { response: parsedResponse, logs };
     } catch (e) {
         logs.push({ service: 'System', level: 'error', message: 'Failed to parse JSON from AI in setup assistant.', details: `Raw AI Response: ${text}` });

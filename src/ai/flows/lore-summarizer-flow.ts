@@ -7,8 +7,8 @@
  */
 
 import type { LoreSummarizerInput, LoreSummarizerOutput } from '@/ai/types';
-import { callGoogleAiChat } from '../utils/google-ai';
-
+import { callEdenAiChat } from '../utils/eden-ai';
+import { AppConfig } from '@/ai/types';
 
 const getSystemPrompt = (timeline: any[]) => `You are a master storyteller and AI persona architect. Your task is to transform a timeline of lore into a cohesive and engaging system prompt for an AI personality named "Mountain Man".
 
@@ -24,16 +24,14 @@ ${timeline.map(item => `- ${item.prompt}: ${item.response}`).join('\n')}
 
 
 export async function loreSummarizerFlow(input: LoreSummarizerInput): Promise<LoreSummarizerOutput> {
-    const config = {
-        googleApiKey: localStorage.getItem('googleApiKey'),
+    const config: AppConfig = {
+        edenApiKey: localStorage.getItem('edenApiKey'),
     };
     
     const prompt = getSystemPrompt(input.timeline);
     
-    const { text, logs } = await callGoogleAiChat(config, [], prompt);
-
-    // The main service function will handle logging
-    const cleanedJsonString = text.replace(/```json\n?/, '').replace(/```$/, '');
-    const parsed = JSON.parse(cleanedJsonString);
+    const { text, logs } = await callEdenAiChat(config, [{ role: 'user', text: prompt }], true);
+    
+    const parsed = JSON.parse(text);
     return parsed;
 }

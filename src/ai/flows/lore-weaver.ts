@@ -6,7 +6,7 @@
  * - loreWeaverFlow - The main function to get a lore-based response.
  */
 import type { LoreWeaverInput, LoreWeaverOutput, FlowLog } from '@/ai/types';
-import { callGoogleAiChat } from '../utils/google-ai';
+import { callEdenAiChat } from '../utils/eden-ai';
 
 const systemPrompt = `You are COSMO (Central Operating System Management Orbiter), the AI assistant for Apollo Station, the community's HQ, created by mtman1987. Your purpose is to act as a creative partner and lore master. You are helping a crew member flesh out the rich universe of Apollo Station.
 
@@ -19,16 +19,18 @@ export async function loreWeaverFlow(input: LoreWeaverInput): Promise<{response:
     
     const userPrompt = `User's Lore Prompt: "${input.prompt}"`;
 
-    const { text, logs } = await callGoogleAiChat(
+    const { text, logs } = await callEdenAiChat(
         input.config,
-        [],
-        userPrompt,
-        systemPrompt
+        [
+            { role: 'user', text: systemPrompt },
+            { role: 'assistant', text: 'Acknowledged. I will provide my response in the requested JSON format.' },
+            { role: 'user', text: userPrompt }
+        ],
+        true
     );
 
     try {
-        const cleanedJsonString = text.replace(/```json\n?/, '').replace(/```$/, '');
-        const parsedResponse = JSON.parse(cleanedJsonString) as LoreWeaverOutput;
+        const parsedResponse = JSON.parse(text) as LoreWeaverOutput;
         return { response: parsedResponse, logs };
     } catch (error) {
         logs.push({ service: 'System', level: 'error', message: 'Failed to parse JSON response from AI for lore weaver.', details: `Raw AI response: ${text}` });

@@ -6,7 +6,8 @@
  * - loreEditorFlow - The main function to get a creative suggestion for a lore draft.
  */
 import type { LoreEditorInput, LoreEditorOutput } from '@/ai/types';
-import { callGoogleAiChat } from '../utils/google-ai';
+import { callEdenAiChat } from '../utils/eden-ai';
+import { AppConfig } from '@/ai/types';
 
 const systemPrompt = `You are COSMO, a creative AI partner for the Apollo Station community. You are helping a crew member write and expand on a piece of lore for the "Galactic Timeline".
 
@@ -16,17 +17,22 @@ IMPORTANT: Generate a helpful and creative suggestion. The final transmission mu
 
 
 export async function loreEditorFlow(input: LoreEditorInput): Promise<LoreEditorOutput> {
-    const config = {
-        googleApiKey: localStorage.getItem('googleApiKey'),
+    const config: AppConfig = {
+        edenApiKey: localStorage.getItem('edenApiKey'),
     };
 
     const userPrompt = `The user's current draft is:\n"${input.currentDraft}"\n\nThe user's request for help is:\n"${input.userRequest}"`;
     
-    const { text, logs } = await callGoogleAiChat(config, [], userPrompt, systemPrompt);
+    const { text, logs } = await callEdenAiChat(config, 
+        [
+            { role: 'user', text: systemPrompt },
+            { role: 'assistant', text: 'Acknowledged. I will provide my suggestion in the requested JSON format.' },
+            { role: 'user', text: userPrompt }
+        ], 
+        true);
     
     // The main service function will handle logging
     
-    const cleanedJsonString = text.replace(/```json\n?/, '').replace(/```$/, '');
-    const parsed = JSON.parse(cleanedJsonString);
+    const parsed = JSON.parse(text);
     return parsed;
 }
