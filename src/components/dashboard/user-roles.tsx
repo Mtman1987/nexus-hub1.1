@@ -102,8 +102,8 @@ export function UserRoles({ isPoppedOut = false, onPopOut, onHide, dragHandlePro
 
   return (
     <>
-      <Card className="h-full flex flex-col">
-        <CardHeader className='shrink-0'>
+      <Card className="h-full flex flex-col bg-transparent">
+        <CardHeader className='shrink-0 bg-card'>
            <div className="flex justify-between items-start">
             <div className="flex items-center gap-2 flex-grow">
                <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto">
@@ -129,7 +129,7 @@ export function UserRoles({ isPoppedOut = false, onPopOut, onHide, dragHandlePro
             </div>
           </div>
         </CardHeader>
-        <CardContent className="flex-grow flex flex-col overflow-hidden">
+        <CardContent className="flex-grow flex flex-col overflow-hidden bg-card">
           <ScrollArea className="flex-grow pr-1 bg-transparent">
             <Table>
                 <TableHeader>

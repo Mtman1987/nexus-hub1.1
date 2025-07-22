@@ -63,9 +63,9 @@ export function WebsiteViewer({ isPoppedOut = false, onPopOut, onHide, dragHandl
   const siteKeys = Object.keys(SITES);
 
   return (
-    <Card className="h-full flex flex-col">
+    <Card className="h-full flex flex-col bg-transparent">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
-        <CardHeader>
+        <CardHeader className="bg-card">
           <div className="flex justify-between items-start">
              <div className="flex items-center gap-2 flex-grow">
                <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto">
@@ -101,7 +101,7 @@ export function WebsiteViewer({ isPoppedOut = false, onPopOut, onHide, dragHandl
               </Button>
           </div>
         </CardHeader>
-        <CardContent className="flex-grow p-0 overflow-hidden">
+        <CardContent className="flex-grow p-0 overflow-hidden bg-card">
             {siteKeys.map(key => (
               <TabsContent key={key} value={key} className="h-full mt-0">
                   <iframe

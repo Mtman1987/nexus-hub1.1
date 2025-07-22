@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { useState, useEffect, useCallback } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent, DragOverlay, DragStartEvent } from '@dnd-kit/core';
-import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable } from '@dnd-kit/sortable';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { createPortal } from 'react-dom';
 
@@ -19,8 +19,6 @@ import { WebsiteViewer } from '@/components/dashboard/website-viewer';
 import { FallbackStrategy } from '@/components/dashboard/fallback-strategy';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useLogs } from '@/context/LogContext';
-import { Sidebar } from '@/components/layout/sidebar';
-import { MobileSidebar } from '@/components/layout/mobile-sidebar';
 import { SavedItems } from '@/components/dashboard/saved-items';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LoreWeaver } from '@/components/dashboard/lore-weaver';
@@ -51,11 +49,14 @@ const defaultModuleOrder = ALL_MODULES_CONFIG.map(m => m.id);
 
 // Wrapper component to make modules sortable
 const SortableModule = ({ id, children }: { id: string, children: React.ReactNode }) => {
-    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ 
+        id,
+    });
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
         opacity: isDragging ? 0.5 : 1,
+        height: '100%',
     };
 
     return (
@@ -188,7 +189,7 @@ export default function DashboardPage() {
         description: "All local settings have been removed. Reloading application.",
       });
       
-      setTimeout(() => window.location.reload(), 1000);
+      setTimeout(() => window.location.href = '/launcher-ui', 1000);
 
     } catch (error) {
        toast({
@@ -220,103 +221,95 @@ export default function DashboardPage() {
 
   return (
     <>
-      <div className="flex min-h-screen w-full">
-        <Sidebar />
-        <main className="flex-1 flex flex-col overflow-auto bg-transparent">
-            <header className="flex h-14 items-center gap-4 border-b bg-card/80 px-4 md:hidden">
-              <MobileSidebar />
-              <h1 className="text-lg font-bold">Dashboard</h1>
-            </header>
-            <div className="flex-1 flex flex-col p-4 md:p-6 space-y-6">
-                <div className="hidden md:flex items-center justify-between flex-shrink-0">
-                    <h1 className="text-xl md:text-3xl font-bold tracking-tight">Dashboard</h1>
-                    <div className="flex items-center gap-2">
-                        <Button size="sm" onClick={handleSaveLayout}>
-                            <Save className="mr-2 h-4 w-4" />
-                            Save Layout
+        <div className="flex-1 flex flex-col p-4 md:p-6 space-y-6 h-full">
+            <div className="flex items-center justify-between flex-shrink-0">
+                <h1 className="text-xl md:text-3xl font-bold tracking-tight">Dashboard</h1>
+                <div className="flex items-center gap-2">
+                    <Button size="sm" onClick={handleSaveLayout}>
+                        <Save className="mr-2 h-4 w-4" />
+                        Save Layout
+                    </Button>
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                        <Button variant="destructive" size="sm">
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Reset All
                         </Button>
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                            <Button variant="destructive" size="sm">
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Reset All
-                            </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                This will permanently delete all API keys, settings, and layouts from your browser and close all windows.
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={handleClearSettings}>
-                                Yes, reset everything
-                                </AlertDialogAction>
-                            </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
-                    </div>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                            This will permanently delete all API keys, settings, and layouts from your browser and close all windows.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleClearSettings}>
+                            Yes, reset everything
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
                 </div>
-
-                <div className="flex-grow flex flex-col gap-6 overflow-hidden bg-background/90 p-4 rounded-lg">
-                    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-                        <SortableContext items={visibleModuleIds}>
-                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                {visibleModuleIds.map(id => {
-                                    const moduleConfig = ALL_MODULES_CONFIG.find(m => m.id === id);
-                                    if (!moduleConfig) return null;
-                                    
-                                    const ModuleComponent = moduleConfig.component;
-                                    return (
-                                        <SortableModule key={id} id={id}>
-                                          <ModuleComponent
-                                            onHide={() => handleHideModule(id)} 
-                                            onPopOut={() => handlePopOut(id, moduleConfig.title)}
-                                          />
-                                        </SortableModule>
-                                    );
-                                })}
-                            </div>
-                        </SortableContext>
-                        
-                        {typeof document !== 'undefined' && createPortal(
-                          <DragOverlay style={{ zIndex: -1 }}>
-                            {activeId && ActiveModuleComponent && (
-                                <ActiveModuleComponent 
-                                  onHide={() => {}} 
-                                  onPopOut={() => {}}
-                                />
-                            )}
-                          </DragOverlay>,
-                          document.body
-                        )}
-
-                    </DndContext>
-                </div>
-                
-                {trulyHiddenModules.length > 0 && (
-                    <Card className="mt-auto">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <LayoutGrid className="h-5 w-5" />
-                                Hidden Modules
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="flex flex-wrap gap-2">
-                            {trulyHiddenModules.map(module => (
-                                <Button key={module.id} variant="outline" size="sm" onClick={() => handleShowModule(module.id)}>
-                                    <Eye className="mr-2 h-4 w-4"/>
-                                    {module.title}
-                                </Button>
-                            ))}
-                        </CardContent>
-                    </Card>
-                )}
             </div>
-        </main>
-      </div>
+
+            <div className="flex-grow overflow-hidden bg-background/90 p-4 rounded-lg">
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+                    <SortableContext items={visibleModuleIds} strategy={verticalListSortingStrategy}>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 h-full">
+                            {visibleModuleIds.map(id => {
+                                const moduleConfig = ALL_MODULES_CONFIG.find(m => m.id === id);
+                                if (!moduleConfig) return null;
+                                
+                                const ModuleComponent = moduleConfig.component;
+                                return (
+                                    <SortableModule key={id} id={id}>
+                                      <ModuleComponent
+                                        onHide={() => handleHideModule(id)} 
+                                        onPopOut={() => handlePopOut(id, moduleConfig.title)}
+                                      />
+                                    </SortableModule>
+                                );
+                            })}
+                        </div>
+                    </SortableContext>
+                    
+                    {typeof document !== 'undefined' && createPortal(
+                      <DragOverlay style={{ zIndex: 100 }}>
+                        {activeId && ActiveModuleComponent && (
+                             <ActiveModuleComponent 
+                                isPoppedOut={true} // Simplified for overlay
+                                onHide={() => {}} 
+                                onPopOut={() => {}}
+                             />
+                        )}
+                      </DragOverlay>,
+                      document.body
+                    )}
+
+                </DndContext>
+            </div>
+            
+            {trulyHiddenModules.length > 0 && (
+                <Card className="mt-auto">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <LayoutGrid className="h-5 w-5" />
+                            Hidden Modules
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex flex-wrap gap-2">
+                        {trulyHiddenModules.map(module => (
+                            <Button key={module.id} variant="outline" size="sm" onClick={() => handleShowModule(module.id)}>
+                                <Eye className="mr-2 h-4 w-4"/>
+                                {module.title}
+                            </Button>
+                        ))}
+                    </CardContent>
+                </Card>
+            )}
+        </div>
     </>
   );
 }

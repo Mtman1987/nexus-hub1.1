@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { LogProvider } from '@/context/LogContext';
 import { BotNameProvider } from '@/context/BotNameContext';
 import { SidebarProvider } from '@/context/SidebarContext';
+import { MobileSidebar } from '@/components/layout/mobile-sidebar';
+import { Sidebar } from '@/components/layout/sidebar';
 
 export const metadata: Metadata = {
   title: 'Apollo Station',
@@ -25,7 +27,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
         <meta name="theme-color" content="#1A1A1A" />
       </head>
-      <body className="font-body antialiased bg-background text-foreground">
+      <body className="font-body antialiased bg-transparent text-foreground">
         <div className="fixed top-0 left-0 w-full h-full starfield -z-10">
            <div className="shooting-star" style={{ top: '10vh', left: '40vw', animationDelay: '-1s' }}></div>
            <div className="shooting-star" style={{ top: '50vh', left: '60vw', animationDelay: '-3.4s' }}></div>
@@ -34,7 +36,16 @@ export default function RootLayout({
         <LogProvider>
           <BotNameProvider>
             <SidebarProvider>
-              {children}
+              <div className="flex min-h-screen w-full">
+                <Sidebar />
+                <main className="flex-1 flex flex-col overflow-auto bg-transparent">
+                  <header className="flex h-14 items-center gap-4 border-b bg-card/80 px-4 md:hidden">
+                    <MobileSidebar />
+                    <h1 className="text-lg font-bold">Apollo Station</h1>
+                  </header>
+                  {children}
+                </main>
+              </div>
             </SidebarProvider>
           </BotNameProvider>
         </LogProvider>
