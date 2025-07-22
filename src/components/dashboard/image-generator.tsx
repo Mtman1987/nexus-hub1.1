@@ -24,7 +24,7 @@ interface ImageGeneratorProps {
 }
 
 export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHandleProps, isPreview }: ImageGeneratorProps) {
-    const [prompt, setPrompt] = useState('');
+    const [prompt, setPrompt] = useState('A majestic dragon soaring over a mystical forest at dawn.');
     const [isLoading, setIsLoading] = useState(false);
     const [result, setResult] = useState<ImageGeneratorOutput | null>(null);
     const { toast } = useToast();
