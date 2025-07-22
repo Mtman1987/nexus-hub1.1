@@ -12,6 +12,9 @@ export default {
   ],
   theme: {
     extend: {
+      boxShadow: {
+        glow: '0 0 15px 2px hsl(var(--primary) / 0.5)',
+      },
       fontFamily: {
         body: ['Inter', 'sans-serif'],
         headline: ['Inter', 'sans-serif'],
