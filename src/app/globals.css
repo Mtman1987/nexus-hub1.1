@@ -50,6 +50,7 @@
     radial-gradient(3px 3px at 10% 90%, hsla(0, 0%, 100%, 0.3), transparent);
   background-size: 100% 100%, 200px 200px, 200px 200px, 300px 300px, 300px 300px;
   background-position: 0 0, 10px 20px, 150px 100px, 50px 250px, 250px 50px;
+  animation: pulse-star-anim 10s ease-in-out infinite alternate;
 }
 
 .planet {
@@ -77,7 +78,7 @@
     transform: rotateX(75deg);
 }
 
-.shooting-star {
+.shooting-star, .shooting-star-reverse {
   position: absolute;
   left: 50%;
   top: 50%;
@@ -85,11 +86,19 @@
   background: linear-gradient(-45deg, hsl(var(--accent)), rgba(0, 0, 255, 0));
   border-radius: 999px;
   filter: drop-shadow(0 0 6px hsl(var(--accent)));
+}
+
+.shooting-star {
   animation: shooting-star-anim 15s ease-in-out infinite;
 }
 
-.shooting-star::before,
-.shooting-star::after {
+.shooting-star-reverse {
+  animation: shooting-star-reverse-anim 15s ease-in-out infinite;
+}
+
+
+.shooting-star::before, .shooting-star::after,
+.shooting-star-reverse::before, .shooting-star-reverse::after {
   content: '';
   position: absolute;
   top: calc(50% - 1px);
@@ -101,7 +110,7 @@
   animation: a-shining 15s ease-in-out infinite;
 }
 
-.shooting-star::after {
+.shooting-star::after, .shooting-star-reverse::after {
   transform: translateX(50%) rotateZ(-45deg);
 }
 
@@ -119,6 +128,20 @@
   }
 }
 
+@keyframes shooting-star-reverse-anim {
+  0% {
+    transform: rotate(135deg) translateX(50vw);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(135deg) translateX(-50vw);
+    opacity: 0;
+  }
+}
+
 @keyframes a-shining {
   0% {
     width: 0;
@@ -128,5 +151,14 @@
   }
   100% {
     width: 0;
+  }
+}
+
+@keyframes pulse-star-anim {
+  from {
+    background-size: 100% 100%, 200px 200px, 200px 200px, 300px 300px, 300px 300px;
+  }
+  to {
+    background-size: 100% 100%, 210px 210px, 190px 190px, 310px 310px, 290px 290px;
   }
 }
