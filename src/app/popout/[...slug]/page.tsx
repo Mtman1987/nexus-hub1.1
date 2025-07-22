@@ -20,6 +20,7 @@ import { ResumeParser } from '@/components/dashboard/resume-parser';
 import { Translator } from '@/components/dashboard/translator';
 import { CodeHelper } from '@/components/dashboard/code-helper';
 import { VideoGenerator } from '@/components/dashboard/video-generator';
+import { CustomModule } from '@/components/dashboard/custom-module';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { LogProvider } from '@/context/LogContext';
@@ -43,6 +44,7 @@ const moduleMap: { [key: string]: React.ComponentType<any> } = {
   resumeParser: ResumeParser,
   translator: Translator,
   codeHelper: CodeHelper,
+  customModule: CustomModule,
 };
 
 function PopoutContent({ slug }: { slug: string }) {

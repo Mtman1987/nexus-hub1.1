@@ -30,6 +30,7 @@ import { AudioTranscription } from '@/components/dashboard/audio-transcription';
 import { Translator } from '@/components/dashboard/translator';
 import { CodeHelper } from '@/components/dashboard/code-helper';
 import { VideoGenerator } from '@/components/dashboard/video-generator';
+import { CustomModule } from '@/components/dashboard/custom-module';
 
 
 // Define all modules with their components
@@ -51,6 +52,7 @@ const ALL_MODULES_CONFIG = [
     { id: 'websiteViewer', title: 'Website Viewer', component: WebsiteViewer, defaultSize: 'col-span-1 lg:col-span-2' },
     { id: 'savedItems', title: 'Saved Items', component: SavedItems, defaultSize: 'col-span-1 lg:col-span-2' },
     { id: 'loreWeaver', title: 'Lore Weaver', component: LoreWeaver, defaultSize: 'col-span-1' },
+    { id: 'customModule', title: 'Custom Module', component: CustomModule, defaultSize: 'col-span-1' },
 ];
 const defaultModuleOrder = ALL_MODULES_CONFIG.map(m => m.id);
 

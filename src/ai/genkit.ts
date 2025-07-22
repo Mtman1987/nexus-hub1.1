@@ -1,70 +1,23 @@
-{
-  "name": "nextn",
-  "version": "0.1.0",
-  "private": "true",
-  "scripts": {
-    "dev": "next dev --turbopack -p 9002",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "typecheck": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@dnd-kit/core": "^6.1.0",
-    "@dnd-kit/sortable": "^8.0.0",
-    "@dnd-kit/utilities": "^3.2.2",
-    "@hookform/resolvers": "^4.1.3",
-    "@radix-ui/react-accordion": "^1.2.3",
-    "@radix-ui/react-alert-dialog": "^1.1.6",
-    "@radix-ui/react-avatar": "^1.1.3",
-    "@radix-ui/react-checkbox": "^1.1.4",
-    "@radix-ui/react-collapsible": "^1.1.11",
-    "@radix-ui/react-dialog": "^1.1.6",
-    "@radix-ui/react-dropdown-menu": "^2.1.6",
-    "@radix-ui/react-label": "^2.1.2",
-    "@radix-ui/react-menubar": "^1.1.6",
-    "@radix-ui/react-popover": "^1.1.6",
-    "@radix-ui/react-progress": "^1.1.2",
-    "@radix-ui/react-radio-group": "^1.2.3",
-    "@radix-ui/react-scroll-area": "^1.2.3",
-    "@radix-ui/react-select": "^2.1.6",
-    "@radix-ui/react-separator": "^1.1.2",
-    "@radix-ui/react-slider": "^1.2.3",
-    "@radix-ui/react-slot": "^1.2.3",
-    "@radix-ui/react-switch": "^1.1.3",
-    "@radix-ui/react-tabs": "^1.1.3",
-    "@radix-ui/react-toast": "^1.2.6",
-    "@radix-ui/react-tooltip": "^1.1.8",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "cmdk": "^1.0.0",
-    "date-fns": "^3.6.0",
-    "embla-carousel-react": "^8.6.0",
-    "lucide-react": "^0.475.0",
-    "next": "15.3.3",
-    "react": "^18.3.1",
-    "react-day-picker": "^8.10.1",
-    "react-dom": "^18.3.1",
-    "react-hook-form": "^7.5.5",
-    "react-resizable-panels": "^2.0.9",
-    "recharts": "^2.13.0-alpha.4",
-    "sonner": "^1.6.0",
-    "tailwind-merge": "^2.5.2",
-    "tailwindcss-animate": "^1.0.7",
-    "vaul": "^0.9.1",
-    "zod": "^3.23.8"
-  },
-  "devDependencies": {
-    "@types/node": "^22.5.2",
-    "@types/react": "^18.3.5",
-    "@types/react-dom": "^18.3.0",
-    "eslint": "^9.1.1",
-    "eslint-config-next": "15.3.3",
-    "eslint-plugin-tailwindcss": "^3.17.4",
-    "postcss": "^8.4.40",
-    "prettier": "^3.3.3",
-    "prettier-plugin-tailwindcss": "^0.6.5",
-    "tailwindcss": "^3.4.10",
-    "typescript": "^5.5.4"
-  }
-}
+/**
+ * @fileoverview This file initializes the Genkit AI platform with necessary plugins.
+ * It exports a configured `ai` object that is used throughout the application
+ * to define and run AI flows.
+ */
+import { genkit } from 'genkit';
+import { googleAI } from '@genkit-ai/googleai';
+import { firebase } from '@genkit-ai/firebase';
+import { googleCloud } from '@genkit-ai/google-cloud';
+
+// Initialize Genkit with plugins for Google AI (for Gemini models),
+// Firebase (for the bot personality store), and Google Cloud (for logging and tracing).
+export const ai = genkit({
+  plugins: [
+    googleAI(),
+    firebase(),
+    googleCloud(),
+  ],
+  // Log all AI requests and responses to the console for debugging.
+  logLevel: 'debug',
+  // Enable production-grade telemetry for monitoring.
+  enableTracingAndMetrics: true,
+});
