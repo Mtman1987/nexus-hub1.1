@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Terminal, Wand2, Sparkles, Loader2 } from 'lucide-react';
+import { Terminal, Wand2, Sparkles, Loader2, ShieldCheck } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { getSetupAssistantResponse } from '@/services/ai';
 import type { SetupAssistantInput, SetupAssistantOutput } from '@/ai/types';
@@ -29,8 +29,15 @@ interface SetupDialogProps {
 
 const steps = [
   {
+    title: "Secure Your Vault",
+    description: "Create a password to protect your API keys. You will need this to make changes later.",
+    isGroup: true,
+    required: true,
+    topic: "Vault Password"
+  },
+  {
     title: "Eden AI API Key (Required)",
-    description: "This is the primary key for your chatbot and other AI tools.",
+    description: "This is the primary key for COSMO and other AI tools.",
     field: "edenApiKey",
     required: true,
     topic: "Eden AI"
@@ -67,6 +74,8 @@ type ApiKeys = { [key: string]: string };
 export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [apiKeys, setApiKeys] = useState<ApiKeys>({});
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   const [aiIsLoading, setAiIsLoading] = useState(false);
   const [aiQuestion, setAiQuestion] = useState('');
@@ -83,6 +92,8 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
           localStorage.setItem(key, value);
         }
       });
+      localStorage.setItem('vaultPassword', password);
+
       toast({
         title: "Configuration Saved",
         description: "Your initial settings have been saved. You can change them later in the API Key Vault.",
@@ -151,8 +162,18 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
     }
 }
 
+  const stepConfig = steps[currentStep];
   const isAssistantDisabled = !apiKeys.edenApiKey;
-  const isNextDisabled = steps[currentStep].required && !apiKeys[steps[currentStep].field as string];
+  
+  let isNextDisabled = false;
+  if (stepConfig.required) {
+    if (currentStep === 0) { // Password step
+        isNextDisabled = !password || password !== confirmPassword;
+    } else if (stepConfig.field) {
+        isNextDisabled = !apiKeys[stepConfig.field];
+    }
+  }
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -168,28 +189,38 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
             <Progress value={progress} className="w-full" />
 
             <div className="space-y-2">
-                <h3 className="font-semibold text-lg">{steps[currentStep].title}</h3>
-                <p className="text-sm text-muted-foreground">{steps[currentStep].description}</p>
+                <h3 className="font-semibold text-lg">{stepConfig.title}</h3>
+                <p className="text-sm text-muted-foreground">{stepConfig.description}</p>
             </div>
             
-            {!steps[currentStep].isGroup ? (
+            {!stepConfig.isGroup ? (
                 <Input
                     type="password"
-                    placeholder={`Enter your ${steps[currentStep].title}...`}
-                    value={apiKeys[steps[currentStep].field as string] || ''}
-                    onChange={(e) => handleInputChange(steps[currentStep].field as string, e.target.value)}
+                    placeholder={`Enter your ${stepConfig.title}...`}
+                    value={apiKeys[stepConfig.field as string] || ''}
+                    onChange={(e) => handleInputChange(stepConfig.field as string, e.target.value)}
                 />
             ) : (
                 <>
-                {currentStep === 1 && (
-                     <Input
-                        type="password"
-                        placeholder={`Enter your ${steps[currentStep].title}...`}
-                        value={apiKeys[steps[currentStep].field as string] || ''}
-                        onChange={(e) => handleInputChange(steps[currentStep].field as string, e.target.value)}
-                    />
+                {currentStep === 0 && (
+                     <div className="space-y-4 p-4 border rounded-lg bg-background">
+                         <div className="space-y-2">
+                             <Label htmlFor="vault-password">New Password</Label>
+                             <Input id="vault-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                         </div>
+                         <div className="space-y-2">
+                             <Label htmlFor="confirm-password">Confirm Password</Label>
+                             <Input id="confirm-password" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                         </div>
+                         {password && confirmPassword && password !== confirmPassword && (
+                            <Alert variant="destructive">
+                                <ShieldCheck className="h-4 w-4" />
+                                <AlertTitle>Passwords do not match!</AlertTitle>
+                            </Alert>
+                         )}
+                     </div>
                 )}
-                {currentStep === 2 && (
+                {currentStep === 3 && (
                     <div className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="discord-token">Discord Bot Token</Label>
@@ -201,7 +232,7 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
                         </div>
                     </div>
                 )}
-                {currentStep === 3 && (
+                {currentStep === 4 && (
                     <div className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="twitch-token">Twitch Bot Token</Label>
@@ -209,7 +240,7 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
                         </div>
                     </div>
                 )}
-                {currentStep === 4 && (
+                {currentStep === 5 && (
                     <div className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="streamerbot-address">Streamer.bot Server Address</Label>
@@ -237,7 +268,7 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
                        <div className="space-y-2">
                          <Label htmlFor="ai-question">Ask COSMO</Label>
                          <div className="flex items-center gap-2">
-                            <Input id="ai-question" placeholder={`e.g., "How do I get a ${steps[currentStep].topic} key?"`} value={aiQuestion} onChange={e => setAiQuestion(e.target.value)} />
+                            <Input id="ai-question" placeholder={`e.g., "How do I get a ${stepConfig.topic} key?"`} value={aiQuestion} onChange={e => setAiQuestion(e.target.value)} />
                             <Button onClick={handleAiHelp} disabled={aiIsLoading} size="icon">
                                 {aiIsLoading ? <Loader2 className="h-4 w-4 animate-spin"/> : <Sparkles className="h-4 w-4"/>}
                             </Button>
@@ -260,7 +291,7 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
         </div>
 
         <DialogFooter>
-            {!steps[currentStep].required && (
+            {!stepConfig.required && (
                 <Button variant="ghost" onClick={handleSkip}>Skip</Button>
             )}
             <Button onClick={handleNext} disabled={isNextDisabled}>
@@ -271,3 +302,5 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
     </Dialog>
   );
 }
+
+    

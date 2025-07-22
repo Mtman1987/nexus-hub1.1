@@ -17,8 +17,6 @@ import { cn } from '@/lib/utils';
 import { PopOutButton } from './pop-out-button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
-// You can change the vault password here
-const VAULT_PASSWORD = 'spcmtn';
 const UNLOCK_DURATION_MS = 5 * 60 * 1000; // 5 minutes
 
 export const settingKeys = [
@@ -27,7 +25,7 @@ export const settingKeys = [
   'discordToken', 'discordWebhook', 'twitchToken', 'providerStatus',
   'streamerbotServerAddress', 'streamerbotServerPort', 'streamerbotRequestType', 'streamerbotActionName', 'streamerbotVariableName', 'streamerbotWebhookUrl',
   'nexusConnectWebhookUrl', 'nexusConnectConnections', 'remoteHubAddress', 'remoteAccessSecret',
-  'ttsProvider', 'sttProvider', 'translationProvider'
+  'ttsProvider', 'sttProvider', 'translationProvider', 'vaultPassword'
 ] as const;
 
 export type SettingKey = typeof settingKeys[number];
@@ -169,6 +167,8 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
   const countdownRef = useRef<NodeJS.Timeout | null>(null);
 
   const [customModels, setCustomModels] = useState<{ [key: string]: string }>({});
+  
+  const [vaultPassword, setVaultPassword] = useState<string | null>(null);
 
   useEffect(() => {
     if (isPreview) return;
@@ -182,6 +182,8 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                 loadedSettings[key as SettingsObjectKey] = value;
             }
         }
+        
+        setVaultPassword(localStorage.getItem('vaultPassword'));
         
         let savedConnections = localStorage.getItem('nexusConnectConnections');
         if (savedConnections) {
@@ -261,7 +263,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
   }, []);
 
   const handleUnlock = () => {
-    if (password === VAULT_PASSWORD) {
+    if (password === vaultPassword) {
         setIsLocked(false);
         const newUnlockTimestamp = Date.now() + UNLOCK_DURATION_MS;
         setUnlockTimestamp(newUnlockTimestamp);
@@ -433,12 +435,21 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleUnlock()}
-                  disabled={!isLocked}
+                  disabled={!isLocked || !vaultPassword}
               />
-              <Button onClick={handleUnlock} disabled={!isLocked}>
+              <Button onClick={handleUnlock} disabled={!isLocked || !vaultPassword}>
                   <Unlock className="h-4 w-4" />
               </Button>
           </div>
+           {!vaultPassword && (
+               <Alert variant="destructive" className="mt-4">
+                  <Lock className="h-4 w-4" />
+                  <AlertTitle>No Vault Password Set</AlertTitle>
+                  <AlertDescription>
+                     Please run the Setup Wizard to secure your vault.
+                  </AlertDescription>
+              </Alert>
+          )}
           {!isLocked && (
                <Alert variant="default" className="mt-4">
                   <Unlock className="h-4 w-4" />
@@ -705,3 +716,5 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     </Card>
   );
 }
+
+    
