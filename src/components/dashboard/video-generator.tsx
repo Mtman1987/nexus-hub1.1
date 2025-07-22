@@ -14,7 +14,8 @@ import type { VideoGeneratorOutput, VideoGeneratorInput } from '@/ai/types';
 import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import { Slider } from '../ui/slider';
+
+const videoProviders = ['amazon', 'replicate', 'stabilityai', 'minimax'];
 
 interface VideoGeneratorProps {
   onPopOut?: () => void;
@@ -30,34 +31,32 @@ export function VideoGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
     const [result, setResult] = useState<VideoGeneratorOutput | null>(null);
     const { toast } = useToast();
     const { addLog } = useLogs();
-
-    const [aspectRatio, setAspectRatio] = useState<"16:9" | "9:16">('16:9');
-    const [durationSeconds, setDurationSeconds] = useState(5);
+    
+    const [provider, setProvider] = useState('amazon');
 
     const handleGenerateVideo = async () => {
         setIsLoading(true);
         setResult(null);
 
-        const logDetails = `Prompt: "${prompt.substring(0, 100)}...", Aspect Ratio: ${aspectRatio}, Duration: ${durationSeconds}s`;
+        const logDetails = `Prompt: "${prompt.substring(0, 100)}...", Provider: ${provider}`;
         addLog({ service: 'Video Generator', level: 'info', message: "User requested a video.", details: logDetails });
         
         try {
-            const apiKey = localStorage.getItem('googleApiKey');
+            const apiKey = localStorage.getItem('edenApiKey');
             if (!apiKey) {
                  toast({
-                    title: "Missing Google AI Key",
-                    description: "Please enter your Google AI API key in the API Vault.",
+                    title: "Missing Eden AI Key",
+                    description: "Please enter your Eden AI API key in the API Vault.",
                     variant: "destructive"
                 });
-                addLog({ service: 'System', level: 'error', message: "Video Generator failed: Google AI API key is missing." });
+                addLog({ service: 'System', level: 'error', message: "Video Generator failed: Eden AI API key is missing." });
                 setIsLoading(false);
                 return;
             }
             
             const input: VideoGeneratorInput = {
                 prompt,
-                aspectRatio,
-                durationSeconds
+                provider,
             };
 
             const response = await generateVideo(input);
@@ -159,28 +158,15 @@ export function VideoGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
                             </p>
                         </div>
                         <div className="grid gap-4">
-                            <div className="grid grid-cols-3 items-center gap-4">
-                                <Label htmlFor="aspectRatio">Aspect Ratio</Label>
-                                <Select value={aspectRatio} onValueChange={(v: "16:9" | "9:16") => setAspectRatio(v)}>
-                                    <SelectTrigger className="col-span-2"><SelectValue /></SelectTrigger>
+                           <div className="grid grid-cols-3 items-center gap-4">
+                               <Label htmlFor="provider">Provider</Label>
+                               <Select value={provider} onValueChange={setProvider}>
+                                    <SelectTrigger className="col-span-2 capitalize"><SelectValue /></SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="16:9">16:9 (Landscape)</SelectItem>
-                                        <SelectItem value="9:16">9:16 (Portrait)</SelectItem>
+                                        {videoProviders.map(p => <SelectItem key={p} value={p} className="capitalize">{p}</SelectItem>)}
                                     </SelectContent>
                                 </Select>
-                            </div>
-                            <div className="grid grid-cols-3 items-center gap-4">
-                                <Label htmlFor="duration">Duration</Label>
-                                <div className="col-span-2 flex items-center gap-2">
-                                     <Slider
-                                        id="duration"
-                                        min={5} max={8} step={1}
-                                        value={[durationSeconds]}
-                                        onValueChange={(v) => setDurationSeconds(v[0])}
-                                    />
-                                    <span className="text-xs font-mono">{durationSeconds}s</span>
-                                </div>
-                            </div>
+                           </div>
                         </div>
                     </div>
                 </PopoverContent>

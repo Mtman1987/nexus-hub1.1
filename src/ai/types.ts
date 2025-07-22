@@ -222,13 +222,12 @@ export interface CodeGeneratorOutput {
 // --- Video Generator ---
 export interface VideoGeneratorInput {
     prompt: string;
-    aspectRatio: '16:9' | '9:16';
-    durationSeconds: number;
+    provider: string;
 }
 
 export interface VideoGeneratorOutput {
     video: {
-        url: string; // The data URI of the video
+        url: string; // The resource_url from Eden AI
         contentType: string; // e.g., 'video/mp4'
     };
     logs: FlowLog[];

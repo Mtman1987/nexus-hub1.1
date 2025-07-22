@@ -1,9 +1,10 @@
 
 'use server';
 /**
- * @fileOverview An AI flow for generating code snippets from an instruction.
+ * @fileOverview An AI flow for intelligently selecting the best provider for a given task.
+ * This is a placeholder and currently just uses the default code generation.
  *
- * - intelligentFallbackFlow - The main function to get a code snippet.
+ * - intelligentFallbackFlow - The main function to get a recommendation.
  */
 import type { CodeGeneratorInput, CodeGeneratorOutput, FlowLog } from '@/ai/types';
 import { AppConfig } from '@/ai/types';
@@ -65,6 +66,9 @@ export async function intelligentFallbackFlow(
   input: CodeGeneratorInput
 ): Promise<{response: CodeGeneratorOutput, logs: FlowLog[]}> {
     
+    // This flow is a placeholder. A real implementation would involve a meta-AI call
+    // to decide which provider/model is best for the user's `goal` and `prompt`.
+    // For now, it just defaults to the standard code generation.
     const { result, logs } = await callEdenAiCodeGeneration(input.config, input);
 
     return {

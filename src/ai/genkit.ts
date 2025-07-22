@@ -5,7 +5,7 @@
  */
 import { genkit } from 'genkit';
 import { googleAI } from '@genkit-ai/googleai';
-import { firebase } from '@genkit-ai/firebase';
+import { firebase } from '@genkit-ai/firebase/v1';
 import { googleCloud } from '@genkit-ai/google-cloud';
 
 // Initialize Genkit with plugins for Google AI (for Gemini models),

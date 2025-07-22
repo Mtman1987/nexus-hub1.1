@@ -1,81 +1,106 @@
 
 'use server';
 /**
- * @fileOverview A flow for generating video from a text prompt using Veo.
+ * @fileOverview A flow for generating video from a text prompt using Eden AI's async API.
  */
-import { ai } from '@/ai/genkit';
-import { googleAI } from '@genkit-ai/googleai';
-import { z } from 'zod';
-import type { VideoGeneratorInput, VideoGeneratorOutput, FlowLog } from '../types';
+import type { VideoGeneratorInput, VideoGeneratorOutput, FlowLog, AppConfig } from '../types';
 
-async function toBase64(url: string): Promise<string> {
-    try {
-        const fetch = (await import('node-fetch')).default;
-        const response = await fetch(`${url}&key=${process.env.GOOGLE_API_KEY}`);
+async function pollForResult(jobId: string, config: AppConfig): Promise<any> {
+    const url = `https://api.edenai.run/v2/video/generation_async/${jobId}`;
+    const headers = { "Authorization": `Bearer ${config.edenApiKey}` };
+    
+    // Poll every 10 seconds for 5 minutes
+    for (let i = 0; i < 30; i++) {
+        await new Promise(resolve => setTimeout(resolve, 10000));
+        const response = await fetch(url, { headers });
         if (!response.ok) {
-            throw new Error(`Failed to fetch video data: ${response.statusText}`);
+            // If the job is not found, it might still be processing, so we continue
+            if (response.status === 404) continue;
+            throw new Error(`Polling failed with status ${response.status}`);
         }
-        const buffer = await response.buffer();
-        return buffer.toString('base64');
-    } catch(e) {
-        console.error("Error fetching or converting video to base64", e);
-        throw e;
+        const result = await response.json();
+        if (result.status === 'succeeded') {
+            return result;
+        }
+        if (result.status === 'failed') {
+            throw new Error(`Video generation job failed: ${result.error?.message || 'Unknown error'}`);
+        }
+    }
+    throw new Error('Video generation timed out after 5 minutes.');
+}
+
+
+async function callEdenAiVideo(
+    config: AppConfig,
+    input: VideoGeneratorInput,
+): Promise<{ result: VideoGeneratorOutput, logs: FlowLog[] }> {
+    const logs: FlowLog[] = [];
+    if (!config.edenApiKey) {
+        throw new Error("Eden AI API key is not configured.");
+    }
+    
+    logs.push({ service: 'Eden Video', level: 'info', message: `Submitting video generation job with provider ${input.provider}...` });
+    
+    const url = "https://api.edenai.run/v2/video/generation_async";
+    const payload = {
+        providers: input.provider,
+        text: input.prompt,
+        // other params like resolution can be added if supported by the provider
+    };
+    const headers = { 
+        "Authorization": `Bearer ${config.edenApiKey}`,
+        "Content-Type": "application/json"
+    };
+
+    try {
+        const initialResponse = await fetch(url, { method: 'POST', body: JSON.stringify(payload), headers });
+        if (!initialResponse.ok) {
+            const errorBody = await initialResponse.text();
+            throw new Error(`Video job submission failed with status ${initialResponse.status}: ${errorBody}`);
+        }
+        const initialResult = await initialResponse.json();
+
+        if (!initialResult.job_id) {
+            throw new Error("Eden AI did not return a job ID.");
+        }
+        
+        logs.push({ service: 'Eden Video', level: 'info', message: `Job submitted successfully (ID: ${initialResult.job_id}). Polling for result...` });
+
+        const finalResult = await pollForResult(initialResult.job_id, config);
+        
+        const videoUrl = finalResult.results[input.provider]?.video_resource_url;
+        if (!videoUrl) {
+            throw new Error("Could not find video URL in the final result.");
+        }
+        
+        logs.push({ service: 'Eden Video', level: 'info', message: 'Successfully generated video.' });
+        return { 
+            result: { 
+                video: {
+                    url: videoUrl,
+                    contentType: 'video/mp4' // Assuming mp4
+                }
+            }, 
+            logs 
+        };
+
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "An unknown error occurred during video generation.";
+        logs.push({ service: 'Eden Video', level: 'error', message: errorMessage, details: error instanceof Error ? error.stack : undefined });
+        throw error;
     }
 }
 
+
 export async function videoGeneratorFlow(input: VideoGeneratorInput): Promise<VideoGeneratorOutput> {
-    const logs: FlowLog[] = [];
+    const config: AppConfig = {
+        edenApiKey: localStorage.getItem('edenApiKey'),
+    };
     
-    try {
-        logs.push({ service: 'Video Generation', level: 'info', message: 'Starting Veo video generation process...' });
+    const { result, logs } = await callEdenAiVideo(config, input);
 
-        let { operation } = await ai.generate({
-            model: googleAI.model('veo-2.0-generate-001'),
-            prompt: input.prompt,
-            config: {
-                durationSeconds: input.durationSeconds,
-                aspectRatio: input.aspectRatio,
-            },
-        });
-
-        if (!operation) {
-            throw new Error('Expected the model to return an operation');
-        }
-
-        logs.push({ service: 'Video Generation', level: 'info', message: 'Video generation job submitted. Polling for completion...', details: `Operation Name: ${operation.name}` });
-
-        while (!operation.done) {
-            await new Promise((resolve) => setTimeout(resolve, 5000)); // Wait 5 seconds
-            operation = await ai.checkOperation(operation);
-            logs.push({ service: 'Video Generation', level: 'info', message: `Polling... Operation status: ${operation.done ? 'done' : 'running'}` });
-        }
-
-        if (operation.error) {
-            throw new Error(`Video generation failed: ${operation.error.message}`);
-        }
-
-        const videoPart = operation.output?.message?.content.find((p) => !!p.media);
-        if (!videoPart || !videoPart.media) {
-            throw new Error('Failed to find the generated video in the operation result.');
-        }
-
-        logs.push({ service: 'Video Generation', level: 'info', message: 'Video generated successfully. Converting to data URI.' });
-        
-        const videoBase64 = await toBase64(videoPart.media.url);
-        const contentType = videoPart.media.contentType || 'video/mp4';
-        const dataUri = `data:${contentType};base64,${videoBase64}`;
-
-        return {
-            video: {
-                url: dataUri,
-                contentType: contentType,
-            },
-            logs,
-        };
-
-    } catch (e) {
-        const error = e as Error;
-        logs.push({ service: 'Video Generation', level: 'error', message: `An error occurred: ${error.message}`, details: error.stack });
-        throw error; // Re-throw the error to be caught by the service layer
-    }
+    return {
+        ...result,
+        logs,
+    };
 }
