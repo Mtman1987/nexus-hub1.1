@@ -2,6 +2,7 @@
 'use server';
 /**
  * @fileOverview A flow for generating video from a text prompt using Eden AI's async API.
+ * It now supports optional image-to-video generation.
  */
 import type { VideoGeneratorInput, VideoGeneratorOutput, FlowLog, AppConfig } from '../types';
 
@@ -42,31 +43,37 @@ async function callEdenAiVideo(
     logs.push({ service: 'Eden Video', level: 'info', message: `Submitting video generation job with provider ${input.provider}...` });
     
     const url = "https://api.edenai.run/v2/video/generation_async";
-    const payload = {
-        providers: input.provider,
-        text: input.prompt,
-        // other params like resolution can be added if supported by the provider
-    };
+    
+    const formData = new FormData();
+    formData.append('providers', input.provider);
+    formData.append('text', input.prompt);
+    formData.append('fallback_providers', ''); // Ensure no unexpected fallbacks
+    
+    if (input.image) {
+        formData.append('file', input.image);
+        logs.push({ service: 'Eden Video', level: 'info', message: 'Image file included for image-to-video generation.'});
+    }
+
     const headers = { 
         "Authorization": `Bearer ${config.edenApiKey}`,
-        "Content-Type": "application/json"
     };
 
     try {
-        const initialResponse = await fetch(url, { method: 'POST', body: JSON.stringify(payload), headers });
+        const initialResponse = await fetch(url, { method: 'POST', body: formData, headers });
         if (!initialResponse.ok) {
             const errorBody = await initialResponse.text();
             throw new Error(`Video job submission failed with status ${initialResponse.status}: ${errorBody}`);
         }
         const initialResult = await initialResponse.json();
 
-        if (!initialResult.job_id) {
-            throw new Error("Eden AI did not return a job ID.");
+        if (!initialResult.public_id) { // Eden async returns public_id now
+            throw new Error(`Eden AI did not return a job ID. Response: ${JSON.stringify(initialResult)}`);
         }
         
-        logs.push({ service: 'Eden Video', level: 'info', message: `Job submitted successfully (ID: ${initialResult.job_id}). Polling for result...` });
+        const jobId = initialResult.public_id;
+        logs.push({ service: 'Eden Video', level: 'info', message: `Job submitted successfully (ID: ${jobId}). Polling for result...` });
 
-        const finalResult = await pollForResult(initialResult.job_id, config);
+        const finalResult = await pollForResult(jobId, config);
         
         const videoUrl = finalResult.results[input.provider]?.video_resource_url;
         if (!videoUrl) {

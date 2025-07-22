@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Wand2, GripVertical, EyeOff, Video, Settings, ChevronDown, Sparkles } from 'lucide-react';
+import { Loader2, Wand2, GripVertical, EyeOff, Video, Settings, ChevronDown, Sparkles, Image as ImageIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { PopOutButton } from './pop-out-button';
 import { useLogs } from '@/context/LogContext';
@@ -14,8 +14,9 @@ import type { VideoGeneratorOutput, VideoGeneratorInput } from '@/ai/types';
 import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { Input } from '../ui/input';
 
-const videoProviders = ['amazon', 'replicate', 'stabilityai', 'minimax'];
+const videoProviders = ['replicate', 'stabilityai', 'amazon', 'minimax'];
 
 interface VideoGeneratorProps {
   onPopOut?: () => void;
@@ -32,13 +33,17 @@ export function VideoGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
     const { toast } = useToast();
     const { addLog } = useLogs();
     
-    const [provider, setProvider] = useState('amazon');
+    const [provider, setProvider] = useState('replicate');
+    const [imageFile, setImageFile] = useState<File | null>(null);
 
     const handleGenerateVideo = async () => {
         setIsLoading(true);
         setResult(null);
 
-        const logDetails = `Prompt: "${prompt.substring(0, 100)}...", Provider: ${provider}`;
+        let logDetails = `Prompt: "${prompt.substring(0, 100)}...", Provider: ${provider}`;
+        if (imageFile) {
+            logDetails += `, Image: ${imageFile.name}`;
+        }
         addLog({ service: 'Video Generator', level: 'info', message: "User requested a video.", details: logDetails });
         
         try {
@@ -57,6 +62,7 @@ export function VideoGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
             const input: VideoGeneratorInput = {
                 prompt,
                 provider,
+                ...(imageFile && { image: imageFile }),
             };
 
             const response = await generateVideo(input);
@@ -92,7 +98,7 @@ export function VideoGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
                   Avatar Forge
                 </CardTitle>
                 <CardDescription>
-                  Generate animated avatars from text prompts.
+                  Generate animated avatars from text and images.
                 </CardDescription>
               </div>
             </div>
@@ -140,6 +146,17 @@ export function VideoGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
                 onChange={(e) => setPrompt(e.target.value)}
                 className="h-20"
             />
+
+            <div className="space-y-2">
+                <Label htmlFor="image-file">Starting Image (Optional)</Label>
+                <div className="flex items-center gap-2">
+                    <Input id="image-file" type="file" onChange={e => setImageFile(e.target.files?.[0] || null)} accept="image/png, image/jpeg" />
+                    <Button variant="ghost" size="icon" onClick={() => setImageFile(null)} disabled={!imageFile}>
+                        <Trash2 className="h-4 w-4" />
+                    </Button>
+                </div>
+                {imageFile && <p className="text-sm text-muted-foreground">Selected: {imageFile.name}</p>}
+            </div>
             
             <Popover>
                 <PopoverTrigger asChild>

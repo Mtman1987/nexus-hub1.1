@@ -223,6 +223,7 @@ export interface CodeGeneratorOutput {
 export interface VideoGeneratorInput {
     prompt: string;
     provider: string;
+    image?: File;
 }
 
 export interface VideoGeneratorOutput {
