@@ -97,7 +97,7 @@ export function Fallback({ onPopOut, isPoppedOut = false, onHide, dragHandleProp
   return (
     <>
     <SetupDialog open={showSetup} onOpenChange={setShowSetup} />
-    <Card className="h-full flex flex-col bg-card/80">
+    <Card className="h-full flex flex-col">
       <CardHeader>
         <div className="flex justify-between items-start">
              <div className="flex items-center gap-2 flex-grow">

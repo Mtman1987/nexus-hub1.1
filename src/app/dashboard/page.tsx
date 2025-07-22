@@ -232,7 +232,7 @@ export default function DashboardPage() {
                 </div>
             </div>
 
-            <div className="flex-grow rounded-lg overflow-hidden p-6">
+            <div className="flex-grow rounded-lg overflow-hidden p-6 bg-background/80">
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                     <SortableContext items={visibleModuleIds} strategy={verticalListSortingStrategy}>
                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 h-full">
