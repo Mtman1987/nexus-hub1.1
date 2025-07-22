@@ -106,11 +106,9 @@ export function UserRoles({ isPoppedOut = false, onPopOut, onHide, dragHandlePro
         <CardHeader className='shrink-0'>
            <div className="flex justify-between items-start">
             <div className="flex items-center gap-2 flex-grow">
-               {dragHandleProps && (
-                <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto">
-                  <GripVertical />
-                </Button>
-              )}
+               <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto">
+                <GripVertical />
+              </Button>
               <div className="flex-grow">
                 <CardTitle className="flex items-center gap-2">
                   <Users className="h-6 w-6 text-accent" />
@@ -132,7 +130,7 @@ export function UserRoles({ isPoppedOut = false, onPopOut, onHide, dragHandlePro
           </div>
         </CardHeader>
         <CardContent className="flex-grow flex flex-col overflow-hidden">
-          <ScrollArea className="flex-grow">
+          <ScrollArea className="flex-grow pr-1">
             <Table>
                 <TableHeader>
                   <TableRow>
@@ -178,7 +176,7 @@ export function UserRoles({ isPoppedOut = false, onPopOut, onHide, dragHandlePro
                 </TableBody>
             </Table>
           </ScrollArea>
-          <div className="flex justify-end mt-auto pt-4 border-t">
+          <div className="mt-4 flex justify-end pt-4 border-t">
             <Button onClick={handleSaveChanges} disabled={isSaving}>
               {isSaving ? (
                 <>

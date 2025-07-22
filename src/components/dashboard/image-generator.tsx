@@ -89,11 +89,9 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
       <CardHeader>
         <div className="flex justify-between items-start">
              <div className="flex items-center gap-2 flex-grow">
-               {dragHandleProps && (
-                <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto">
-                  <GripVertical />
-                </Button>
-              )}
+               <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto">
+                <GripVertical />
+              </Button>
               <div className="flex-grow">
                 <CardTitle className="flex items-center gap-2">
                   <ImageIcon className="h-6 w-6 text-accent" />
@@ -115,7 +113,7 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
         </div>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col gap-4 overflow-hidden">
-        <div className="flex-grow flex flex-col items-center justify-center bg-muted/50 rounded-lg p-4 relative">
+        <div className="flex-grow flex flex-col items-center justify-center bg-muted/50 rounded-lg p-4 relative overflow-y-auto">
             {isLoading ? (
                 <div className="flex flex-col items-center gap-2 text-muted-foreground">
                     <Loader2 className="h-8 w-8 animate-spin"/>
@@ -142,7 +140,7 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
         </div>
         
         {result && (
-             <Alert variant="default" className="text-xs">
+             <Alert variant="default" className="text-xs shrink-0">
                 <Info className="h-4 w-4" />
                 <AlertTitle>Enhanced Prompt Used</AlertTitle>
                 <AlertDescription>

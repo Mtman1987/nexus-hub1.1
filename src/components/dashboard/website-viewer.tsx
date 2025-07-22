@@ -63,16 +63,14 @@ export function WebsiteViewer({ isPoppedOut = false, onPopOut, onHide, dragHandl
   const siteKeys = Object.keys(SITES);
 
   return (
-    <Card className="h-full flex flex-col border-0 shadow-none">
+    <Card className="h-full flex flex-col">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
         <CardHeader>
           <div className="flex justify-between items-start">
              <div className="flex items-center gap-2 flex-grow">
-               {dragHandleProps && (
-                <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto">
-                  <GripVertical />
-                </Button>
-              )}
+               <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto">
+                <GripVertical />
+              </Button>
               <div className="flex-grow">
                 <CardTitle className="flex items-center gap-2">
                   <Monitor className="h-6 w-6" />

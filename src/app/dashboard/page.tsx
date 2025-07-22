@@ -51,7 +51,6 @@ const defaultModuleOrder = ALL_MODULES_CONFIG.map(m => m.id);
 const SortableModule = ({ id, children }: { id: string, children: React.ReactNode }) => {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ 
       id,
-      strategy: verticalListSortingStrategy,
     });
     const style: React.CSSProperties = {
         transform: CSS.Transform.toString(transform),
@@ -61,8 +60,8 @@ const SortableModule = ({ id, children }: { id: string, children: React.ReactNod
     };
 
     return (
-        <div ref={setNodeRef} style={style}>
-             {React.isValidElement(children) ? React.cloneElement(children, { dragHandleProps: listeners, ...attributes }) : children}
+        <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+             {children}
         </div>
     );
 };

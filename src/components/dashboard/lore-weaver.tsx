@@ -121,11 +121,9 @@ export function LoreWeaver({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
       <CardHeader>
         <div className="flex justify-between items-start">
              <div className="flex items-center gap-2 flex-grow">
-               {dragHandleProps && (
-                <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto">
-                  <GripVertical />
-                </Button>
-              )}
+               <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto">
+                <GripVertical />
+              </Button>
               <div className="flex-grow">
                 <CardTitle className="flex items-center gap-2">
                   <ScrollText className="h-6 w-6 text-accent" />
@@ -157,25 +155,27 @@ export function LoreWeaver({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
             />
         </div>
 
-        {result && (
-            <Alert className="flex-grow flex flex-col overflow-hidden">
-                <div className="flex justify-between items-start shrink-0">
-                    <AlertTitle className="flex items-center gap-2">
-                        <Wand2 className="h-4 w-4" />
-                        COSMO's Transmission
-                    </AlertTitle>
-                    <Button variant="outline" size="sm" onClick={handleSaveTransmission}>
-                        <Save className="mr-2 h-4 w-4" />
-                        Save
-                    </Button>
-                </div>
-                <ScrollArea className="flex-grow mt-2 pr-4">
-                    <AlertDescription className="whitespace-pre-wrap">{result.response}</AlertDescription>
-                </ScrollArea>
-            </Alert>
-        )}
+        <div className="flex-grow overflow-y-auto pr-1">
+          {result && (
+              <Alert className="h-full flex flex-col">
+                  <div className="flex justify-between items-start shrink-0">
+                      <AlertTitle className="flex items-center gap-2">
+                          <Wand2 className="h-4 w-4" />
+                          COSMO's Transmission
+                      </AlertTitle>
+                      <Button variant="outline" size="sm" onClick={handleSaveTransmission}>
+                          <Save className="mr-2 h-4 w-4" />
+                          Save
+                      </Button>
+                  </div>
+                  <ScrollArea className="flex-grow mt-2 pr-4">
+                      <AlertDescription className="whitespace-pre-wrap">{result.response}</AlertDescription>
+                  </ScrollArea>
+              </Alert>
+          )}
+        </div>
 
-        <div className="flex justify-end mt-auto shrink-0">
+        <div className="flex justify-end mt-4 pt-4 border-t">
             <Button onClick={handleGetIdea} disabled={isLoading || !prompt}>
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
                 Weave Idea

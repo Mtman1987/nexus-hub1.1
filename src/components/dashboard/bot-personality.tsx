@@ -230,11 +230,9 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
         <CardHeader>
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-2 flex-grow">
-               {dragHandleProps && (
-                <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto">
-                  <GripVertical />
-                </Button>
-              )}
+               <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto">
+                <GripVertical />
+              </Button>
               <div className='flex-grow'>
                 <CardTitle className="flex items-center gap-2 text-2xl">
                   <Smile className="h-6 w-6 text-accent" />
@@ -253,7 +251,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
             </div>
           </div>
         </CardHeader>
-        <CardContent className="flex-grow flex flex-col overflow-hidden">
+        <CardContent className="flex-grow flex flex-col gap-4 overflow-hidden">
           <form id="bot-personality-form" className="flex flex-col flex-grow overflow-hidden" onSubmit={handleSaveChanges}>
             <ScrollArea className="flex-grow pr-1">
                 <div className="space-y-4">
@@ -355,7 +353,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                 </div>
             </ScrollArea>
 
-             <div className="flex justify-end items-center pt-4 border-t mt-auto shrink-0">
+             <div className="mt-4 flex justify-end pt-4 border-t">
                 <Button type="submit" form="bot-personality-form">
                   <Save className="mr-2 h-4 w-4" />
                   Save All

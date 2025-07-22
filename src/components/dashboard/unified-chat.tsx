@@ -303,11 +303,9 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
       <CardHeader>
         <div className="flex justify-between items-start">
              <div className="flex items-center gap-2 flex-grow">
-               {dragHandleProps && (
-                <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto">
-                  <GripVertical />
-                </Button>
-              )}
+               <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto">
+                <GripVertical />
+              </Button>
               <div className="flex-grow">
                 <CardTitle className="flex items-center gap-2">
                   <MessageSquare className="h-6 w-6 text-accent" />
@@ -328,8 +326,8 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
             </div>
         </div>
       </CardHeader>
-      <CardContent className="flex-grow flex flex-col overflow-hidden">
-        <ScrollArea className="flex-grow bg-muted/20 rounded-lg p-4 mb-4" ref={scrollAreaRef}>
+      <CardContent className="flex-grow flex flex-col gap-4 overflow-hidden">
+        <ScrollArea className="flex-grow bg-muted/20 rounded-lg p-4" ref={scrollAreaRef}>
           <div className="space-y-4">
             {messages.length === 0 ? (
               <p className="text-sm text-muted-foreground">Chat history will be displayed here.</p>

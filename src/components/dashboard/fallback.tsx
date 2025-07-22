@@ -100,11 +100,9 @@ export function Fallback({ onPopOut, isPoppedOut = false, onHide, dragHandleProp
       <CardHeader>
         <div className="flex justify-between items-start">
              <div className="flex items-center gap-2 flex-grow">
-               {dragHandleProps && (
-                <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto">
-                  <GripVertical />
-                </Button>
-              )}
+               <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto">
+                <GripVertical />
+              </Button>
               <div className="flex-grow">
                 <CardTitle className="flex items-center gap-2">
                   <Lightbulb className="h-6 w-6 text-accent" />
@@ -125,32 +123,30 @@ export function Fallback({ onPopOut, isPoppedOut = false, onHide, dragHandleProp
             </div>
         </div>
       </CardHeader>
-      <CardContent className="flex flex-col flex-grow overflow-hidden">
-        <ScrollArea className="flex-grow pr-1">
-            <div className="space-y-4">
-                <div className="space-y-2">
-                    <Label htmlFor="goal">Your Goal</Label>
-                    <Input id="goal" placeholder="e.g., Write a marketing email, summarize a document" value={goal} onChange={(e) => setGoal(e.target.value)} />
-                </div>
-                 <div className="space-y-2">
-                    <Label htmlFor="prompt">Your Full Prompt</Label>
-                    <Textarea id="prompt" placeholder="Enter the full prompt you want to send to the AI..." value={prompt} onChange={(e) => setPrompt(e.target.value)} />
-                </div>
-
-                {result && (
-                    <Alert variant={result.recommendation === 'Error' ? 'destructive' : 'default'}>
-                        <Wand2 className="h-4 w-4" />
-                        <AlertTitle>
-                            {result.recommendation === 'Error' ? 'Error' : `Recommendation: ${result.recommendation}`}
-                        </AlertTitle>
-                        <AlertDescription>
-                            {result.reasoning}
-                        </AlertDescription>
-                    </Alert>
-                )}
+      <CardContent className="flex-grow flex flex-col gap-4 overflow-hidden">
+        <div className="flex-grow space-y-4 overflow-y-auto pr-1">
+            <div className="space-y-2">
+                <Label htmlFor="goal">Your Goal</Label>
+                <Input id="goal" placeholder="e.g., Write a marketing email, summarize a document" value={goal} onChange={(e) => setGoal(e.target.value)} />
             </div>
-        </ScrollArea>
-        <div className="flex justify-between items-center mt-auto pt-4 border-t">
+             <div className="space-y-2">
+                <Label htmlFor="prompt">Your Full Prompt</Label>
+                <Textarea id="prompt" placeholder="Enter the full prompt you want to send to the AI..." value={prompt} onChange={(e) => setPrompt(e.target.value)} />
+            </div>
+
+            {result && (
+                <Alert variant={result.recommendation === 'Error' ? 'destructive' : 'default'}>
+                    <Wand2 className="h-4 w-4" />
+                    <AlertTitle>
+                        {result.recommendation === 'Error' ? 'Error' : `Recommendation: ${result.recommendation}`}
+                    </AlertTitle>
+                    <AlertDescription>
+                        {result.reasoning}
+                    </AlertDescription>
+                </Alert>
+            )}
+        </div>
+        <div className="flex justify-between items-center mt-4 pt-4 border-t">
             <Button variant="outline" onClick={() => setShowSetup(true)}>
                 <LifeBuoy className="mr-2 h-4 w-4" />
                 Setup Wizard
