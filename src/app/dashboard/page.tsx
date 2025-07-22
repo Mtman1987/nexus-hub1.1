@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent, DragOverlay, DragStartEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { createPortal } from 'react-dom';
 
 import { LogViewer } from '@/components/dashboard/log-viewer';
 import { ApiSettings } from '@/components/dashboard/api-settings';
@@ -28,7 +29,7 @@ import { BotPersonality } from '@/components/dashboard/bot-personality';
 import { Fallback } from '@/components/dashboard/fallback';
 import { ImageGenerator } from '@/components/dashboard/image-generator';
 import { MusicPlayer } from '@/components/dashboard/music-player';
-import { createPortal } from 'react-dom';
+
 
 // Define all modules with their components
 const ALL_MODULES_CONFIG = [
@@ -55,12 +56,11 @@ const SortableModule = ({ id, children }: { id: string, children: React.ReactNod
         transform: CSS.Transform.toString(transform),
         transition,
         opacity: isDragging ? 0.5 : 1,
-        gridColumn: 'span 1 / span 1',
     };
 
     return (
-        <div ref={setNodeRef} style={style} {...attributes}>
-            {React.cloneElement(children as React.ReactElement, { dragHandleProps: { ...listeners } })}
+        <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+            {children}
         </div>
     );
 };
@@ -282,7 +282,7 @@ export default function DashboardPage() {
                         </SortableContext>
                         
                         {typeof document !== 'undefined' && createPortal(
-                          <DragOverlay>
+                          <DragOverlay style={{ zIndex: -1 }}>
                             {activeId && ActiveModuleComponent && (
                                 <ActiveModuleComponent 
                                   onHide={() => {}} 
