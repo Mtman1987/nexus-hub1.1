@@ -39,7 +39,7 @@ const ALL_MODULES_CONFIG = [
     { id: 'fallback', title: 'Intelligent Fallback', component: Fallback },
     { id: 'fallbackStrategy', title: 'Fallback Strategy', component: FallbackStrategy},
     { id: 'userRoles', title: 'Access Control', component: UserRoles },
-    { id: 'websiteViewer', title: 'Website Viewer', component: WebsiteViewer },
+    // { id: 'websiteViewer', title: 'Website Viewer', component: WebsiteViewer },
     { id: 'savedItems', title: 'Saved Items', component: SavedItems },
     { id: 'loreWeaver', title: 'Lore Weaver', component: LoreWeaver },
 ];
@@ -195,7 +195,6 @@ export default function DashboardPage() {
   const visibleModuleIds = moduleOrder.filter(id => !hiddenModules.includes(id));
   const trulyHiddenModules = ALL_MODULES_CONFIG.filter(m => hiddenModules.includes(m.id));
   const activeModule = activeId ? ALL_MODULES_CONFIG.find(({ id }) => id === activeId) : null;
-  const ActiveModuleComponent = activeModule?.component;
 
   return (
     <>
@@ -241,7 +240,7 @@ export default function DashboardPage() {
                                 if (!moduleConfig) return null;
                                 
                                 return (
-                                    <DraggableModule key={id} id={id}>
+                                    <DraggableModule key={id} id={id} >
                                       <moduleConfig.component
                                         onHide={() => handleHideModule(id)} 
                                         onPopOut={() => handlePopOut(id, moduleConfig.title)}
@@ -252,8 +251,12 @@ export default function DashboardPage() {
                         </div>
                     </SortableContext>
                      <DragOverlay>
-                        {activeId && ActiveModuleComponent ? (
-                            <ActiveModuleComponent />
+                        {activeId && activeModule ? (
+                          <Card className="h-full w-full bg-primary/50 flex items-center justify-center">
+                            <CardHeader>
+                              <CardTitle>{activeModule.title}</CardTitle>
+                            </CardHeader>
+                          </Card>
                         ) : null}
                     </DragOverlay>
                 </DndContext>

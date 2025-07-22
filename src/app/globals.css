@@ -48,15 +48,16 @@
       radial-gradient(rgba(255,255,255,.4), rgba(255,255,255,.1) 2px, transparent 30px);
   background-size: 550px 550px, 350px 350px, 250px 250px, 150px 150px; 
   background-position: 0 0, 40px 60px, 130px 270px, 70px 100px;
-  animation: stars-scroll 200s linear infinite;
+  /* animation: stars-scroll 200s linear infinite; */
   background-color: hsl(0 0% 8%);
 }
 
-@keyframes stars-scroll {
+/* @keyframes stars-scroll {
   from { transform: translateY(0px); }
   to { transform: translateY(-2000px); }
-}
+} */
 
+/* 
 .shooting-star {
   position: absolute;
   left: 50%;
@@ -109,4 +110,4 @@
   100% {
     width: 0;
   }
-}
+} */
