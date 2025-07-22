@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { ShieldCheck, Save, LifeBuoy, Power, Bot, PlusCircle, Trash2, Link, Copy, Server, KeyRound, RefreshCw, Radio, GripVertical, EyeOff, Lock, Unlock } from 'lucide-react';
+import { ShieldCheck, Save, LifeBuoy, Power, Bot, PlusCircle, Trash2, Link, Copy, Server, KeyRound, RefreshCw, Radio, GripVertical, EyeOff, Lock, Unlock, Cpu, Share2, Star } from 'lucide-react';
 import React, { useState, useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useLogs } from '@/context/LogContext';
@@ -91,23 +91,14 @@ const defaultSettings: Partial<Settings> = {
 }
 
 const PROVIDER_CONFIG = {
-    eden: { name: 'Eden AI' },
-    google: { name: 'Google AI' },
-    openai: { name: 'OpenAI' },
-    groq: { name: 'Groq' },
+    eden: { name: 'Eden AI', icon: <Star className="h-5 w-5 text-yellow-400" /> },
+    google: { name: 'Google AI', icon: <Bot className="h-5 w-5" /> },
+    openai: { name: 'OpenAI', icon: <Bot className="h-5 w-5" /> },
+    groq: { name: 'Groq', icon: <Bot className="h-5 w-5" /> },
 };
 
 
 const FALLBACK_ORDER: AiProviderId[] = ['google', 'openai', 'groq'];
-
-const CustomAccordionTrigger: React.FC<React.PropsWithChildren<{icon: React.ReactNode, title: string}>> = ({ children, icon, title }) => (
-    <AccordionTrigger className="text-lg font-semibold hover:no-underline">
-        <div className="flex items-center gap-2">
-            {icon}
-            {title}
-        </div>
-    </AccordionTrigger>
-);
 
 const ServiceStatusToggle: React.FC<{
   providerId: ProviderId;
@@ -121,7 +112,7 @@ const ServiceStatusToggle: React.FC<{
 
   return (
     <div className="space-y-2">
-      <Label htmlFor={`${providerId}-status`} className="flex items-center gap-2">
+      <Label htmlFor={`${providerId}-status`} className="flex items-center gap-2 text-xs">
         <Power className="h-4 w-4" />
         Service Status
       </Label>
@@ -157,7 +148,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
   const [settings, setSettings] = useState<Settings>(defaultSettings);
   const [providerStatus, setProviderStatus] = useState<ProviderStatus>(defaultProviderStatus);
   const { addLog } = useLogs();
-  const [openAccordions, setOpenAccordions] = useState<string[]>(['eden', 'discord']);
+  const [openAccordions, setOpenAccordions] = useState<string[]>(['ai-providers']);
 
   const [isLocked, setIsLocked] = useState(true);
   const [password, setPassword] = useState('');
@@ -447,218 +438,209 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
               </Alert>
           )}
         </div>
-        <ScrollArea className="flex-grow pr-4">
+        <ScrollArea className="flex-grow pr-4 -mr-4">
           <form id="api-settings-form" className="space-y-4" onSubmit={handleSaveChanges}>
             <Accordion type="multiple" value={openAccordions} onValueChange={handleAccordionChange} className="w-full space-y-2">
-                <AccordionItem value="remote-settings">
-                  <CustomAccordionTrigger icon={<Server className="h-5 w-5"/>} title="Remote Access" />
-                   <AccordionContent className="space-y-4 pt-4">
-                       <div className="space-y-2">
-                           <Label htmlFor="remote-hub-address">Remote Hub Address</Label>
-                           <Input 
-                               id="remote-hub-address" 
-                               type="text" 
-                               placeholder="e.g., https://your-tunnel.ngrok.io" 
-                               value={settings.remoteHubAddress || ''} 
-                               onChange={(e) => handleInputChange('remoteHubAddress', e.target.value)} 
-                               disabled={isLocked}
-                           />
-                           <p className="text-xs text-muted-foreground">Enter your public tunneling URL (like ngrok) to control your local hub from this deployed UI.</p>
-                       </div>
-                       <div className="space-y-2">
-                            <Label htmlFor="remote-access-secret">Remote Access Secret Key</Label>
-                            <div className="flex items-center gap-2">
-                                <Input 
-                                   id="remote-access-secret" 
-                                   type="password" 
-                                   placeholder="A strong, unique password for security" 
-                                   value={settings.remoteAccessSecret || ''} 
-                                   onChange={(e) => handleInputChange('remoteAccessSecret', e.target.value)} 
-                                   disabled={isLocked}
-                                />
-                                <Button type="button" variant="outline" size="icon" onClick={generateSecretKey} aria-label="Generate new secret key" disabled={isLocked}>
-                                    <RefreshCw className="h-4 w-4"/>
-                                </Button>
-                            </div>
-                            <p className="text-xs text-muted-foreground">
-                                This key must be identical on both your local hub and your cloud-hosted UI for the connection to work.
-                            </p>
-                       </div>
-                   </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="eden">
-                    <CustomAccordionTrigger icon={<Bot className="h-5 w-5 text-cyan-400"/>} title="Eden AI (Primary)" />
-                    <AccordionContent className="space-y-4 pt-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="eden-key">Eden AI API Key</Label>
-                            <Input id="eden-key" type="password" placeholder="Your primary key from Eden AI" value={settings.edenApiKey || ''} onChange={(e) => handleInputChange('edenApiKey', e.target.value)} disabled={isLocked}/>
+                <AccordionItem value="ai-providers">
+                    <AccordionTrigger className="text-lg font-semibold hover:no-underline">
+                        <div className="flex items-center gap-2">
+                            <Cpu className="h-5 w-5"/>
+                            AI Providers
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="eden-provider">Provider via Eden</Label>
-                            <Select value={settings.edenAiProvider || 'openai'} onValueChange={(value) => handleInputChange('edenAiProvider', value)} disabled={isLocked}>
-                                <SelectTrigger><SelectValue placeholder="Select a provider..." /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="openai">OpenAI</SelectItem>
-                                    <SelectItem value="google">Google</SelectItem>
-                                    <SelectItem value="anthropic">Anthropic</SelectItem>
-                                    <SelectItem value="cohere">Cohere</SelectItem>
-                                    <SelectItem value="meta">Meta</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                         <div className="space-y-2">
-                              <Label htmlFor="eden-model">Model Name via Eden</Label>
-                              <Select value={settings.edenAiModel} onValueChange={(value) => handleInputChange('edenAiModel', value)} disabled={isLocked}>
-                                  <SelectTrigger><SelectValue placeholder="Select a model..." /></SelectTrigger>
-                                  <SelectContent>
-                                  {edenModelsForProvider.map(model => (
-                                      <SelectItem key={model} value={`${edenProvider}/${model}`}>{model}</SelectItem>
-                                  ))}
-                                  </SelectContent>
-                              </Select>
-                              <p className="text-xs text-muted-foreground">The full model name (e.g., openai/gpt-4o) will be sent.</p>
-                          </div>
-                    </AccordionContent>
-                </AccordionItem>
-                
-                {(['google', 'openai', 'groq'] as const).map((providerId) => (
-                    <AccordionItem key={providerId} value={providerId}>
-                        <CustomAccordionTrigger icon={<Bot className="h-5 w-5"/>} title={`${PROVIDER_CONFIG[providerId].name} (Fallback)`} />
-                        <AccordionContent className="space-y-4 pt-4">
-                            <ServiceStatusToggle providerId={providerId} isConfigured={!!settings[`${providerId}ApiKey`]} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
+                    </AccordionTrigger>
+                    <AccordionContent className="space-y-4 pt-4 pl-2 border-l-2 border-primary/20">
+                         {/* Eden AI */}
+                        <div className="space-y-4 p-3 border rounded-md">
+                            <h4 className="font-semibold flex items-center gap-2">{PROVIDER_CONFIG.eden.icon} {PROVIDER_CONFIG.eden.name} (Primary)</h4>
                             <div className="space-y-2">
-                                <Label htmlFor={`${providerId}-ai-key`}>{`${PROVIDER_CONFIG[providerId].name}`} API Key</Label>
-                                <Input id={`${providerId}-ai-key`} type="password" placeholder={`Your ${PROVIDER_CONFIG[providerId].name} API Key`} value={settings[`${providerId}ApiKey`] || ''} onChange={(e) => handleInputChange(`${providerId}ApiKey`, e.target.value)} disabled={isLocked}/>
+                                <Label htmlFor="eden-key">Eden AI API Key</Label>
+                                <Input id="eden-key" type="password" placeholder="Your primary key from Eden AI" value={settings.edenApiKey || ''} onChange={(e) => handleInputChange('edenApiKey', e.target.value)} disabled={isLocked}/>
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor={`${providerId}-model-name`}>{`${PROVIDER_CONFIG[providerId].name}`} Model Name</Label>
-                                <Select value={settings[`${providerId}ModelName`] || defaultModels[`${providerId}ModelName`]} onValueChange={(value) => handleModelSelect(`${providerId}ModelName`, value)} disabled={isLocked}>
-                                    <SelectTrigger><SelectValue placeholder="Select a model..." /></SelectTrigger>
-                                    <SelectContent>
-                                        {popularModels[providerId].map(model => (
-                                            <SelectItem key={model} value={model}>{model}</SelectItem>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="eden-provider">Provider via Eden</Label>
+                                    <Select value={settings.edenAiProvider || 'openai'} onValueChange={(value) => handleInputChange('edenAiProvider', value)} disabled={isLocked}>
+                                        <SelectTrigger><SelectValue placeholder="Select a provider..." /></SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="openai">OpenAI</SelectItem>
+                                            <SelectItem value="google">Google</SelectItem>
+                                            <SelectItem value="anthropic">Anthropic</SelectItem>
+                                            <SelectItem value="cohere">Cohere</SelectItem>
+                                            <SelectItem value="meta">Meta</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="eden-model">Model Name via Eden</Label>
+                                    <Select value={settings.edenAiModel} onValueChange={(value) => handleInputChange('edenAiModel', value)} disabled={isLocked}>
+                                        <SelectTrigger><SelectValue placeholder="Select a model..." /></SelectTrigger>
+                                        <SelectContent>
+                                        {edenModelsForProvider.map(model => (
+                                            <SelectItem key={model} value={`${edenProvider}/${model}`}>{model}</SelectItem>
                                         ))}
-                                        <SelectItem value="custom">Custom...</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                             </div>
-                            {settings[`${providerId}ModelName`] === 'custom' && (
-                              <div className="space-y-2 pl-2 border-l-2 border-primary">
-                                  <Label htmlFor={`${providerId}-custom-model`}>Custom Model ID</Label>
-                                  <Input 
-                                      id={`${providerId}-custom-model`}
-                                      placeholder="Enter your fine-tuned model ID"
-                                      value={customModels[`${providerId}ModelName`] || ''}
-                                      onChange={(e) => handleCustomModelChange(`${providerId}ModelName`, e.target.value)}
-                                      disabled={isLocked}
-                                  />
-                              </div>
-                            )}
-                        </AccordionContent>
-                    </AccordionItem>
-                ))}
-
-                 <AccordionItem value="discord">
-                    <CustomAccordionTrigger icon={<Bot className="h-5 w-5"/>} title="Discord Integration" />
-                    <AccordionContent className="space-y-4 pt-4">
-                        <ServiceStatusToggle providerId="discord" isConfigured={!!settings.discordWebhook || !!settings.discordToken} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
-                        <div className="space-y-2">
-                            <Label htmlFor="discord-token">Discord Bot Token (For Python Bot)</Label>
-                            <Input id="discord-token" type="password" placeholder="Needed to run the separate Python bot" value={settings.discordToken || ''} onChange={(e) => handleInputChange('discordToken', e.target.value)} disabled={isLocked}/>
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="discord-webhook">Discord Webhook URL (For App to Send)</Label>
-                            <Input id="discord-webhook" type="password" placeholder="For sending messages from this app to Discord" value={settings.discordWebhook || ''} onChange={(e) => handleInputChange('discordWebhook', e.target.value)} disabled={isLocked}/>
-                        </div>
+                        {/* Fallback Providers */}
+                        {(['google', 'openai', 'groq'] as const).map((providerId) => (
+                             <div key={providerId} className="space-y-4 p-3 border rounded-md">
+                                <h4 className="font-semibold flex items-center gap-2">{PROVIDER_CONFIG[providerId].icon} {PROVIDER_CONFIG[providerId].name} (Fallback)</h4>
+                                <ServiceStatusToggle providerId={providerId} isConfigured={!!settings[`${providerId}ApiKey`]} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
+                                <div className="space-y-2">
+                                    <Label htmlFor={`${providerId}-ai-key`}>{`${PROVIDER_CONFIG[providerId].name}`} API Key</Label>
+                                    <Input id={`${providerId}-ai-key`} type="password" placeholder={`Your ${PROVIDER_CONFIG[providerId].name} API Key`} value={settings[`${providerId}ApiKey`] || ''} onChange={(e) => handleInputChange(`${providerId}ApiKey`, e.target.value)} disabled={isLocked}/>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor={`${providerId}-model-name`}>{`${PROVIDER_CONFIG[providerId].name}`} Model Name</Label>
+                                    <Select value={settings[`${providerId}ModelName`] || defaultModels[`${providerId}ModelName`]} onValueChange={(value) => handleModelSelect(`${providerId}ModelName`, value)} disabled={isLocked}>
+                                        <SelectTrigger><SelectValue placeholder="Select a model..." /></SelectTrigger>
+                                        <SelectContent>
+                                            {popularModels[providerId].map(model => (
+                                                <SelectItem key={model} value={model}>{model}</SelectItem>
+                                            ))}
+                                            <SelectItem value="custom">Custom...</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                {settings[`${providerId}ModelName`] === 'custom' && (
+                                <div className="space-y-2 pl-2 border-l-2 border-primary">
+                                    <Label htmlFor={`${providerId}-custom-model`}>Custom Model ID</Label>
+                                    <Input 
+                                        id={`${providerId}-custom-model`}
+                                        placeholder="Enter your fine-tuned model ID"
+                                        value={customModels[`${providerId}ModelName`] || ''}
+                                        onChange={(e) => handleCustomModelChange(`${providerId}ModelName`, e.target.value)}
+                                        disabled={isLocked}
+                                    />
+                                </div>
+                                )}
+                             </div>
+                        ))}
                     </AccordionContent>
                 </AccordionItem>
-
-                 <AccordionItem value="twitch">
-                    <CustomAccordionTrigger icon={<Bot className="h-5 w-5"/>} title="Twitch Integration" />
-                    <AccordionContent className="space-y-4 pt-4">
-                        <ServiceStatusToggle providerId="twitch" isConfigured={!!settings.twitchToken} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
-                        <div className="space-y-2">
-                            <Label htmlFor="twitch-token">Twitch Bot Token (Optional)</Label>
-                            <Input id="twitch-token" type="password" placeholder="For direct Twitch bot actions" value={settings.twitchToken || ''} onChange={(e) => handleInputChange('twitchToken', e.target.value)} disabled={isLocked}/>
+                <AccordionItem value="service-integrations">
+                    <AccordionTrigger className="text-lg font-semibold hover:no-underline">
+                        <div className="flex items-center gap-2">
+                            <Share2 className="h-5 w-5"/>
+                            Service Integrations
                         </div>
-                    </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="streamerbot">
-                    <CustomAccordionTrigger icon={<Radio className="h-5 w-5"/>} title="Streamer.bot Integration" />
-                    <AccordionContent className="space-y-4 pt-4">
-                        <ServiceStatusToggle providerId="streamerbot" isConfigured={true} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
-                        <div className="space-y-2">
-                            <Label htmlFor="streamerbot-address">Server Address</Label>
-                            <Input id="streamerbot-address" type="text" placeholder="127.0.0.1" value={settings.streamerbotServerAddress || ''} onChange={(e) => handleInputChange('streamerbotServerAddress', e.target.value)} disabled={isLocked}/>
+                    </AccordionTrigger>
+                    <AccordionContent className="space-y-4 pt-4 pl-2 border-l-2 border-primary/20">
+                        <div className="space-y-4 p-3 border rounded-md">
+                           <h4 className="font-semibold flex items-center gap-2"><Bot className="h-5 w-5"/> Discord</h4>
+                           <ServiceStatusToggle providerId="discord" isConfigured={!!settings.discordWebhook || !!settings.discordToken} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
+                           <div className="space-y-2">
+                                <Label htmlFor="discord-token">Discord Bot Token (For Python Bot)</Label>
+                                <Input id="discord-token" type="password" placeholder="Needed to run the separate Python bot" value={settings.discordToken || ''} onChange={(e) => handleInputChange('discordToken', e.target.value)} disabled={isLocked}/>
+                           </div>
+                           <div className="space-y-2">
+                                <Label htmlFor="discord-webhook">Discord Webhook URL (For App to Send)</Label>
+                                <Input id="discord-webhook" type="password" placeholder="For sending messages from this app to Discord" value={settings.discordWebhook || ''} onChange={(e) => handleInputChange('discordWebhook', e.target.value)} disabled={isLocked}/>
+                           </div>
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="streamerbot-port">Server Port</Label>
-                            <Input id="streamerbot-port" type="text" placeholder="9003" value={settings.streamerbotServerPort || ''} onChange={(e) => handleInputChange('streamerbotServerPort', e.target.value)} disabled={isLocked}/>
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="streamerbot-request-type">Request Type</Label>
-                            <Select value={settings.streamerbotRequestType || 'DoAction'} onValueChange={(value) => handleInputChange('streamerbotRequestType', value as string)} disabled={isLocked}>
-                                <SelectTrigger><SelectValue placeholder="Select a request type..." /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="DoAction">Do Action</SelectItem>
-                                    <SelectItem value="BroadcastMessage">Broadcast Message</SelectItem>
-                                    <SelectItem value="SetGlobalVariable">Set Global Variable</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        {settings.streamerbotRequestType === 'DoAction' && (
+                        <div className="space-y-4 p-3 border rounded-md">
+                           <h4 className="font-semibold flex items-center gap-2"><Bot className="h-5 w-5"/> Twitch</h4>
+                           <ServiceStatusToggle providerId="twitch" isConfigured={!!settings.twitchToken} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
                             <div className="space-y-2">
-                                <Label htmlFor="streamerbot-action-name">Action Name</Label>
-                                <Input id="streamerbot-action-name" type="text" placeholder="e.g., Apollo Station Message" value={settings.streamerbotActionName || ''} onChange={(e) => handleInputChange('streamerbotActionName', e.target.value)} disabled={isLocked}/>
+                                <Label htmlFor="twitch-token">Twitch Bot Token (Optional)</Label>
+                                <Input id="twitch-token" type="password" placeholder="For direct Twitch bot actions" value={settings.twitchToken || ''} onChange={(e) => handleInputChange('twitchToken', e.target.value)} disabled={isLocked}/>
                             </div>
-                        )}
-                        {settings.streamerbotRequestType === 'SetGlobalVariable' && (
+                        </div>
+                        <div className="space-y-4 p-3 border rounded-md">
+                           <h4 className="font-semibold flex items-center gap-2"><Radio className="h-5 w-5"/> Streamer.bot</h4>
+                           <ServiceStatusToggle providerId="streamerbot" isConfigured={true} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="streamerbot-address">Server Address</Label>
+                                    <Input id="streamerbot-address" type="text" placeholder="127.0.0.1" value={settings.streamerbotServerAddress || ''} onChange={(e) => handleInputChange('streamerbotServerAddress', e.target.value)} disabled={isLocked}/>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="streamerbot-port">Server Port</Label>
+                                    <Input id="streamerbot-port" type="text" placeholder="9003" value={settings.streamerbotServerPort || ''} onChange={(e) => handleInputChange('streamerbotServerPort', e.target.value)} disabled={isLocked}/>
+                                </div>
+                            </div>
                             <div className="space-y-2">
-                                <Label htmlFor="streamerbot-variable-name">Variable Name</Label>
-                                <Input id="streamerbot-variable-name" type="text" placeholder="e.g., spcmtnMessage" value={settings.streamerbotVariableName || ''} onChange={(e) => handleInputChange('streamerbotVariableName', e.target.value)} disabled={isLocked}/>
-                                <p className="text-xs text-muted-foreground">The message from Unified Chat will be set as the value for this variable.</p>
+                                <Label htmlFor="streamerbot-webhook-url">Streamer.bot Webhook URL (for events)</Label>
+                                <Input id="streamerbot-webhook-url" type="text" value={settings.streamerbotWebhookUrl || ''} onChange={(e) => handleInputChange('streamerbotWebhookUrl', e.target.value)} disabled={isLocked}/>
                             </div>
-                        )}
-                        <div className="space-y-2">
-                            <Label htmlFor="streamerbot-webhook-url">Streamer.bot Webhook URL (for events)</Label>
-                            <Input id="streamerbot-webhook-url" type="text" value={settings.streamerbotWebhookUrl || ''} onChange={(e) => handleInputChange('streamerbotWebhookUrl', e.target.value)} disabled={isLocked}/>
                         </div>
                     </AccordionContent>
                 </AccordionItem>
-                
-                 <AccordionItem value="nexusconnect">
-                    <CustomAccordionTrigger icon={<Link className="h-5 w-5"/>} title="Nexus Connect" />
-                    <AccordionContent className="space-y-4 pt-4">
-                        <ServiceStatusToggle providerId="nexusconnect" isConfigured={true} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
-                        <div className="space-y-2">
-                            <Label htmlFor="nexus-webhook-url">Your Inbound Webhook URL (Share this)</Label>
-                            <div className="flex items-center gap-2">
-                                <Input id="nexus-webhook-url" type="text" value={settings.nexusConnectWebhookUrl || ''} readOnly disabled={isLocked}/>
-                                <Button type="button" variant="outline" size="icon" onClick={() => copyToClipboard(settings.nexusConnectWebhookUrl || '')} disabled={isLocked}><Copy className="h-4 w-4"/></Button>
-                            </div>
+                 <AccordionItem value="connectivity">
+                    <AccordionTrigger className="text-lg font-semibold hover:no-underline">
+                        <div className="flex items-center gap-2">
+                           <Link className="h-5 w-5"/>
+                            Connectivity
                         </div>
-                        <div className="space-y-2">
-                            <Label>Outbound Connections (Send to these URLs)</Label>
+                    </AccordionTrigger>
+                    <AccordionContent className="space-y-4 pt-4 pl-2 border-l-2 border-primary/20">
+                        <div className="space-y-4 p-3 border rounded-md">
+                           <h4 className="font-semibold flex items-center gap-2"><Server className="h-5 w-5"/> Remote Access</h4>
+                           <div className="space-y-2">
+                               <Label htmlFor="remote-hub-address">Remote Hub Address</Label>
+                               <Input 
+                                   id="remote-hub-address" 
+                                   type="text" 
+                                   placeholder="e.g., https://your-tunnel.ngrok.io" 
+                                   value={settings.remoteHubAddress || ''} 
+                                   onChange={(e) => handleInputChange('remoteHubAddress', e.target.value)} 
+                                   disabled={isLocked}
+                               />
+                               <p className="text-xs text-muted-foreground">Enter your public tunneling URL (like ngrok) to control your local hub from this deployed UI.</p>
+                           </div>
+                           <div className="space-y-2">
+                                <Label htmlFor="remote-access-secret">Remote Access Secret Key</Label>
+                                <div className="flex items-center gap-2">
+                                    <Input 
+                                    id="remote-access-secret" 
+                                    type="password" 
+                                    placeholder="A strong, unique password for security" 
+                                    value={settings.remoteAccessSecret || ''} 
+                                    onChange={(e) => handleInputChange('remoteAccessSecret', e.target.value)} 
+                                    disabled={isLocked}
+                                    />
+                                    <Button type="button" variant="outline" size="icon" onClick={generateSecretKey} aria-label="Generate new secret key" disabled={isLocked}>
+                                        <RefreshCw className="h-4 w-4"/>
+                                    </Button>
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    This key must be identical on both your local hub and your cloud-hosted UI for the connection to work.
+                                </p>
+                           </div>
+                        </div>
+                        <div className="space-y-4 p-3 border rounded-md">
+                            <h4 className="font-semibold flex items-center gap-2"><Link className="h-5 w-5"/> Nexus Connect</h4>
+                             <ServiceStatusToggle providerId="nexusconnect" isConfigured={true} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
                             <div className="space-y-2">
-                                {(settings.nexusConnectConnections || []).map((conn, index) => (
-                                    <div key={index} className="flex items-center gap-2">
-                                        <Input 
-                                            type="text" 
-                                            placeholder="Enter another user's webhook URL"
-                                            value={conn}
-                                            onChange={(e) => handleConnectionChange(index, e.target.value)}
-                                            disabled={isLocked}
-                                        />
-                                        <Button type="button" variant="destructive" size="icon" onClick={() => handleRemoveConnection(index)} disabled={isLocked}><Trash2 className="h-4 w-4"/></Button>
-                                    </div>
-                                ))}
+                                <Label htmlFor="nexus-webhook-url">Your Inbound Webhook URL (Share this)</Label>
+                                <div className="flex items-center gap-2">
+                                    <Input id="nexus-webhook-url" type="text" value={settings.nexusConnectWebhookUrl || ''} readOnly disabled={isLocked}/>
+                                    <Button type="button" variant="outline" size="icon" onClick={() => copyToClipboard(settings.nexusConnectWebhookUrl || '')} disabled={isLocked}><Copy className="h-4 w-4"/></Button>
+                                </div>
                             </div>
-                            <Button type="button" variant="outline" size="sm" onClick={handleAddConnection} disabled={isLocked}><PlusCircle className="mr-2 h-4 w-4"/>Add Connection</Button>
+                            <div className="space-y-2">
+                                <Label>Outbound Connections (Send to these URLs)</Label>
+                                <div className="space-y-2">
+                                    {(settings.nexusConnectConnections || []).map((conn, index) => (
+                                        <div key={index} className="flex items-center gap-2">
+                                            <Input 
+                                                type="text" 
+                                                placeholder="Enter another user's webhook URL"
+                                                value={conn}
+                                                onChange={(e) => handleConnectionChange(index, e.target.value)}
+                                                disabled={isLocked}
+                                            />
+                                            <Button type="button" variant="destructive" size="icon" onClick={() => handleRemoveConnection(index)} disabled={isLocked}><Trash2 className="h-4 w-4"/></Button>
+                                        </div>
+                                    ))}
+                                </div>
+                                <Button type="button" variant="outline" size="sm" onClick={handleAddConnection} disabled={isLocked}><PlusCircle className="mr-2 h-4 w-4"/>Add Connection</Button>
+                            </div>
                         </div>
                     </AccordionContent>
-                </AccordionItem>
+                 </AccordionItem>
             </Accordion>
           </form>
         </ScrollArea>
@@ -672,5 +654,3 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     </Card>
   );
 }
-
-    

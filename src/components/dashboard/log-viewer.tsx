@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from '@/components/ui/button';
 import { PopOutButton } from './pop-out-button';
 import { useToast } from '@/hooks/use-toast';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 
 interface LogViewerProps {
   onPopOut?: () => void;
@@ -75,11 +76,12 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
         });
     }
   };
-
+  
+  const recentLogs = logs.slice(0, 5);
 
   return (
     <>
-      <Card className="flex flex-col bg-card/80" style={{ height: '480px' }}>
+      <Card className="flex flex-col bg-card/80">
         <CardHeader className="shrink-0">
           <div className="flex justify-between items-start">
              <div className="flex items-center gap-2 flex-grow">
@@ -104,45 +106,77 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
             </div>
           </div>
         </CardHeader>
-        <CardContent className="flex-grow overflow-hidden">
-          <ScrollArea className="h-full">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Service</TableHead>
-                  <TableHead>Message</TableHead>
-                  <TableHead className="text-right">Time</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {logs.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={3} className="text-center text-muted-foreground">
-                      No log entries yet.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  logs.map((log, index) => (
-                    <TableRow key={index} onClick={() => handleRowClick(log)} className="cursor-pointer">
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          {serviceIcons[log.service] || <BookText className="h-4 w-4" />}
-                          <span className="font-medium">{log.service}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Badge variant={levelColors[log.level as keyof typeof levelColors]} className="capitalize text-xs">{log.level}</Badge>
-                          <span className="truncate">{log.message}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right text-muted-foreground">{log.timestamp}</TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </ScrollArea>
+        <CardContent className="flex-grow overflow-hidden flex flex-col">
+           <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="logs">
+                 <div className="overflow-hidden">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                            <TableHead>Service</TableHead>
+                            <TableHead>Message</TableHead>
+                            <TableHead className="text-right">Time</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {recentLogs.length === 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={3} className="text-center text-muted-foreground">
+                                No log entries yet.
+                                </TableCell>
+                            </TableRow>
+                            ) : (
+                            recentLogs.map((log, index) => (
+                                <TableRow key={index} onClick={() => handleRowClick(log)} className="cursor-pointer">
+                                <TableCell>
+                                    <div className="flex items-center gap-2">
+                                    {serviceIcons[log.service] || <BookText className="h-4 w-4" />}
+                                    <span className="font-medium">{log.service}</span>
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    <div className="flex items-center gap-2">
+                                    <Badge variant={levelColors[log.level as keyof typeof levelColors]} className="capitalize text-xs">{log.level}</Badge>
+                                    <span className="truncate">{log.message}</span>
+                                    </div>
+                                </TableCell>
+                                <TableCell className="text-right text-muted-foreground">{log.timestamp}</TableCell>
+                                </TableRow>
+                            ))
+                            )}
+                        </TableBody>
+                    </Table>
+                     <AccordionTrigger className="text-sm p-2 justify-center hover:no-underline">
+                        {logs.length > 5 ? `Show all ${logs.length} logs...` : 'Full Log History'}
+                     </AccordionTrigger>
+                 </div>
+                <AccordionContent>
+                    <ScrollArea className="h-64">
+                         <Table>
+                             <TableBody>
+                                {logs.map((log, index) => (
+                                    <TableRow key={index} onClick={() => handleRowClick(log)} className="cursor-pointer">
+                                    <TableCell>
+                                        <div className="flex items-center gap-2">
+                                        {serviceIcons[log.service] || <BookText className="h-4 w-4" />}
+                                        <span className="font-medium">{log.service}</span>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center gap-2">
+                                        <Badge variant={levelColors[log.level as keyof typeof levelColors]} className="capitalize text-xs">{log.level}</Badge>
+                                        <span className="truncate">{log.message}</span>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="text-right text-muted-foreground">{log.timestamp}</TableCell>
+                                    </TableRow>
+                                ))}
+                             </TableBody>
+                         </Table>
+                    </ScrollArea>
+                </AccordionContent>
+            </AccordionItem>
+           </Accordion>
         </CardContent>
       </Card>
 
@@ -150,7 +184,7 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
         <Dialog open={!!selectedLog} onOpenChange={(isOpen) => !isOpen && handleCloseDialog()}>
           <DialogContent className="sm:max-w-2xl">
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-3">
+              <DialogTitle className="flex items-center gap-3 text-title-foreground">
                 {serviceIcons[selectedLog.service] || <Info className="h-6 w-6" />}
                 Log Details
               </DialogTitle>
@@ -191,5 +225,3 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
     </>
   );
 }
-
-    
