@@ -3,7 +3,7 @@
 /**
  * @fileOverview An AI flow for generating images from a text prompt.
  * It uses a three-step process:
- * 1. Intelligently select the best provider (OpenAI, StabilityAI, Bytedance) for the prompt.
+ * 1. Intelligently select the best provider for the prompt.
  * 2. Optimize the user's prompt for the selected provider.
  * 3. Generate an image using the selected provider and the optimized prompt.
  */
@@ -17,12 +17,13 @@ async function selectBestProvider(
     prompt: string
 ): Promise<{ provider: string, logs: FlowLog[] }> {
     const logs: FlowLog[] = [];
-    const systemPrompt = `You are an expert AI art director. Your job is to select the best image generation provider for a given prompt. The available providers are "openai", "stabilityai", "bytedance", and "replicate".
+    const systemPrompt = `You are an expert AI art director. Your job is to select the best image generation provider for a given prompt. The available providers are "openai", "stabilityai", "bytedance", "replicate", and "amazon".
 
 - Choose "openai" for complex scenes, natural language, and brand-safe content.
 - Choose "stabilityai" for general purpose, creative, and photorealistic images.
 - Choose "bytedance" for high-quality anime, manga, or stylized character art.
 - Choose "replicate" for accessing a wide variety of open-source models and specific, experimental artistic styles.
+- Choose "amazon" for high-realism, clean object renders, and product-style photography.
 
 Analyze the user's prompt and decide which of the providers is the best fit. Your response MUST be a valid JSON object with a single key "provider".
 Example: {"provider": "stabilityai"}`;
@@ -41,7 +42,7 @@ Example: {"provider": "stabilityai"}`;
         logs.push(...chatLogs);
         const result = JSON.parse(text);
         const provider = result.provider;
-        if (!['openai', 'stabilityai', 'bytedance', 'replicate'].includes(provider)) {
+        if (!['openai', 'stabilityai', 'bytedance', 'replicate', 'amazon'].includes(provider)) {
             throw new Error(`AI returned an invalid provider: ${provider}`);
         }
         logs.push({ service: 'Eden', level: 'info', message: `Selected provider: ${provider}` });
