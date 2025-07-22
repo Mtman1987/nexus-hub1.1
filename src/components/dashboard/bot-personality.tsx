@@ -65,6 +65,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
   useEffect(() => {
     if (isPreview) return;
     try {
+      // The collection ID "bot-personalities" is defined here.
       const q = query(collection(db, "bot-personalities"));
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const store: BotPersonalityType[] = [];
