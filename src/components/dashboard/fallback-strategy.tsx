@@ -21,7 +21,7 @@ export function FallbackStrategy({ onPopOut, isPoppedOut = false, onHide, dragHa
   const { providers, handlePriorityChange, saveStrategy, availableProviderCount } = useFallbackStrategy();
   
   return (
-    <Card className="h-full flex flex-col">
+    <Card className="h-full flex flex-col bg-card/80">
       <CardHeader>
         <div className="flex justify-between items-start">
             <div className="flex items-center gap-2 flex-grow">
