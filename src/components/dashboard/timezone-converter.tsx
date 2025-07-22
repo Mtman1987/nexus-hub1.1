@@ -154,8 +154,8 @@ export function TimeZoneConverter({ onPopOut, isPoppedOut = false, onHide, dragH
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2 text-primary">
-                  <Clock className="h-6 w-6 text-accent" />
+                <CardTitle className="flex items-center gap-2 text-title-foreground">
+                  <Clock className="h-6 w-6" />
                   Time Zone Converter
                 </CardTitle>
                 <CardDescription>
@@ -218,7 +218,7 @@ export function TimeZoneConverter({ onPopOut, isPoppedOut = false, onHide, dragH
             {result && (
                 <div className="space-y-2 pt-4">
                     <div className="p-4 rounded-lg border bg-muted">
-                        <p className="font-semibold text-lg text-primary">{result}</p>
+                        <p className="font-semibold text-lg text-title-foreground">{result}</p>
                         <p className="text-sm text-muted-foreground">in {toTz}</p>
                     </div>
                      <div className="p-4 rounded-lg border">

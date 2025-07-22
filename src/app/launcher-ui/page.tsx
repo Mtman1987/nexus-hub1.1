@@ -33,13 +33,13 @@ export default function LauncherPage() {
       <div className="flex h-screen w-screen items-center justify-center text-foreground">
         <div className="relative flex flex-col items-center gap-6 text-center p-8 rounded-lg max-w-md mx-auto">
            <div 
-             className="w-24 h-24 flex items-center justify-center text-primary"
+             className="w-24 h-24 flex items-center justify-center text-title-foreground"
             >
                 <Rocket className="w-full h-full" />
            </div>
           
           <div className="space-y-2">
-             <h1 className="text-4xl font-bold tracking-tighter text-primary">Apollo Station</h1>
+             <h1 className="text-4xl font-bold tracking-tighter text-title-foreground">Apollo Station</h1>
              <p className="text-muted-foreground">
                 {botName}'s command center is standing by. All systems ready for launch.
              </p>

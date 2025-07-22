@@ -30,8 +30,8 @@ export function FallbackStrategy({ onPopOut, isPoppedOut = false, onHide, dragHa
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2 text-primary">
-                  <Shuffle className="h-6 w-6 text-accent" />
+                <CardTitle className="flex items-center gap-2 text-title-foreground">
+                  <Shuffle className="h-6 w-6" />
                   Fallback Strategy
                 </CardTitle>
                 <CardDescription>

@@ -126,8 +126,8 @@ export function LoreWeaver({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2 text-primary">
-                  <ScrollText className="h-6 w-6 text-accent" />
+                <CardTitle className="flex items-center gap-2 text-title-foreground">
+                  <ScrollText className="h-6 w-6" />
                   Lore Weaver
                 </CardTitle>
                 <CardDescription>

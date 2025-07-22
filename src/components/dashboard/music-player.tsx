@@ -146,8 +146,8 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                                 <GripVertical />
                             </Button>
                             <div className="flex-grow">
-                                <CardTitle className="flex items-center gap-2 text-primary">
-                                    <Music className="h-6 w-6 text-accent" />
+                                <CardTitle className="flex items-center gap-2 text-title-foreground">
+                                    <Music className="h-6 w-6" />
                                     Subspace Comms
                                 </CardTitle>
                                 <CardDescription>
