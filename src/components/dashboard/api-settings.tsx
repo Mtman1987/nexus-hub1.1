@@ -69,7 +69,7 @@ const popularModels = {
 };
 
 const serviceProviders = {
-    tts: ['google', 'openai', 'elevenlabs', 'microsoft', 'amazon'],
+    tts: ['google', 'openai', 'elevenlabs', 'microsoft', 'amazon', 'lovoai'],
     stt: ['deepgram', 'openai', 'gladia', 'assemblyai', 'microsoft', 'google', 'amazon', 'speechmatics', 'symblai'],
     translation: ['google', 'deepl', 'microsoft', 'amazon', 'ibm']
 };
@@ -705,5 +705,3 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     </Card>
   );
 }
-
-    
