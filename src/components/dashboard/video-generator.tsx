@@ -151,7 +151,7 @@ export function VideoGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
                 <Label htmlFor="image-file">Starting Image (Optional)</Label>
                 <div className="flex items-center gap-2">
                     <Input id="image-file" type="file" onChange={e => setImageFile(e.target.files?.[0] || null)} accept="image/png, image/jpeg" />
-                    <Button variant="destructive" size="icon" onClick={() => setImageFile(null)} disabled={!imageFile}>
+                    <Button size="icon" onClick={() => setImageFile(null)} disabled={!imageFile} className="bg-red-600 hover:bg-red-700 text-white disabled:bg-red-600/50 disabled:cursor-not-allowed">
                         <Trash2 className="h-4 w-4" />
                     </Button>
                 </div>
@@ -198,3 +198,5 @@ export function VideoGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
     </Card>
   );
 }
+
+    

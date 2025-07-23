@@ -306,7 +306,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                           </SelectContent>
                       </Select>
                       <Button type="button" variant="outline" size="icon" onClick={handleAddNewPersonality} title="Add New Personality"><PlusCircle className="h-4 w-4"/></Button>
-                      <Button type="button" variant="destructive" size="icon" onClick={handleDeletePersonality} disabled={isSelectedPersonalityDefault} title="Delete Personality"><Trash2 className="h-4 w-4"/></Button>
+                      <Button type="button" size="icon" onClick={handleDeletePersonality} disabled={isSelectedPersonalityDefault} title="Delete Personality" className="bg-red-600 hover:bg-red-700 text-white disabled:bg-red-600/50 disabled:cursor-not-allowed"><Trash2 className="h-4 w-4"/></Button>
                   </div>
               </div>
 
@@ -425,3 +425,5 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
       </Card>
   );
 }
+
+    

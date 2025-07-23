@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -20,8 +21,6 @@
     --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --destructive-new: 0 84.2% 60.2%;
-    --destructive-new-foreground: 210 40% 98%;
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
     --ring: 173 97% 42%;
@@ -47,3 +46,5 @@
     color: hsl(var(--foreground));
   }
 }
+
+    

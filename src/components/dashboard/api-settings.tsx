@@ -753,7 +753,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview }:
                     <AccordionContent className="space-y-4 pt-4 pl-2 border-l-2 border-destructive/20">
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
-                            <Button variant="destructive" disabled={isLocked}>
+                            <Button className="bg-red-600 hover:bg-red-700 text-white" disabled={isLocked}>
                                 <Trash2 className="mr-2 h-4 w-4" />
                                 Reset All Application Data
                             </Button>
@@ -789,3 +789,5 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview }:
     </Card>
   );
 }
+
+    
