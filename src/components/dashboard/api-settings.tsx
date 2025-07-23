@@ -121,7 +121,7 @@ const ServiceStatusToggle: React.FC<{
   isLocked: boolean;
 }> = ({ providerId, isConfigured, providerStatus, onStatusChange, isLocked }) => {
   const isEnabled = providerStatus[providerId] === 'enabled';
-  const lightColor = !isConfigured ? 'bg-status-neutral' : isEnabled ? 'bg-status-positive' : 'bg-destructive';
+  const lightColor = !isConfigured ? 'bg-status-neutral' : isEnabled ? 'bg-status-positive' : 'bg-destructive-new';
 
   return (
     <div className="space-y-2">
@@ -744,7 +744,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview }:
                     </AccordionContent>
                  </AccordionItem>
                  <AccordionItem value="danger-zone">
-                    <AccordionTrigger className="text-lg font-semibold hover:no-underline text-destructive">
+                    <AccordionTrigger className="text-lg font-semibold hover:no-underline text-destructive-new">
                         <div className="flex items-center gap-2">
                             <AlertTriangle className="h-5 w-5"/>
                             Danger Zone

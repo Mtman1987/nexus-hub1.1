@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
@@ -303,7 +304,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                             <div key={item.id} className="flex items-center gap-2 rounded-lg border p-3">
                                 <div className="flex-grow">{renderItemContent(item)}</div>
                                 <Button variant="outline" size="sm" onClick={() => handleEdit(item)}><Edit className="mr-2 h-4 w-4"/>Finalize</Button>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={() => removeItem(item.id)}><Trash2 className="h-4 w-4" /></Button>
+                                <Button variant="destructive" size="icon" className="h-8 w-8 shrink-0" onClick={() => removeItem(item.id)}><Trash2 className="h-4 w-4" /></Button>
                             </div>
                         ))
                      ) : (
@@ -331,7 +332,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                         otherItems.map(item => (
                             <div key={item.id} className="flex items-start gap-2 rounded-lg border p-3">
                                 <div className="flex-grow">{renderItemContent(item)}</div>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={() => removeItem(item.id)}>
+                                <Button variant="destructive" size="icon" className="h-8 w-8 shrink-0" onClick={() => removeItem(item.id)}>
                                     <Trash2 className="h-4 w-4" />
                                 </Button>
                             </div>
