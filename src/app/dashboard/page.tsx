@@ -13,6 +13,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useLogs } from '@/context/LogContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ALL_MODULES_CONFIG } from '@/lib/modules';
+import { CommandCenterControl } from '@/components/dashboard/command-center-control';
+
 
 const defaultModuleOrder = ALL_MODULES_CONFIG.map(m => m.id);
 
