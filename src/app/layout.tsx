@@ -23,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta name="theme-color" content="#000000" />
       </head>
@@ -32,9 +32,9 @@ export default function RootLayout({
           <BotNameProvider>
             <SidebarProvider>
               <ControlPanelProvider>
-                <div className="flex flex-1 h-screen">
+                <div className="flex h-screen w-screen overflow-hidden">
                     <Sidebar />
-                    <div className="flex flex-col flex-1 h-screen overflow-hidden">
+                    <div className="flex flex-col flex-1 overflow-hidden">
                        <Header />
                         <main className="flex-1 overflow-y-auto overflow-x-hidden">
                           {children}
