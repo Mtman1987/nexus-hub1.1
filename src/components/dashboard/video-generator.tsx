@@ -92,11 +92,11 @@ export function VideoGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-title-foreground">
                   <Video className="h-6 w-6 text-primary" />
                   Avatar Forge
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-muted-foreground">
                   Generate animated avatars from text and images.
                 </CardDescription>
               </div>
@@ -131,8 +131,8 @@ export function VideoGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
                 </video>
             ) : (
                 <div className="text-center">
-                    <Video className="h-12 w-12 mx-auto mb-2" />
-                    <p>Your generated avatar will appear here.</p>
+                    <Video className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
+                    <p className="text-muted-foreground">Your generated avatar will appear here.</p>
                 </div>
             )}
         </div>
@@ -150,7 +150,7 @@ export function VideoGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
                 <Label htmlFor="image-file">Starting Image (Optional)</Label>
                 <div className="flex items-center gap-2">
                     <Input id="image-file" type="file" onChange={e => setImageFile(e.target.files?.[0] || null)} accept="image/png, image/jpeg" />
-                    <Button variant="ghost" size="icon" onClick={() => setImageFile(null)} disabled={!imageFile}>
+                    <Button variant="destructive" size="icon" onClick={() => setImageFile(null)} disabled={!imageFile}>
                         <Trash2 className="h-4 w-4" />
                     </Button>
                 </div>
@@ -169,7 +169,7 @@ export function VideoGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
                     <div className="grid gap-4">
                         <div className="space-y-2">
                             <h4 className="font-medium leading-none">Video Options</h4>
-                            <p className="text-sm">
+                            <p className="text-sm text-muted-foreground">
                             Configure the generation parameters.
                             </p>
                         </div>
