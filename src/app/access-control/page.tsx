@@ -14,9 +14,9 @@ export default function AccessControlPage() {
               Manage user roles and permissions for your team members. This module is running in a standalone window.
           </p>
       </header>
-      <main className="p-4 lg:p-6 pt-0">
+      <div className="p-4 lg:p-6 pt-0">
           <UserRoles />
-      </main>
+      </div>
     </>
   );
 }

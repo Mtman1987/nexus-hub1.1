@@ -138,7 +138,7 @@ export default function DashboardPage() {
   const activeModule = activeId ? ALL_MODULES_CONFIG.find(({ id }) => id === activeId) : null;
 
   return (
-    <div className="flex-1 flex flex-col p-4 md:p-6 space-y-6">
+    <div className="flex flex-col p-4 md:p-6 space-y-6">
         <div className="flex items-center justify-between flex-shrink-0">
             <h1 className="text-xl md:text-3xl font-bold tracking-tight text-title-foreground flex items-center gap-3">
               <CommunityLogo className="h-10 w-auto" />

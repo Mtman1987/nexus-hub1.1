@@ -14,9 +14,9 @@ export default function SpaceMountainPage() {
              Use the controls below to view and interact with your live websites directly from Apollo Station. This module is running in a standalone window.
           </p>
       </header>
-      <main className="flex-grow p-4 lg:p-6 pt-0">
+      <div className="flex-grow p-4 lg:p-6 pt-0">
           <WebsiteViewer />
-      </main>
+      </div>
     </>
   );
 }
