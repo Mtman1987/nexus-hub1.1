@@ -40,8 +40,8 @@ export default function RootLayout({
                           {children}
                         </main>
                     </div>
-                    <ControlPanel />
                 </div>
+                <ControlPanel />
               </ControlPanelProvider>
             </SidebarProvider>
           </BotNameProvider>
