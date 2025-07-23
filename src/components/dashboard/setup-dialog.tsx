@@ -187,7 +187,7 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[525px]" onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle className="text-2xl">Apollo Station Onboarding</DialogTitle>
+          <DialogTitle className="text-2xl text-title-foreground">Apollo Station Onboarding</DialogTitle>
           <DialogDescription>
             Let's get your services configured. Follow the steps below.
           </DialogDescription>
@@ -267,7 +267,7 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
               <AccordionItem value="item-1">
                 <AccordionTrigger disabled={isAssistantDisabled}>
                     <div className="flex items-center gap-2 text-sm">
-                        <Wand2 className="h-4 w-4" />
+                        <Wand2 className="h-4 w-4 text-primary" />
                         {isAssistantDisabled ? "Enter Eden AI key to enable COSMO" : "Need help from COSMO?"}
                     </div>
                 </AccordionTrigger>
