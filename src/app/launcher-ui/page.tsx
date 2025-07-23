@@ -33,7 +33,7 @@ export default function LauncherPage() {
       <SetupDialog open={showSetup} onOpenChange={setShowSetup} />
       <div className="flex h-screen w-screen items-center justify-center text-foreground">
         <div className="relative flex flex-col items-center gap-6 text-center p-8 rounded-lg max-w-md mx-auto">
-            <CommunityLogo className="w-24 h-24 text-title-foreground" />
+            <CommunityLogo className="w-24 text-title-foreground" />
           
           <div className="space-y-2">
              <h1 className="text-4xl font-bold tracking-tighter text-title-foreground">Apollo Station</h1>
