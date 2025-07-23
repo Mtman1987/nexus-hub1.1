@@ -1,44 +1,53 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Users, Globe, LayoutGrid } from 'lucide-react';
+import { Home, Users, Globe, LayoutGrid, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { ComponentProps } from 'react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import * as React from 'react';
-import { CommunityLogo } from '../icons/community-logo';
+import { ALL_MODULES_CONFIG } from '@/lib/modules';
+import { Checkbox } from '../ui/checkbox';
+import { Label } from '../ui/label';
+import { useSidebar } from '@/context/SidebarContext';
+import { ScrollArea } from '../ui/scroll-area';
 
 type SidebarNavProps = ComponentProps<'nav'> & {
   isCollapsed?: boolean;
-  isMobile?: boolean;
 }
 
-export function SidebarNav({ isCollapsed = false, isMobile = false, className }: SidebarNavProps) {
-  const pathname = usePathname();
+export function SidebarNav({ isCollapsed = false, className }: SidebarNavProps) {
+  const { hiddenModules, setHiddenModules } = useSidebar();
+  
+  const handleModuleToggle = (moduleId: string, checked: boolean) => {
+    setHiddenModules(prev => {
+      if(checked) {
+        return prev.filter(id => id !== moduleId);
+      } else {
+        return [...prev, moduleId];
+      }
+    });
+  }
 
   const navClass = "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:bg-muted";
-  const activeClass = "bg-muted font-bold text-primary";
-
-  const navItems = [
-    { href: "/dashboard", icon: <LayoutGrid className="h-5 w-5" />, label: "Dashboard" },
-    { href: "/access-control", icon: <Users className="h-5 w-5" />, label: "Access Control" },
-    { href: "/spacemountain", icon: <Globe className="h-5 w-5" />, label: "Website Viewer" },
-  ];
 
   if (isCollapsed) {
     return (
       <TooltipProvider>
         <nav className={cn("grid items-start gap-1 p-2 text-base font-medium lg:p-4 flex-grow", className)}>
-          {navItems.map(item => (
-            <Tooltip key={item.label} delayDuration={0}>
+          {ALL_MODULES_CONFIG.map(module => (
+            <Tooltip key={module.id} delayDuration={0}>
               <TooltipTrigger asChild>
-                <Link href={item.href} className={cn(navClass, "justify-center", pathname === item.href && activeClass)}>
-                  {item.icon}
-                  <span className="sr-only">{item.label}</span>
-                </Link>
+                 <div className={cn(navClass, "justify-center")}>
+                   <Checkbox
+                      id={`col-vis-${module.id}`}
+                      checked={!hiddenModules.includes(module.id)}
+                      onCheckedChange={(checked) => handleModuleToggle(module.id, !!checked)}
+                   />
+                </div>
               </TooltipTrigger>
               <TooltipContent side="right">
-                {item.label}
+                {module.title}
               </TooltipContent>
             </Tooltip>
           ))}
@@ -48,13 +57,22 @@ export function SidebarNav({ isCollapsed = false, isMobile = false, className }:
   }
 
   return (
-      <nav className={cn("grid items-start gap-1 p-2 text-base font-medium lg:p-4 flex-grow", className)}>
-        {navItems.map(item => (
-          <Link key={item.label} href={item.href} className={cn(navClass, pathname === item.href && activeClass)} title={item.label}>
-             {item.icon}
-            {item.label}
-          </Link>
-        ))}
+      <nav className={cn("flex flex-col items-start gap-1 p-2 text-base font-medium lg:p-4 flex-grow", className)}>
+        <Label className="px-3 py-2 text-xs font-semibold text-muted-foreground">MODULE VISIBILITY</Label>
+        <ScrollArea className="w-full">
+           <div className="grid gap-1 pr-2">
+            {ALL_MODULES_CONFIG.map(module => (
+              <div key={module.id} className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:bg-muted">
+                <Checkbox
+                  id={`vis-${module.id}`}
+                  checked={!hiddenModules.includes(module.id)}
+                  onCheckedChange={(checked) => handleModuleToggle(module.id, !!checked)}
+                  />
+                <Label htmlFor={`vis-${module.id}`} className="w-full cursor-pointer">{module.title}</Label>
+              </div>
+            ))}
+           </div>
+        </ScrollArea>
       </nav>
   );
 }

@@ -6,13 +6,15 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { arrayMove, SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
 import { DraggableModule } from '@/components/dashboard/draggable-module';
 
-import { Save, Trash2, Eye, LayoutGrid, EyeOff } from 'lucide-react';
+import { Save, Trash2, Eye, LayoutGrid } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useLogs } from '@/context/LogContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ALL_MODULES_CONFIG } from '@/lib/modules';
+import { CommunityLogo } from '@/components/icons/community-logo';
+import { useSidebar } from '@/context/SidebarContext';
 
 
 const defaultModuleOrder = ALL_MODULES_CONFIG.map(m => m.id);
@@ -23,7 +25,7 @@ export default function DashboardPage() {
   const { addLog } = useLogs();
   
   const [moduleOrder, setModuleOrder] = React.useState<string[]>(defaultModuleOrder);
-  const [hiddenModules, setHiddenModules] = React.useState<string[]>([]);
+  const { hiddenModules, setHiddenModules } = useSidebar();
   const [activeId, setActiveId] = React.useState<string | null>(null);
   
   const openPopoutsRef = React.useRef<Map<string, Window>>(new Map());
@@ -42,7 +44,7 @@ export default function DashboardPage() {
         addLog({ service: 'System', level: 'info', message: `Pop-out window for module '${title}' was closed.` });
       }
     }, 500);
-  }, [addLog]);
+  }, [addLog, setHiddenModules]);
 
  const openPopoutWindow = React.useCallback((componentId: string, title: string) => {
       const { availWidth, availHeight, availLeft, availTop } = window.screen;
@@ -71,20 +73,17 @@ export default function DashboardPage() {
         toast({ title: "Pop-up blocked", description: "Couldn't open window. Please allow pop-ups." });
         setHiddenModules(prev => prev.filter(mId => mId !== componentId));
     }
-  }, [toast, openPopoutWindow, setupWindowCloseWatcher, addLog]);
+  }, [toast, openPopoutWindow, setupWindowCloseWatcher, addLog, setHiddenModules]);
 
   React.useEffect(() => {
     try {
         const savedOrder = localStorage.getItem('moduleOrder');
         if (savedOrder) {
           const parsedOrder = JSON.parse(savedOrder);
-          // Ensure saved order contains all modules and no duplicates
           const validOrder = defaultModuleOrder.map(id => parsedOrder.includes(id) ? id : null).filter(Boolean) as string[];
           const newModules = defaultModuleOrder.filter(id => !validOrder.includes(id));
           setModuleOrder([...validOrder, ...newModules]);
         }
-        const savedHidden = localStorage.getItem('hiddenModules');
-        if(savedHidden) setHiddenModules(JSON.parse(savedHidden));
         addLog({ service: 'System', level: 'info', message: 'Dashboard layout restored from local storage.' });
     } catch (error) {
         console.error("Failed to load layout from localStorage", error);
@@ -173,7 +172,10 @@ export default function DashboardPage() {
   return (
     <div className="flex-1 flex flex-col p-4 md:p-6 space-y-6">
         <div className="flex items-center justify-between flex-shrink-0">
-            <h1 className="text-xl md:text-3xl font-bold tracking-tight text-title-foreground flex items-center gap-2"><Home className="h-8 w-8 text-primary"/>Dashboard</h1>
+            <h1 className="text-xl md:text-3xl font-bold tracking-tight text-title-foreground flex items-center gap-3">
+              <CommunityLogo className="h-10 w-auto text-primary" />
+              Dashboard
+            </h1>
             <div className="flex items-center gap-2">
                 <Button size="sm" onClick={handleSaveLayout}>
                     <Save className="mr-2 h-4 w-4" />
@@ -237,7 +239,7 @@ export default function DashboardPage() {
         </DndContext>
         
         {trulyHiddenModules.length > 0 && (
-            <Card className="mt-8 bg-card/80">
+            <Card className="mt-8">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-title-foreground">
                         <LayoutGrid className="h-5 w-5 text-primary" />
