@@ -6,7 +6,7 @@
 @layer base {
   :root {
     --background: 262 52% 10%;
-    --foreground: 0 0% 98%; /* Pure white for readability */
+    --foreground: 0 0% 100%; /* Pure white for readability */
     --title-foreground: 28 100% 50%; /* Rocket Dog Orange */
     --card: 262 52% 14% / 0.8; /* Translucent purple */
     --card-foreground: 0 0% 98%;
@@ -65,13 +65,13 @@
 
 .planet {
     position: absolute;
-    bottom: -10vh; 
-    left: -8vw;
-    width: 250px; 
-    height: 250px;
+    bottom: -15vh;
+    left: -12vw;
+    width: 350px;
+    height: 350px;
     background-color: hsl(200 80% 70% / 0.5); /* Icy blue planet */
     border-radius: 50%;
-    box-shadow: 0 0 40px hsl(200 80% 70% / 0.5);
+    box-shadow: 0 0 56px hsl(200 80% 70% / 0.5);
     z-index: -5;
 }
 
@@ -89,7 +89,7 @@
     height: 150%;
     margin-left: -75%;
     margin-top: -75%;
-    border: 5px solid hsl(0 0% 100% / 0.2);
+    border: 7px solid hsl(0 0% 100% / 0.2);
 }
 
 .planet::after { /* Second, inner ring */
@@ -97,7 +97,7 @@
     height: 125%;
     margin-left: -62.5%;
     margin-top: -62.5%;
-    border: 3px solid hsl(0 0% 100% / 0.15);
+    border: 4px solid hsl(0 0% 100% / 0.15);
 }
 
 

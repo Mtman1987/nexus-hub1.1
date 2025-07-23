@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from 'react';
@@ -13,6 +12,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useLogs } from '@/context/LogContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ALL_MODULES_CONFIG } from '@/lib/modules';
+import { CommunityLogo } from '@/components/icons/community-logo';
 
 
 const defaultModuleOrder = ALL_MODULES_CONFIG.map(m => m.id);
@@ -173,7 +173,10 @@ export default function DashboardPage() {
   return (
     <div className="flex-1 flex flex-col p-4 md:p-6 space-y-6">
         <div className="flex items-center justify-between flex-shrink-0">
-            <h1 className="text-xl md:text-3xl font-bold tracking-tight text-title-foreground">Dashboard</h1>
+            <h1 className="text-xl md:text-3xl font-bold tracking-tight text-title-foreground flex items-center gap-3">
+              <CommunityLogo className="h-10 w-auto text-primary" />
+              Dashboard
+            </h1>
             <div className="flex items-center gap-2">
                 <Button size="sm" onClick={handleSaveLayout}>
                     <Save className="mr-2 h-4 w-4" />

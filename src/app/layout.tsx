@@ -38,9 +38,9 @@ export default function RootLayout({
               <ControlPanelProvider>
                 <div className="flex h-screen w-screen overflow-hidden">
                     <Sidebar />
-                    <div className="flex flex-col flex-1 h-screen">
+                    <div className="flex flex-col flex-1 h-screen overflow-hidden">
                        <Header />
-                        <main className="flex-1 overflow-auto">
+                        <main className="flex-1 overflow-y-auto overflow-x-hidden">
                           {children}
                         </main>
                     </div>

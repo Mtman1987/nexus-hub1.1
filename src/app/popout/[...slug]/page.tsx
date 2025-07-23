@@ -73,7 +73,8 @@ function PopoutContent({ slug }: { slug: string }) {
     }
 
     return (
-        <div className="h-screen w-screen bg-card/80 text-foreground p-4">
+        <div className="h-screen w-screen p-4">
+             <div className="bg-theme"></div>
             <LogProvider>
                 <BotNameProvider>
                     <SidebarProvider>
@@ -89,14 +90,12 @@ export default function PopoutPage({ params }: { params: { slug: string[] } }) {
     const slug = params.slug ? params.slug.join('/') : '';
     
     return (
-        <div className="bg-theme">
-            <Suspense fallback={
-                <div className="flex h-screen w-screen items-center justify-center bg-background text-foreground">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                </div>
-            }>
-                <PopoutContent slug={slug} />
-            </Suspense>
-        </div>
+        <Suspense fallback={
+            <div className="flex h-screen w-screen items-center justify-center bg-background text-foreground">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        }>
+            <PopoutContent slug={slug} />
+        </Suspense>
     );
 }

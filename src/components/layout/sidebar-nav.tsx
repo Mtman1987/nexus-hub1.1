@@ -1,11 +1,12 @@
 
-import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, Users, Globe, LayoutGrid } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { ComponentProps } from 'react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import * as React from 'react';
+import { CommunityLogo } from '../icons/community-logo';
 
 type SidebarNavProps = ComponentProps<'nav'> & {
   isCollapsed?: boolean;
@@ -19,7 +20,7 @@ export function SidebarNav({ isCollapsed = false, isMobile = false, className }:
   const activeClass = "bg-muted text-primary font-semibold";
 
   const navItems = [
-    { href: "/dashboard", icon: <Home className="h-5 w-5" />, label: "Dashboard" },
+    { href: "/dashboard", icon: <CommunityLogo className="h-5 w-5" />, label: "Dashboard" },
     { href: "/access-control", icon: <Users className="h-5 w-5" />, label: "Access Control" },
     { href: "/spacemountain", icon: <Globe className="h-5 w-5" />, label: "Website Viewer" },
   ];
@@ -50,7 +51,7 @@ export function SidebarNav({ isCollapsed = false, isMobile = false, className }:
       <nav className={cn("grid items-start gap-1 p-2 text-base font-medium lg:p-4 flex-grow", className)}>
         {navItems.map(item => (
           <Link key={item.label} href={item.href} className={cn(navClass, pathname === item.href && activeClass)} title={item.label}>
-             {React.cloneElement(item.icon, { className: cn("h-5 w-5", pathname === item.href && "text-primary")})}
+             {React.cloneElement(item.icon, { className: cn("h-5 w-5", pathname === item.href ? "text-primary" : "text-muted-foreground")})}
             {item.label}
           </Link>
         ))}
