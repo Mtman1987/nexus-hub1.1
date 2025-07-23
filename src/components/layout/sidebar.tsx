@@ -17,7 +17,7 @@ export function Sidebar() {
         isCollapsed ? "w-16" : "w-64"
     )}>
         <div className="flex h-14 items-center border-b px-4 lg:h-[60px] justify-between">
-            <div className="flex items-center gap-2 font-semibold text-primary overflow-hidden">
+            <div className="flex items-center gap-2 font-semibold text-foreground overflow-hidden">
                 <CommunityLogo className="h-6 w-auto flex-shrink-0" />
                 {!isCollapsed && <span className="text-lg whitespace-nowrap">Apollo Station</span>}
             </div>
