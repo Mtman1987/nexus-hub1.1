@@ -26,6 +26,7 @@ export default function DashboardPage() {
   const [moduleOrder, setModuleOrder] = React.useState<string[]>(defaultModuleOrder);
   const { hiddenModules, setHiddenModules } = useSidebar();
   const [activeId, setActiveId] = React.useState<string | null>(null);
+  const [isMounted, setIsMounted] = React.useState(false);
   
   const openPopoutsRef = React.useRef<Map<string, Window>>(new Map());
 
@@ -33,6 +34,23 @@ export default function DashboardPage() {
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor)
   );
+
+  React.useEffect(() => {
+    setIsMounted(true);
+    try {
+        const savedOrder = localStorage.getItem('moduleOrder');
+        if (savedOrder) {
+          const parsedOrder = JSON.parse(savedOrder);
+          const validOrder = defaultModuleOrder.map(id => parsedOrder.includes(id) ? id : null).filter(Boolean) as string[];
+          const newModules = defaultModuleOrder.filter(id => !validOrder.includes(id));
+          setModuleOrder([...validOrder, ...newModules]);
+        }
+        addLog({ service: 'System', level: 'info', message: 'Dashboard layout restored from local storage.' });
+    } catch (error) {
+        console.error("Failed to load layout from localStorage", error);
+        addLog({ service: 'System', level: 'error', message: 'Failed to load dashboard layout.', details: error instanceof Error ? error.stack : String(error) });
+    }
+  }, [addLog]);
 
   const setupWindowCloseWatcher = React.useCallback((win: Window, id: string, title: string) => {
     const checkWindow = setInterval(() => {
@@ -73,22 +91,6 @@ export default function DashboardPage() {
         setHiddenModules(prev => prev.filter(mId => mId !== componentId));
     }
   }, [toast, openPopoutWindow, setupWindowCloseWatcher, addLog, setHiddenModules]);
-
-  React.useEffect(() => {
-    try {
-        const savedOrder = localStorage.getItem('moduleOrder');
-        if (savedOrder) {
-          const parsedOrder = JSON.parse(savedOrder);
-          const validOrder = defaultModuleOrder.map(id => parsedOrder.includes(id) ? id : null).filter(Boolean) as string[];
-          const newModules = defaultModuleOrder.filter(id => !validOrder.includes(id));
-          setModuleOrder([...validOrder, ...newModules]);
-        }
-        addLog({ service: 'System', level: 'info', message: 'Dashboard layout restored from local storage.' });
-    } catch (error) {
-        console.error("Failed to load layout from localStorage", error);
-        addLog({ service: 'System', level: 'error', message: 'Failed to load dashboard layout.', details: error instanceof Error ? error.stack : String(error) });
-    }
-  }, [addLog]);
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
@@ -137,6 +139,10 @@ export default function DashboardPage() {
   const trulyHiddenModules = ALL_MODULES_CONFIG.filter(m => hiddenModules.includes(m.id));
   const activeModule = activeId ? ALL_MODULES_CONFIG.find(({ id }) => id === activeId) : null;
 
+  if (!isMounted) {
+    return null; // Render nothing on the server
+  }
+
   return (
     <div className="flex flex-col p-4 md:p-6 space-y-6">
         <div className="flex items-center justify-between flex-shrink-0">
@@ -163,6 +169,7 @@ export default function DashboardPage() {
                             <DraggableModule key={id} id={id} className={moduleConfig.defaultSize}>
                               <moduleConfig.component
                                 onPopOut={() => handlePopOut(id, moduleConfig.title)}
+                                onHide={() => setHiddenModules(prev => [...prev, id])}
                               />
                             </DraggableModule>
                         );

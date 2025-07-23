@@ -3,13 +3,12 @@
 
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, SlidersHorizontal } from "lucide-react";
-import { useControlPanel } from "@/context/ControlPanelContext";
+import { Menu } from "lucide-react";
 import { CommandCenterControl } from "../dashboard/command-center-control";
 import { useState, useEffect } from 'react';
 
 export function MobileSidebar() {
-  const { isPanelOpen, setPanelOpen } = useControlPanel();
+  const [isPanelOpen, setPanelOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
