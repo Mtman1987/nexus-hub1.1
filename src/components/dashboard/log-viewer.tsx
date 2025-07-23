@@ -23,12 +23,12 @@ interface LogViewerProps {
 }
 
 const serviceIcons: { [key: string]: React.ReactNode } = {
-  Discord: <DiscordLogo className="h-4 w-4" />,
-  Twitch: <Twitch className="h-4 w-4" />,
-  'Eden': <Bot className="h-4 w-4" />,
-  'Google AI': <Bot className="h-4 w-4" />,
-  'Streamer.bot': <Radio className="h-4 w-4" />,
-  System: <BookText className="h-4 w-4" />,
+  Discord: <DiscordLogo className="h-4 w-4 text-primary" />,
+  Twitch: <Twitch className="h-4 w-4 text-primary" />,
+  'Eden': <Bot className="h-4 w-4 text-primary" />,
+  'Google AI': <Bot className="h-4 w-4 text-primary" />,
+  'Streamer.bot': <Radio className="h-4 w-4 text-primary" />,
+  System: <BookText className="h-4 w-4 text-primary" />,
 };
 
 const levelColors = {
@@ -88,7 +88,7 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-title-foreground">
                   <BookText className="h-6 w-6 text-primary" />
                   Captain's Log
                 </CardTitle>
@@ -129,7 +129,7 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
                                 <TableRow key={index} onClick={() => handleRowClick(log)} className="cursor-pointer">
                                 <TableCell>
                                     <div className="flex items-center gap-2">
-                                    {serviceIcons[log.service] || <BookText className="h-4 w-4" />}
+                                    {serviceIcons[log.service] || <BookText className="h-4 w-4 text-primary" />}
                                     <span className="font-medium">{log.service}</span>
                                     </div>
                                 </TableCell>
@@ -139,7 +139,7 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
                                     <span className="truncate">{log.message}</span>
                                     </div>
                                 </TableCell>
-                                <TableCell className="text-right">{log.timestamp}</TableCell>
+                                <TableCell className="text-right text-muted-foreground">{log.timestamp}</TableCell>
                                 </TableRow>
                             ))
                             )}
@@ -157,7 +157,7 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
                                     <TableRow key={index} onClick={() => handleRowClick(log)} className="cursor-pointer">
                                     <TableCell>
                                         <div className="flex items-center gap-2">
-                                        {serviceIcons[log.service] || <BookText className="h-4 w-4" />}
+                                        {serviceIcons[log.service] || <BookText className="h-4 w-4 text-primary" />}
                                         <span className="font-medium">{log.service}</span>
                                         </div>
                                     </TableCell>
@@ -167,7 +167,7 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
                                         <span className="truncate">{log.message}</span>
                                         </div>
                                     </TableCell>
-                                    <TableCell className="text-right">{log.timestamp}</TableCell>
+                                    <TableCell className="text-right text-muted-foreground">{log.timestamp}</TableCell>
                                     </TableRow>
                                 ))}
                              </TableBody>
@@ -184,7 +184,7 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
           <DialogContent className="sm:max-w-2xl">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-3 text-primary">
-                {serviceIcons[selectedLog.service] || <Info className="h-6 w-6" />}
+                {serviceIcons[selectedLog.service] || <Info className="h-6 w-6 text-primary" />}
                 Log Details
               </DialogTitle>
               <DialogDescription>
@@ -198,7 +198,7 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
                 </div>
                  <div>
                     <h4 className="font-semibold mb-1">Timestamp</h4>
-                    <p className="text-sm">{selectedLog.timestamp}</p>
+                    <p className="text-sm text-muted-foreground">{selectedLog.timestamp}</p>
                 </div>
                 {selectedLog.details && (
                     <div>

@@ -427,9 +427,9 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
               <GripVertical />
             </Button>
             <div className='flex-grow flex items-center gap-2'>
-              <ShieldCheck className="w-8 text-primary" />
+              <ShieldCheck className="w-8 h-8 text-primary" />
               <div>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="text-title-foreground">
                   API Key Vault
                 </CardTitle>
                 <CardDescription>Manage all your secret keys and connection endpoints here.</CardDescription>

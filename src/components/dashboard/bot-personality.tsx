@@ -271,7 +271,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                 <GripVertical />
               </Button>
               <div className='flex-grow'>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-title-foreground">
                   <Smile className="h-6 w-6 text-primary" />
                   Bot Personality
                 </CardTitle>
@@ -424,5 +424,3 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
       </Card>
   );
 }
-
-    

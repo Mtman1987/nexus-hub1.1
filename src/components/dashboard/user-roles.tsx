@@ -110,7 +110,7 @@ export function UserRoles({ isPoppedOut = false, onPopOut, onHide, dragHandlePro
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-title-foreground">
                   <Users className="h-6 w-6 text-primary" />
                   Access Control
                 </CardTitle>
@@ -155,7 +155,7 @@ export function UserRoles({ isPoppedOut = false, onPopOut, onHide, dragHandlePro
                         <Select value={user.role} onValueChange={(value) => handleRoleChange(user.id, value)}>
                           <SelectTrigger className="w-[180px]">
                              <div className="flex items-center gap-2">
-                               <Shield className="h-4 w-4" />
+                               <Shield className="h-4 w-4 text-primary" />
                                <SelectValue placeholder="Select a role" />
                              </div>
                           </SelectTrigger>
