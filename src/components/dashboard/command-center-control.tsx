@@ -35,7 +35,7 @@ type Profile = {
 };
 
 const defaultSettings: CommandCenterSettings = {
-    visibleModules: ALL_MODULES_CONFIG.map(m => m.id).filter(id => id !== 'commandCenterControl'),
+    visibleModules: ALL_MODULES_CONFIG.map(m => m.id),
     theme: { background: '', primary: '', accent: '' },
     fontSize: 16,
 };
@@ -138,7 +138,7 @@ export function CommandCenterControl({ onPopOut, isPoppedOut = false, onHide, dr
         toast({title: "Settings Reset", description: "Command Center settings have been reset to default."});
     }
 
-    const modulesToShow = ALL_MODULES_CONFIG.filter(m => m.id !== 'commandCenterControl');
+    const modulesToShow = ALL_MODULES_CONFIG;
 
     return (
         <Card className="flex flex-col bg-card/80">

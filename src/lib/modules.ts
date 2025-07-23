@@ -20,7 +20,6 @@ import { CustomModule } from '@/components/dashboard/custom-module';
 import { CommandCenterControl } from '@/components/dashboard/command-center-control';
 
 export const ALL_MODULES_CONFIG = [
-    { id: 'commandCenterControl', title: 'Command Center Control', component: CommandCenterControl, defaultSize: 'col-span-1 lg:col-span-2' },
     { id: 'unifiedChat', title: 'Unified Chat', component: UnifiedChat, defaultSize: 'col-span-1 lg:col-span-2' },
     { id: 'botPersonality', title: 'Bot Personality', component: BotPersonality, defaultSize: 'col-span-1' },
     { id: 'apiSettings', title: 'API Key Vault', component: ApiSettings, defaultSize: 'col-span-1' },

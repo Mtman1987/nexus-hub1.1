@@ -16,7 +16,7 @@ import { ALL_MODULES_CONFIG } from '@/lib/modules';
 import { CommandCenterControl } from '@/components/dashboard/command-center-control';
 
 
-const defaultModuleOrder = ALL_MODULES_CONFIG.map(m => m.id);
+const defaultModuleOrder = [ 'commandCenterControl', ...ALL_MODULES_CONFIG.map(m => m.id) ];
 
 
 export default function DashboardPage() {
@@ -155,19 +155,25 @@ export default function DashboardPage() {
 
   const handleHideModule = (moduleId: string) => {
     const module = ALL_MODULES_CONFIG.find(m => m.id === moduleId);
-    addLog({ service: 'System', level: 'info', message: `User hid the '${module?.title}' module.` });
+    const title = moduleId === 'commandCenterControl' ? 'Command Center Control' : module?.title;
+    addLog({ service: 'System', level: 'info', message: `User hid the '${title}' module.` });
     setHiddenModules(prev => [...prev, moduleId]);
   };
 
   const handleShowModule = (moduleId: string) => {
     const module = ALL_MODULES_CONFIG.find(m => m.id === moduleId);
-    addLog({ service: 'System', level: 'info', message: `User restored the '${module?.title}' module.` });
+    const title = moduleId === 'commandCenterControl' ? 'Command Center Control' : module?.title;
+    addLog({ service: 'System', level: 'info', message: `User restored the '${title}' module.` });
     setHiddenModules(prev => prev.filter(id => id !== moduleId));
   };
   
   const visibleModuleIds = moduleOrder.filter(id => !hiddenModules.includes(id));
-  const trulyHiddenModules = ALL_MODULES_CONFIG.filter(m => hiddenModules.includes(m.id));
-  const activeModule = activeId ? ALL_MODULES_CONFIG.find(({ id }) => id === activeId) : null;
+  const fullModuleConfig = [
+      ...ALL_MODULES_CONFIG,
+      { id: 'commandCenterControl', title: 'Command Center Control', component: CommandCenterControl, defaultSize: 'col-span-1 lg:col-span-2' },
+  ];
+  const trulyHiddenModules = fullModuleConfig.filter(m => hiddenModules.includes(m.id));
+  const activeModule = activeId ? fullModuleConfig.find(({ id }) => id === activeId) : null;
 
   return (
     <div className="flex-1 flex flex-col p-4 md:p-6 space-y-6">
@@ -207,7 +213,7 @@ export default function DashboardPage() {
             <SortableContext items={visibleModuleIds} strategy={rectSortingStrategy}>
                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                     {visibleModuleIds.map(id => {
-                        const moduleConfig = ALL_MODULES_CONFIG.find(m => m.id === id);
+                        const moduleConfig = fullModuleConfig.find(m => m.id === id);
                         if (!moduleConfig) return null;
                         
                         return (
