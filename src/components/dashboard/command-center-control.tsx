@@ -8,13 +8,13 @@ import { PopOutButton } from './pop-out-button';
 import { SlidersHorizontal, GripVertical, EyeOff, Monitor, Palette, CaseUpper, Save, Check, RefreshCw } from 'lucide-react';
 import { useLogs } from '@/context/LogContext';
 import { useToast } from '@/hooks/use-toast';
-import { ALL_MODULES_CONFIG } from '@/app/dashboard/page';
 import { Checkbox } from '../ui/checkbox';
 import { Label } from '../ui/label';
 import { ScrollArea } from '../ui/scroll-area';
 import { Input } from '../ui/input';
 import { Slider } from '../ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ALL_MODULES_CONFIG } from '@/lib/modules';
 
 const SETTINGS_KEY = 'commandCenterSettings';
 const PROFILES_KEY = 'commandCenterProfiles';
@@ -252,3 +252,4 @@ export function CommandCenterControl({ onPopOut, isPoppedOut = false, onHide, dr
     );
 }
 
+    
