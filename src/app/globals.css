@@ -37,7 +37,7 @@
     @apply border-border;
   }
   body {
-    background-color: hsl(var(--background));
+    @apply bg-background text-foreground;
     position: relative;
     overflow: hidden; /* Prevent body scroll */
   }
@@ -52,10 +52,10 @@
     z-index: -10;
     background-color: hsl(var(--background));
     background-image:
-      radial-gradient(ellipse at center, rgba(255, 239, 186, 0.1) 0%, rgba(138, 43, 226, 0.1) 40%, transparent 70%), /* Yellow-to-purple nebula fog */
-      radial-gradient(2px 2px at 20% 30%, hsla(0, 0%, 100%, 0.4), transparent), /* Stars layer 1 */
+      radial-gradient(ellipse at center, rgba(255, 239, 186, 0.1) 0%, rgba(138, 43, 226, 0.1) 40%, transparent 70%),
+      radial-gradient(2px 2px at 20% 30%, hsla(0, 0%, 100%, 0.4), transparent),
       radial-gradient(2px 2px at 80% 60%, hsla(0, 0%, 100%, 0.4), transparent),
-      radial-gradient(3px 3px at 50% 80%, hsla(0, 0%, 100%, 0.3), transparent), /* Larger stars layer 2 */
+      radial-gradient(3px 3px at 50% 80%, hsla(0, 0%, 100%, 0.3), transparent),
       radial-gradient(3px 3px at 10% 90%, hsla(0, 0%, 100%, 0.3), transparent);
     background-size: 100% 100%, 200px 200px, 200px 200px, 300px 300px, 300px 300px;
     background-position: 0 0, 10px 20px, 150px 100px, 50px 250px, 250px 50px;
@@ -65,10 +65,10 @@
 
 .planet {
     position: absolute;
-    bottom: -21vh; /* Adjusted for size */
-    left: -17vw;  /* Adjusted for size */
-    width: 490px; /* 40% larger than 350px */
-    height: 490px; /* 40% larger than 350px */
+    bottom: -21vh;
+    left: -17vw;
+    width: 490px;
+    height: 490px;
     background-color: hsl(200 80% 70% / 0.5); /* Icy blue planet */
     border-radius: 50%;
     box-shadow: 0 0 56px hsl(200 80% 70% / 0.5);
@@ -84,7 +84,7 @@
     transform: rotateX(75deg);
 }
 
-.planet::before { /* Main Ring */
+.planet::before {
     width: 150%;
     height: 150%;
     margin-left: -75%;
@@ -92,7 +92,7 @@
     border: 7px solid hsl(0 0% 100% / 0.2);
 }
 
-.planet::after { /* Second, inner ring */
+.planet::after {
     width: 125%;
     height: 125%;
     margin-left: -62.5%;

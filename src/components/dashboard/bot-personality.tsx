@@ -263,7 +263,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
   const isSelectedPersonalityDefault = selectedPersonality?.isDefault === true;
 
   return (
-      <Card className="flex flex-col bg-card/80">
+      <Card className="flex flex-col h-full">
         <CardHeader>
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-2 flex-grow">

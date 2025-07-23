@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from 'react';
@@ -240,10 +241,10 @@ export default function DashboardPage() {
         </DndContext>
         
         {trulyHiddenModules.length > 0 && (
-            <Card className="mt-8 bg-card/80">
+            <Card className="mt-8">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-title-foreground">
-                        <LayoutGrid className="h-5 w-5" />
+                        <LayoutGrid className="h-5 w-5 text-primary" />
                         Hidden Modules
                     </CardTitle>
                 </CardHeader>

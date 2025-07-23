@@ -4,7 +4,7 @@ import { Users } from 'lucide-react';
 
 export default function AccessControlPage() {
   return (
-    <div className="flex min-h-screen w-full bg-card/80 text-foreground p-4 lg:p-6">
+    <div className="flex min-h-screen w-full p-4 lg:p-6">
       <div className="bg-theme"></div>
        <div className="w-full">
             <header className="mb-6">
