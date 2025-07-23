@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -41,7 +42,7 @@ export default function LauncherPage() {
              </p>
           </div>
           
-          <Button size="lg" onClick={handleLaunch} className="w-full">
+          <Button size="lg" onClick={handleLaunch} className="w-full" variant="outline">
             <Rocket className="mr-2 h-5 w-5" />
             Launch Dashboard
           </Button>
