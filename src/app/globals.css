@@ -1,10 +1,11 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 3.9%;
+    --background: 262 52% 10%;
     --foreground: 0 0% 98%;
 
     --card: 0 0% 3.9%;
@@ -13,7 +14,7 @@
     --popover: 0 0% 3.9%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 175 90% 45%;
+    --primary: 174 100% 34%;
     --primary-foreground: 175 100% 98%;
     
     --title-foreground: 25 95% 53%;
@@ -24,7 +25,7 @@
     --muted: 0 0% 14.9%;
     --muted-foreground: 0 0% 80%;
 
-    --accent: 0 0% 14.9%;
+    --accent: 174 100% 34%;
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 62.8% 30.6%;
@@ -38,7 +39,7 @@
   }
 
   .dark {
-    --background: 0 0% 3.9%;
+    --background: 262 52% 10%;
     --foreground: 0 0% 98%;
 
     --card: 0 0% 3.9%;
@@ -47,7 +48,7 @@
     --popover: 0 0% 3.9%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 175 90% 45%;
+    --primary: 174 100% 34%;
     --primary-foreground: 175 100% 98%;
 
     --title-foreground: 25 95% 53%;
@@ -58,7 +59,7 @@
     --muted: 0 0% 14.9%;
     --muted-foreground: 0 0% 80%;
 
-    --accent: 0 0% 14.9%;
+    --accent: 174 100% 34%;
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 62.8% 30.6%;
@@ -77,4 +78,53 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.bg-theme {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(ellipse at bottom, hsl(var(--background)) 0%, #090a0f 100%);
+    z-index: -10;
+}
+.planet {
+    position: fixed;
+    top: 20vh;
+    left: 10vw;
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle at 30% 30%, hsl(var(--accent)), #000 70%);
+    border-radius: 50%;
+    box-shadow: -10px -10px 30px rgba(255, 255, 255, 0.1) inset, 0 0 20px hsl(var(--accent));
+    filter: blur(1px);
+    opacity: 0.5;
+}
+
+@keyframes shoot {
+    0% { transform: translateX(0) translateY(0) scale(1); opacity: 1; }
+    100% { transform: translateX(300px) translateY(300px) scale(0); opacity: 0; }
+}
+
+@keyframes shoot-reverse {
+    0% { transform: translateX(0) translateY(0) scale(1); opacity: 1; }
+    100% { transform: translateX(-300px) translateY(300px) scale(0); opacity: 0; }
+}
+
+.shooting-star, .shooting-star-reverse {
+    position: fixed;
+    width: 2px;
+    height: 2px;
+    background-color: hsl(var(--primary));
+    border-radius: 50%;
+    box-shadow: 0 0 5px hsl(var(--primary)), 0 0 10px hsl(var(--primary));
+    opacity: 0;
+}
+
+.shooting-star {
+    animation: shoot 2s linear infinite;
+}
+.shooting-star-reverse {
+     animation: shoot-reverse 2s linear infinite;
 }
