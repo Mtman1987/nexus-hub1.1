@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { CommandCenterControl } from "../dashboard/command-center-control";
@@ -9,13 +9,13 @@ import { useState, useEffect } from 'react';
 
 export function MobileSidebar() {
   const [isPanelOpen, setPanelOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    setIsMounted(true);
   }, []);
 
-  if (!mounted) {
+  if (!isMounted) {
     return null;
   }
   

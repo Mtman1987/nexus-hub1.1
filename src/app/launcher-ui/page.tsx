@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -13,8 +14,10 @@ export default function LauncherPage() {
   const [showSetup, setShowSetup] = useState(false);
   const [isSetupComplete, setIsSetupComplete] = useState(true);
   const { botName } = useBotName();
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
     // Check for the primary required key to determine if setup is needed.
     const hasApiKey = !!localStorage.getItem('edenApiKey');
     setIsSetupComplete(hasApiKey);
@@ -26,6 +29,10 @@ export default function LauncherPage() {
   const handleLaunch = () => {
     router.push('/dashboard');
   };
+
+  if (!isMounted) {
+    return null; // Prevent server-side rendering
+  }
 
   return (
     <>

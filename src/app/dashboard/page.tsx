@@ -41,7 +41,9 @@ export default function DashboardPage() {
         const savedOrder = localStorage.getItem('moduleOrder');
         if (savedOrder) {
           const parsedOrder = JSON.parse(savedOrder);
-          const validOrder = defaultModuleOrder.map(id => parsedOrder.includes(id) ? id : null).filter(Boolean) as string[];
+          // Filter out any IDs that are no longer in the main config
+          const validOrder = parsedOrder.filter((id: string) => defaultModuleOrder.includes(id));
+          // Find any new modules that have been added to the config but aren't in the saved order
           const newModules = defaultModuleOrder.filter(id => !validOrder.includes(id));
           setModuleOrder([...validOrder, ...newModules]);
         }
@@ -135,13 +137,13 @@ export default function DashboardPage() {
     setHiddenModules(prev => prev.filter(id => id !== moduleId));
   };
   
-  const visibleModuleIds = moduleOrder.filter(id => !hiddenModules.includes(id));
-  const trulyHiddenModules = ALL_MODULES_CONFIG.filter(m => hiddenModules.includes(m.id));
-  const activeModule = activeId ? ALL_MODULES_CONFIG.find(({ id }) => id === activeId) : null;
-
   if (!isMounted) {
     return null; // Render nothing on the server
   }
+
+  const visibleModuleIds = moduleOrder.filter(id => !hiddenModules.includes(id));
+  const trulyHiddenModules = ALL_MODULES_CONFIG.filter(m => hiddenModules.includes(m.id));
+  const activeModule = activeId ? ALL_MODULES_CONFIG.find(({ id }) => id === activeId) : null;
 
   return (
     <div className="flex flex-col p-4 md:p-6 space-y-6">
