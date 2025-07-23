@@ -133,7 +133,7 @@ export function Translator({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                         </Button>
                         <div className="flex-grow">
                             <CardTitle className="flex items-center gap-2 text-title-foreground">
-                                <Languages className="h-6 w-6" />
+                                <Languages className="h-6 w-6 text-primary" />
                                 Translator
                             </CardTitle>
                             <CardDescription>
@@ -164,7 +164,7 @@ export function Translator({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                             <Textarea placeholder="Enter text to translate..." value={translateText} onChange={e => setTranslateText(e.target.value)} className="flex-grow"/>
                             {translatedText && (
                                 <Alert>
-                                    <Languages className="h-4 w-4" />
+                                    <Languages className="h-4 w-4 text-primary" />
                                     <div className="flex justify-between items-start">
                                         <div className="flex-grow">
                                             <AlertTitle>Translation Result</AlertTitle>
@@ -215,7 +215,7 @@ export function Translator({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                             {audioFile && <p className="text-sm text-center text-muted-foreground">Selected: {audioFile.name}</p>}
                             {transcribedText && (
                                 <Alert>
-                                    <Mic className="h-4 w-4" />
+                                    <Mic className="h-4 w-4 text-primary" />
                                     <div className="flex justify-between items-start">
                                         <div className="flex-grow">
                                             <AlertTitle>Transcription Result</AlertTitle>

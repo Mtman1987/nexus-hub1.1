@@ -173,7 +173,7 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
         
         {result && result.enhancedPrompt && (
             <Alert variant="default" className="shrink-0">
-                <Sparkles className="h-4 w-4" />
+                <Sparkles className="h-4 w-4 text-primary" />
                 <AlertTitle>Optimized Prompt</AlertTitle>
                 <AlertDescription>{result.enhancedPrompt}</AlertDescription>
             </Alert>
@@ -191,7 +191,7 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
             <Popover>
                 <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full justify-start">
-                        <Settings className="mr-2 h-4 w-4" />
+                        <Settings className="mr-2 h-4 w-4 text-primary" />
                         Options
                         <ChevronDown className="ml-auto h-4 w-4" />
                     </Button>
@@ -236,7 +236,7 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
                             </div>
                              <div className="flex items-center justify-between">
                                 <Label htmlFor="optimize-prompt" className="flex items-center gap-2">
-                                    <Wand2 className="h-4 w-4"/>
+                                    <Wand2 className="h-4 w-4 text-primary"/>
                                     Optimize Prompt
                                 </Label>
                                 <Switch id="optimize-prompt" checked={optimizePrompt} onCheckedChange={setOptimizePrompt} />

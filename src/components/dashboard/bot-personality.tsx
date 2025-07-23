@@ -332,7 +332,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                               >
                                   <SelectTrigger id="bot-voice">
                                       <div className="flex items-center gap-2">
-                                          <Mic className="h-4 w-4" />
+                                          <Mic className="h-4 w-4 text-primary" />
                                           <SelectValue placeholder="Select a voice..."/>
                                       </div>
                                   </SelectTrigger>
@@ -378,7 +378,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                        <Select onValueChange={handleImportFromStore}>
                           <SelectTrigger>
                               <div className="flex items-center gap-2">
-                                  <Store className="h-4 w-4" />
+                                  <Store className="h-4 w-4 text-primary" />
                                   <SelectValue placeholder="Import from store..."/>
                               </div>
                           </SelectTrigger>
