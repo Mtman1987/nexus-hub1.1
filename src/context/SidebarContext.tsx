@@ -29,10 +29,6 @@ export const SidebarProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('hiddenModules', JSON.stringify(hiddenModules));
-  }, [hiddenModules]);
-
-  useEffect(() => {
     if (isMobile) {
       setCollapsed(true);
     }

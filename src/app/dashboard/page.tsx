@@ -109,9 +109,10 @@ export default function DashboardPage() {
   const handleSaveLayout = () => {
     try {
       localStorage.setItem('moduleOrder', JSON.stringify(moduleOrder));
+      localStorage.setItem('hiddenModules', JSON.stringify(hiddenModules));
       toast({
         title: "Layout Saved",
-        description: "Your dashboard module positions have been saved.",
+        description: "Your dashboard module positions and visibility have been saved.",
       });
       addLog({ service: 'System', level: 'info', message: "User saved the dashboard layout." });
     } catch (error) {
