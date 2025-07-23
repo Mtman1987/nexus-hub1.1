@@ -30,7 +30,10 @@ async function optimizePrompt(config: AppConfig, text: string, targetProvider: s
             throw new Error(`Prompt optimization failed with status ${response.status}: ${errorBody}`);
         }
         const result = await response.json();
-        const optimizedText = result.openai.result;
+        const optimizedText = result?.openai?.result;
+        if (!optimizedText) {
+             throw new Error(`Unexpected response format from Eden AI Prompt Optimization. Response: ${JSON.stringify(result)}`);
+        }
         logs.push({ service: 'Eden', level: 'info', message: 'Successfully optimized prompt.' });
         return { result: optimizedText, logs };
     } catch (error) {
@@ -87,13 +90,17 @@ async function callEdenAiImage(
         const result = await response.json();
         const providerResponse = result[provider];
         
-        if (!providerResponse || providerResponse.status === 'fail') {
+        if (!providerResponse) {
+             throw new Error(`Provider '${provider}' not found in Eden AI response. Full response: ${JSON.stringify(result)}`);
+        }
+        
+        if (providerResponse.status === 'fail') {
             const errorMessage = providerResponse?.error?.message || `An unknown error occurred with the ${provider} provider.`;
             throw new Error(errorMessage);
         }
 
         if (!providerResponse.items || providerResponse.items.length === 0) {
-            throw new Error(`Unexpected response format from Eden AI Image API. Provider: ${provider}. Response: ${JSON.stringify(result)}`);
+            throw new Error(`Unexpected response format from Eden AI Image API. No items found for provider '${provider}'. Response: ${JSON.stringify(result)}`);
         }
         
         const images = providerResponse.items;

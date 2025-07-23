@@ -11,6 +11,7 @@ import type { AppConfig } from '@/ai/types';
 async function callEdenAiTts(
     config: AppConfig,
     text: string,
+    provider: string,
     voiceId: string
 ): Promise<{ audio: string, logs: FlowLog[] }> {
     const logs: FlowLog[] = [];
@@ -25,13 +26,10 @@ async function callEdenAiTts(
 
     const url = "https://api.edenai.run/v2/audio/text_to_speech";
     
-    // Determine provider based on voice ID or fallback to settings
-    const provider = voiceId.toLowerCase().includes('wavenet') || voiceId.toLowerCase().includes('neural') ? "google" : config.ttsProvider || "google";
-    
     // Simplified logic for option based on common voice naming conventions.
     // Eden AI's `option` parameter is often 'MALE' or 'FEMALE'.
-    let option = 'MALE';
-    if (voiceId.includes('-F') || voiceId.includes('FEMALE')) {
+    let option = 'MALE'; // Default
+    if (voiceId.includes('-F') || voiceId.includes('FEMALE') || voiceId.toLowerCase().includes('female')) {
         option = 'FEMALE';
     }
 
@@ -45,14 +43,15 @@ async function callEdenAiTts(
         volume: 0,
         sampling_rate: 0,
         providers: provider, 
-        language: "en-US",
+        language: "en-US", // Language can be parameterized in the future
         option: option,
         text: text,
-        voice_id: voiceId // Pass voice ID directly as per API
+        // Some providers use `voice_id` and others use `voice_model`
+        ...(provider === 'google' || provider === 'elevenlabs' ? { voice_id: voiceId } : { voice_model: voiceId })
     };
 
     try {
-        logs.push({ service: 'Eden', level: 'info', message: `Calling Eden AI TTS with voice: ${voiceId} on provider: ${provider}` });
+        logs.push({ service: 'Eden', level: 'info', message: `Calling Eden AI TTS with provider: ${provider}` });
 
         const response = await fetch(url, {
             method: 'POST',
@@ -68,11 +67,18 @@ async function callEdenAiTts(
         const result = await response.json();
         const providerResult = result[provider];
         
-        if (!providerResult || providerResult.status !== 'success') {
+        if (!providerResult) {
+            throw new Error(`Provider '${provider}' not found in Eden AI response. Full response: ${JSON.stringify(result)}`);
+        }
+        
+        if (providerResult.status !== 'success') {
             throw new Error(providerResult?.error?.message || `TTS failed for provider ${provider}.`);
         }
 
         const audioBase64 = providerResult.audio;
+        if (!audioBase64) {
+            throw new Error(`No audio data returned from provider ${provider}.`);
+        }
         
         logs.push({ service: 'Eden', level: 'info', message: 'Successfully generated audio via Eden AI.' });
         return { audio: `data:audio/mp3;base64,${audioBase64}`, logs };
@@ -90,9 +96,10 @@ export async function ttsFlow(input: TtsInput): Promise<TtsOutput> {
     
     // Use the voice passed in the call, fallback to the globally set bot voice, then to a default.
     const voiceToUse = voice || config?.botVoice || 'en-US-Wavenet-F';
+    const providerToUse = config?.ttsProvider || 'google'; // Default to google if not set
 
     try {
-        const { audio, logs } = await callEdenAiTts(config, text, voiceToUse);
+        const { audio, logs } = await callEdenAiTts(config, text, providerToUse, voiceToUse);
         return {
             media: audio,
             logs

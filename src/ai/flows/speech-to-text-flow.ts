@@ -16,12 +16,13 @@ async function callEdenAiSpeechToText(
         throw new Error("Eden AI API key is not configured.");
     }
     
-    logs.push({ service: 'Eden STT', level: 'info', message: `Transcribing audio with provider ${input.provider}...` });
+    const provider = input.provider || 'openai';
+    logs.push({ service: 'Eden STT', level: 'info', message: `Transcribing audio with provider ${provider}...` });
     
     const url = "https://api.edenai.run/v2/audio/speech_to_text_async";
     
     const formData = new FormData();
-    formData.append('providers', input.provider);
+    formData.append('providers', provider);
     formData.append('language', input.language);
     formData.append('file', input.file);
     
@@ -36,10 +37,14 @@ async function callEdenAiSpeechToText(
         }
 
         const result = await response.json();
-        const providerResponse = result[input.provider];
+        const providerResponse = result[provider];
 
-        if (!providerResponse || providerResponse.status === 'fail') {
-           const errorMessage = providerResponse?.error?.message || "An unknown error occurred during transcription.";
+        if (!providerResponse) {
+             throw new Error(`Provider '${provider}' not found in Eden AI response. Full response: ${JSON.stringify(result)}`);
+        }
+
+        if (providerResponse.status === 'fail') {
+           const errorMessage = providerResponse?.error?.message || `An unknown error occurred during transcription with provider '${provider}'.`;
            throw new Error(errorMessage);
         }
 

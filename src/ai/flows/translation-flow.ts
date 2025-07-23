@@ -16,11 +16,12 @@ async function callEdenAiTranslation(
         throw new Error("Eden AI API key is not configured.");
     }
     
-    logs.push({ service: 'Eden Translate', level: 'info', message: `Translating text with provider ${input.provider}...` });
+    const provider = input.provider || 'google';
+    logs.push({ service: 'Eden Translate', level: 'info', message: `Translating text with provider ${provider}...` });
     
     const url = "https://api.edenai.run/v2/translation/automatic_translation";
     const payload = {
-        providers: input.provider,
+        providers: provider,
         text: input.text,
         source_language: input.sourceLang,
         target_language: input.targetLang,
@@ -34,10 +35,14 @@ async function callEdenAiTranslation(
             throw new Error(`Translation failed with status ${response.status}: ${errorBody}`);
         }
         const result = await response.json();
-        const providerResponse = result[input.provider];
+        const providerResponse = result[provider];
+        
+        if (!providerResponse) {
+             throw new Error(`Provider '${provider}' not found in Eden AI response. Full response: ${JSON.stringify(result)}`);
+        }
 
-        if (!providerResponse || providerResponse.status !== 'success') {
-           throw new Error(providerResponse?.error?.message || "An unknown error occurred during translation.");
+        if (providerResponse.status !== 'success') {
+           throw new Error(providerResponse?.error?.message || `An unknown error occurred during translation with provider '${provider}'.`);
         }
 
         logs.push({ service: 'Eden Translate', level: 'info', message: 'Successfully translated text.' });

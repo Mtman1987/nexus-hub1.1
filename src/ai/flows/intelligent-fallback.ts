@@ -19,11 +19,12 @@ async function callEdenAiCodeGeneration(
         throw new Error("Eden AI API key is not configured.");
     }
     
-    logs.push({ service: 'Eden CodeGen', level: 'info', message: `Generating code for language: ${input.language}...` });
+    const provider = input.config.edenAiProvider || 'openai';
+    logs.push({ service: 'Eden CodeGen', level: 'info', message: `Generating code for language: ${input.language} with provider ${provider}...` });
     
     const url = "https://api.edenai.run/v2/text/code_generation";
     const payload = {
-        providers: input.config.edenAiProvider || 'openai',
+        providers: provider,
         prompt: input.prompt || '',
         instruction: input.instruction,
         temperature: 0.1,
@@ -43,11 +44,14 @@ async function callEdenAiCodeGeneration(
             throw new Error(`Code Generation failed with status ${response.status}: ${errorBody}`);
         }
         const result = await response.json();
-        const provider = payload.providers;
         const providerResponse = result[provider];
         
-        if (!providerResponse || providerResponse.status !== 'success') {
-           throw new Error(providerResponse?.error?.message || "An unknown error occurred during code generation.");
+        if (!providerResponse) {
+             throw new Error(`Provider '${provider}' not found in Eden AI response. Full response: ${JSON.stringify(result)}`);
+        }
+        
+        if (providerResponse.status !== 'success') {
+           throw new Error(providerResponse?.error?.message || `An unknown error occurred during code generation with provider '${provider}'.`);
         }
 
         logs.push({ service: 'Eden CodeGen', level: 'info', message: 'Successfully generated code.' });

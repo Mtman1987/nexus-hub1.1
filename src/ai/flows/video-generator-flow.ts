@@ -6,7 +6,7 @@
  */
 import type { VideoGeneratorInput, VideoGeneratorOutput, FlowLog, AppConfig } from '../types';
 
-async function pollForResult(jobId: string, config: AppConfig): Promise<any> {
+async function pollForResult(jobId: string, config: AppConfig, provider: string): Promise<any> {
     const url = `https://api.edenai.run/v2/video/generation_async/${jobId}`;
     const headers = { "Authorization": `Bearer ${config.edenApiKey}` };
     
@@ -24,7 +24,8 @@ async function pollForResult(jobId: string, config: AppConfig): Promise<any> {
             return result;
         }
         if (result.status === 'failed') {
-            throw new Error(`Video generation job failed: ${result.error?.message || 'Unknown error'}`);
+            const providerError = result.results?.[provider]?.error?.message || 'Unknown error';
+            throw new Error(`Video generation job failed: ${providerError}`);
         }
     }
     throw new Error('Video generation timed out after 5 minutes.');
@@ -40,12 +41,13 @@ async function callEdenAiVideo(
         throw new Error("Eden AI API key is not configured.");
     }
     
-    logs.push({ service: 'Eden Video', level: 'info', message: `Submitting video generation job with provider ${input.provider}...` });
+    const provider = input.provider || 'replicate';
+    logs.push({ service: 'Eden Video', level: 'info', message: `Submitting video generation job with provider ${provider}...` });
     
     const url = "https://api.edenai.run/v2/video/generation_async";
     
     const formData = new FormData();
-    formData.append('providers', input.provider);
+    formData.append('providers', provider);
     formData.append('text', input.prompt);
     formData.append('fallback_providers', ''); // Ensure no unexpected fallbacks
     
@@ -73,11 +75,16 @@ async function callEdenAiVideo(
         const jobId = initialResult.public_id;
         logs.push({ service: 'Eden Video', level: 'info', message: `Job submitted successfully (ID: ${jobId}). Polling for result...` });
 
-        const finalResult = await pollForResult(jobId, config);
+        const finalResult = await pollForResult(jobId, config, provider);
         
-        const videoUrl = finalResult.results[input.provider]?.video_resource_url;
+        const providerResult = finalResult.results?.[provider];
+        if (!providerResult) {
+            throw new Error(`Provider '${provider}' not found in final result. Full result: ${JSON.stringify(finalResult)}`);
+        }
+
+        const videoUrl = providerResult.video_resource_url;
         if (!videoUrl) {
-            throw new Error("Could not find video URL in the final result.");
+            throw new Error(`Could not find video URL in the final result for provider '${provider}'.`);
         }
         
         logs.push({ service: 'Eden Video', level: 'info', message: 'Successfully generated video.' });
