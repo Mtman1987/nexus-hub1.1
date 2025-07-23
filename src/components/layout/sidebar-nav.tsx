@@ -35,10 +35,13 @@ export function SidebarNav({ isCollapsed = false, className }: SidebarNavProps) 
     return (
       <TooltipProvider>
         <nav className={cn("grid items-start gap-1 p-2 text-base font-medium lg:p-4 flex-grow", className)}>
-          {ALL_MODULES_CONFIG.map(module => (
+          {ALL_MODULES_CONFIG.map(module => {
+            const Icon = module.icon;
+            return(
             <Tooltip key={module.id} delayDuration={0}>
               <TooltipTrigger asChild>
                  <div className={cn(navClass, "justify-center")}>
+                   {Icon && <Icon className="h-5 w-5 text-primary" />}
                    <Checkbox
                       id={`col-vis-${module.id}`}
                       checked={!hiddenModules.includes(module.id)}
@@ -50,7 +53,7 @@ export function SidebarNav({ isCollapsed = false, className }: SidebarNavProps) 
                 {module.title}
               </TooltipContent>
             </Tooltip>
-          ))}
+          )})}
         </nav>
       </TooltipProvider>
     );
