@@ -8,9 +8,15 @@ import { useSidebar } from '@/context/SidebarContext';
 import { PanelLeftClose, PanelRightClose, Eye, EyeOff } from 'lucide-react';
 import { CommunityLogo } from '../icons/community-logo';
 import { ALL_MODULES_CONFIG } from '@/lib/modules';
+import React, { useState, useEffect } from 'react';
 
 export function Sidebar() {
   const { isCollapsed, setCollapsed, setHiddenModules } = useSidebar();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const handleShowAll = () => {
     setHiddenModules([]);
@@ -35,7 +41,7 @@ export function Sidebar() {
                 <span className="sr-only">Toggle Sidebar</span>
             </Button>
         </div>
-        <SidebarNav isCollapsed={isCollapsed} />
+        {isClient && <SidebarNav isCollapsed={isCollapsed} />}
         <div className="mt-auto p-4 border-t">
              <div className="grid gap-2">
                 <Button variant="outline" size="sm" onClick={handleShowAll} disabled={isCollapsed}>
