@@ -74,7 +74,6 @@ function PopoutContent({ slug }: { slug: string }) {
 
     return (
         <div className="h-screen w-screen p-4">
-             <div className="bg-theme"></div>
             <LogProvider>
                 <BotNameProvider>
                     <SidebarProvider>

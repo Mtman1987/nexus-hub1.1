@@ -5,7 +5,6 @@ import { Globe } from 'lucide-react';
 export default function SpaceMountainPage() {
   return (
     <div className="flex min-h-screen w-full p-4 lg:p-6">
-       <div className="bg-theme"></div>
        <div className="w-full h-screen flex flex-col">
             <header className="mb-6">
                 <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3 text-title-foreground">
