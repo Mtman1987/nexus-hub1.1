@@ -1,4 +1,6 @@
 
+"use client";
+
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, Users, Globe, LayoutGrid, type LucideIcon } from 'lucide-react';
