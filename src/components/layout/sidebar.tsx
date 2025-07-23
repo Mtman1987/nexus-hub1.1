@@ -41,19 +41,23 @@ export function Sidebar() {
                 <span className="sr-only">Toggle Sidebar</span>
             </Button>
         </div>
-        {isClient && <SidebarNav isCollapsed={isCollapsed} />}
-        <div className="mt-auto p-4 border-t">
-             <div className="grid gap-2">
-                <Button variant="outline" size="sm" onClick={handleShowAll} disabled={isCollapsed}>
-                    <Eye className="mr-2 h-4 w-4"/>
-                    Show All
-                </Button>
-                <Button variant="secondary" size="sm" onClick={handleHideAll} disabled={isCollapsed}>
-                    <EyeOff className="mr-2 h-4 w-4"/>
-                    Hide All
-                </Button>
+        {isClient && (
+          <>
+            <SidebarNav isCollapsed={isCollapsed} />
+            <div className="mt-auto p-4 border-t">
+                <div className="grid gap-2">
+                    <Button variant="outline" size="sm" onClick={handleShowAll} disabled={isCollapsed}>
+                        <Eye className="mr-2 h-4 w-4"/>
+                        Show All
+                    </Button>
+                    <Button variant="secondary" size="sm" onClick={handleHideAll} disabled={isCollapsed}>
+                        <EyeOff className="mr-2 h-4 w-4"/>
+                        Hide All
+                    </Button>
+                </div>
             </div>
-        </div>
+          </>
+        )}
     </aside>
   );
 }
