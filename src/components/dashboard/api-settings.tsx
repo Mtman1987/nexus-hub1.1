@@ -17,6 +17,7 @@ import { cn } from '@/lib/utils';
 import { PopOutButton } from './pop-out-button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import VaultConfig from '@/../vault.config.json';
+import { CommunityLogo } from '../icons/community-logo';
 
 const UNLOCK_DURATION_MS = 5 * 60 * 1000; // 5 minutes
 
@@ -48,7 +49,7 @@ type ProviderStatus = {
 }
 
 const defaultModels = {
-    edenAiModel: 'openai/gpt-4o', // Default to a known good provider/model
+    edenAiModel: 'openai/gpt-4-turbo',
     googleModelName: 'gemini-1.5-flash-latest',
     openaiModelName: 'gpt-4o',
     groqModelName: 'llama3-8b-8192',
@@ -426,12 +427,15 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
             <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto">
               <GripVertical />
             </Button>
-            <div className='flex-grow'>
-              <CardTitle className="flex items-center gap-2 text-title-foreground">
-                <ShieldCheck className="h-6 w-6" />
-                API Key Vault
-              </CardTitle>
-              <CardDescription>Manage all your secret keys and connection endpoints here.</CardDescription>
+            <div className='flex-grow flex items-center gap-2'>
+              <CommunityLogo className="w-8" />
+              <div>
+                <CardTitle className="flex items-center gap-2 text-title-foreground">
+                  <ShieldCheck className="h-6 w-6" />
+                  API Key Vault
+                </CardTitle>
+                <CardDescription>Manage all your secret keys and connection endpoints here.</CardDescription>
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -522,7 +526,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="eden-model">Model Name via Eden</Label>
-                                    <Select value={settings.edenAiModel || defaultModels.edenAiModel} onValueChange={(value) => handleInputChange('edenAiModel', value)} disabled={isLocked}>
+                                    <Select value={settings.edenAiModel || ''} onValueChange={(value) => handleInputChange('edenAiModel', value)} disabled={isLocked}>
                                         <SelectTrigger><SelectValue placeholder="Select a model..." /></SelectTrigger>
                                         <SelectContent>
                                         {edenModelsForProvider.map(model => (
@@ -744,5 +748,3 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     </Card>
   );
 }
-
-    
