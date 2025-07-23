@@ -49,11 +49,11 @@ export function SidebarNav({ isCollapsed = false, className }: SidebarNavProps) 
                       checked={!hiddenModules.includes(module.id)}
                       onCheckedChange={(checked) => handleModuleToggle(module.id, !!checked)}
                    />
-                   {Icon && <Icon className="h-5 w-5 text-primary" />}
+                   {Icon && <Icon className="h-5 w-5 text-[hsl(var(--icon-unified-chat))]" />}
                 </div>
               </TooltipTrigger>
               <TooltipContent side="right">
-                {module.title}
+                <span className="text-[hsl(var(--title-unified-chat))]">{module.title}</span>
               </TooltipContent>
             </Tooltip>
           )})}
@@ -76,8 +76,8 @@ export function SidebarNav({ isCollapsed = false, className }: SidebarNavProps) 
                       checked={!hiddenModules.includes(module.id)}
                       onCheckedChange={(checked) => handleModuleToggle(module.id, !!checked)}
                       />
-                    {Icon && <Icon className="h-4 w-4 text-primary" />}
-                    <Label htmlFor={`vis-${module.id}`} className="w-full cursor-pointer">{module.title}</Label>
+                    {Icon && <Icon className="h-4 w-4 text-[hsl(var(--icon-unified-chat))]" />}
+                    <Label htmlFor={`vis-${module.id}`} className="w-full cursor-pointer text-[hsl(var(--title-unified-chat))]">{module.title}</Label>
                   </div>
                 )
             })}
