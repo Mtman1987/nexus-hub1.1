@@ -6,47 +6,15 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { arrayMove, SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
 import { DraggableModule } from '@/components/dashboard/draggable-module';
 
-import { LogViewer } from '@/components/dashboard/log-viewer';
-import { ApiSettings } from '@/components/dashboard/api-settings';
-import { UnifiedChat } from '@/components/dashboard/unified-chat';
 import { Save, Trash2, Eye, LayoutGrid, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { UserRoles } from '@/components/dashboard/user-roles';
-import { WebsiteViewer } from '@/components/dashboard/website-viewer';
-import { FallbackStrategy } from '@/components/dashboard/fallback-strategy';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useLogs } from '@/context/LogContext';
-import { SavedItems } from '@/components/dashboard/saved-items';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { LoreWeaver } from '@/components/dashboard/lore-weaver';
-import { TimeZoneConverter } from '@/components/dashboard/timezone-converter';
-import { BotPersonality } from '@/components/dashboard/bot-personality';
-import { Fallback } from '@/components/dashboard/fallback';
-import { ImageGenerator } from '@/components/dashboard/image-generator';
-import { MusicPlayer } from '@/components/dashboard/music-player';
-import { ResumeParser } from '@/components/dashboard/resume-parser';
-import { Translator } from '@/components/dashboard/translator';
+import { ALL_MODULES_CONFIG } from '@/lib/modules';
 
 
-// Define all modules with their components
-const ALL_MODULES_CONFIG = [
-    { id: 'unifiedChat', title: 'Unified Chat', component: UnifiedChat, defaultSize: 'col-span-1 lg:col-span-2' },
-    { id: 'botPersonality', title: 'Bot Personality', component: BotPersonality, defaultSize: 'col-span-1' },
-    { id: 'apiSettings', title: 'API Key Vault', component: ApiSettings, defaultSize: 'col-span-1' },
-    { id: 'logViewer', title: 'Captain\'s Log', component: LogViewer, defaultSize: 'col-span-1 lg:col-span-2' },
-    { id: 'musicPlayer', title: 'Subspace Comms & Music', component: MusicPlayer, defaultSize: 'col-span-1' },
-    { id: 'imageGenerator', title: 'Stargate Imagery', component: ImageGenerator, defaultSize: 'col-span-1' },
-    { id: 'resumeParser', title: 'Resume Parser', component: ResumeParser, defaultSize: 'col-span-1' },
-    { id: 'translator', title: 'Translator', component: Translator, defaultSize: 'col-span-1' },
-    { id: 'timeZoneConverter', title: 'Time Zone Converter', component: TimeZoneConverter, defaultSize: 'col-span-1' },
-    { id: 'fallback', title: 'Intelligent Fallback', component: Fallback, defaultSize: 'col-span-1' },
-    { id: 'fallbackStrategy', title: 'Fallback Strategy', component: FallbackStrategy, defaultSize: 'col-span-1'},
-    { id: 'userRoles', title: 'Access Control', component: UserRoles, defaultSize: 'col-span-1' },
-    { id: 'websiteViewer', title: 'Website Viewer', component: WebsiteViewer, defaultSize: 'col-span-1 lg:col-span-2' },
-    { id: 'savedItems', title: 'Saved Items', component: SavedItems, defaultSize: 'col-span-1 lg:col-span-2' },
-    { id: 'loreWeaver', title: 'Lore Weaver', component: LoreWeaver, defaultSize: 'col-span-1' },
-];
 const defaultModuleOrder = ALL_MODULES_CONFIG.map(m => m.id);
 
 
@@ -186,13 +154,15 @@ export default function DashboardPage() {
 
   const handleHideModule = (moduleId: string) => {
     const module = ALL_MODULES_CONFIG.find(m => m.id === moduleId);
-    addLog({ service: 'System', level: 'info', message: `User hid the '${module?.title}' module.` });
+    const title = module?.title;
+    addLog({ service: 'System', level: 'info', message: `User hid the '${title}' module.` });
     setHiddenModules(prev => [...prev, moduleId]);
   };
 
   const handleShowModule = (moduleId: string) => {
     const module = ALL_MODULES_CONFIG.find(m => m.id === moduleId);
-    addLog({ service: 'System', level: 'info', message: `User restored the '${module?.title}' module.` });
+    const title = module?.title;
+    addLog({ service: 'System', level: 'info', message: `User restored the '${title}' module.` });
     setHiddenModules(prev => prev.filter(id => id !== moduleId));
   };
   
@@ -203,7 +173,7 @@ export default function DashboardPage() {
   return (
     <div className="flex-1 flex flex-col p-4 md:p-6 space-y-6">
         <div className="flex items-center justify-between flex-shrink-0">
-            <h1 className="text-xl md:text-3xl font-bold tracking-tight text-title-foreground">Dashboard</h1>
+            <h1 className="text-xl md:text-3xl font-bold tracking-tight text-title-foreground flex items-center gap-2"><Home className="h-8 w-8 text-primary"/>Dashboard</h1>
             <div className="flex items-center gap-2">
                 <Button size="sm" onClick={handleSaveLayout}>
                     <Save className="mr-2 h-4 w-4" />
@@ -270,7 +240,7 @@ export default function DashboardPage() {
             <Card className="mt-8 bg-card/80">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-title-foreground">
-                        <LayoutGrid className="h-5 w-5" />
+                        <LayoutGrid className="h-5 w-5 text-primary" />
                         Hidden Modules
                     </CardTitle>
                 </CardHeader>

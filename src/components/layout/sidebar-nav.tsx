@@ -1,4 +1,5 @@
 
+import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, Users, Globe, LayoutGrid } from 'lucide-react';
@@ -49,7 +50,7 @@ export function SidebarNav({ isCollapsed = false, isMobile = false, className }:
       <nav className={cn("grid items-start gap-1 p-2 text-base font-medium lg:p-4 flex-grow", className)}>
         {navItems.map(item => (
           <Link key={item.label} href={item.href} className={cn(navClass, pathname === item.href && activeClass)} title={item.label}>
-            {item.icon}
+             {React.cloneElement(item.icon, { className: cn("h-5 w-5", pathname === item.href && "text-primary")})}
             {item.label}
           </Link>
         ))}

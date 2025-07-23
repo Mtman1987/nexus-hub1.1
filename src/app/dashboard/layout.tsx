@@ -18,9 +18,9 @@ export default function DashboardLayout({
                 setSettings(parsedSettings);
 
                 const root = document.documentElement;
-                if(parsedSettings.theme.background) root.style.setProperty('--background-override', parsedSettings.theme.background);
-                if(parsedSettings.theme.primary) root.style.setProperty('--primary-override', parsedSettings.theme.primary);
-                if(parsedSettings.theme.accent) root.style.setProperty('--accent-override', parsedSettings.theme.accent);
+                if(parsedSettings.theme.background) root.style.setProperty('--background', parsedSettings.theme.background);
+                if(parsedSettings.theme.primary) root.style.setProperty('--primary', parsedSettings.theme.primary);
+                if(parsedSettings.theme.accent) root.style.setProperty('--accent', parsedSettings.theme.accent);
                 if(parsedSettings.fontSize) root.style.fontSize = `${parsedSettings.fontSize}px`;
 
             }
@@ -35,20 +35,30 @@ export default function DashboardLayout({
             channel.close();
             // Reset styles on unmount
             const root = document.documentElement;
-            root.style.removeProperty('--background-override');
-            root.style.removeProperty('--primary-override');
-            root.style.removeProperty('--accent-override');
+            root.style.removeProperty('--background');
+            root.style.removeProperty('--primary');
+            root.style.removeProperty('--accent');
             root.style.removeProperty('font-size');
         };
     }, []);
 
     const style: React.CSSProperties = settings ? {
-        '--background': settings.theme.background ? `var(--background-override)` : undefined,
-        '--primary': settings.theme.primary ? `var(--primary-override)` : undefined,
-        '--accent': settings.theme.accent ? `var(--accent-override)` : undefined,
+        '--background': settings.theme.background ? `hsl(${settings.theme.background})` : undefined,
+        '--primary': settings.theme.primary ? `hsl(${settings.theme.primary})` : undefined,
+        '--accent': settings.theme.accent ? `hsl(${settings.theme.accent})` : undefined,
     } as React.CSSProperties : {};
 
 
-  return <div style={style}>{children}</div>;
+  return (
+    <div className="bg-theme" style={style}>
+        <div className="planet"></div>
+        <div className="shooting-star" style={{ top: '10vh', left: '40vw', animationDelay: '-1s' }}></div>
+        <div className="shooting-star" style={{ top: '50vh', left: '60vw', animationDelay: '-3.4s' }}></div>
+        <div className="shooting-star" style={{ top: '80vh', left: '90vw', animationDelay: '-5.8s' }}></div>
+        <div className="shooting-star-reverse" style={{ top: '20vh', left: '10vw', animationDelay: '-2.2s' }}></div>
+        <div className="shooting-star-reverse" style={{ top: '60vh', left: '80vw', animationDelay: '-4.1s' }}></div>
+        <div className="shooting-star-reverse" style={{ top: '90vh', left: '30vw', animationDelay: '-0.5s' }}></div>
+        {children}
+    </div>
+  );
 }
-

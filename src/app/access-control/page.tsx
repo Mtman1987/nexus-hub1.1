@@ -4,11 +4,12 @@ import { Users } from 'lucide-react';
 
 export default function AccessControlPage() {
   return (
-    <div className="flex min-h-screen w-full bg-background text-foreground p-4 lg:p-6">
+    <div className="flex min-h-screen w-full bg-card/80 text-foreground p-4 lg:p-6">
+      <div className="bg-theme"></div>
        <div className="w-full">
             <header className="mb-6">
-                <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
-                    <Users className="h-8 w-8 text-accent" />
+                <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3 text-title-foreground">
+                    <Users className="h-8 w-8 text-primary" />
                     Access Control
                 </h1>
                 <p className="text-muted-foreground mt-2">

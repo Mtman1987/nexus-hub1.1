@@ -431,7 +431,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
               <CommunityLogo className="w-8" />
               <div>
                 <CardTitle className="flex items-center gap-2 text-title-foreground">
-                  <ShieldCheck className="h-6 w-6" />
+                  <ShieldCheck className="h-6 w-6 text-primary" />
                   API Key Vault
                 </CardTitle>
                 <CardDescription>Manage all your secret keys and connection endpoints here.</CardDescription>

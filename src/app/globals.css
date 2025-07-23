@@ -6,18 +6,18 @@
 @layer base {
   :root {
     --background: 262 52% 10%;
-    --foreground: 220 13% 91%;
-    --title-foreground: 28 100% 50%;
-    --card: 262 52% 14%;
-    --card-foreground: 220 13% 91%;
-    --popover: 174 100% 34% / 0.8;
+    --foreground: 0 0% 98%; /* Pure white for readability */
+    --title-foreground: 28 100% 50%; /* Rocket Dog Orange */
+    --card: 262 52% 14% / 0.8; /* Translucent purple */
+    --card-foreground: 0 0% 98%;
+    --popover: 262 52% 12% / 0.9;
     --popover-foreground: 0 0% 98%;
-    --primary: 174 100% 34%;
+    --primary: 174 100% 34%; /* Teal */
     --primary-foreground: 0 0% 100%;
     --secondary: 0 0% 25% / 0.7;
     --secondary-foreground: 0 0% 100%;
     --muted: 0 0% 25% / 0.7;
-    --muted-foreground: 0 0% 63.9%;
+    --muted-foreground: 0 0% 75%; /* Lighter off-white for muted text */
     --accent: 174 100% 34%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
@@ -37,11 +37,11 @@
     @apply border-border;
   }
   body {
-    background-color: transparent;
+    background-color: hsl(var(--background));
     position: relative;
   }
   
-  body::before {
+  .bg-theme {
     content: '';
     position: fixed;
     top: 0;
@@ -64,13 +64,13 @@
 
 .planet {
     position: absolute;
-    top: 20vh;
-    right: 15vw;
-    width: 60px;
-    height: 60px;
+    bottom: -5vh; /* Move to bottom */
+    right: 5vw; /* Move to right */
+    width: 120px; /* Make it bigger */
+    height: 120px; /* Make it bigger */
     background-color: hsl(200 80% 70% / 0.5); /* Icy blue planet */
     border-radius: 50%;
-    box-shadow: 0 0 20px hsl(200 80% 70% / 0.5);
+    box-shadow: 0 0 30px hsl(200 80% 70% / 0.5);
     z-index: -5;
 }
 
@@ -84,7 +84,7 @@
     margin-left: -75%;
     margin-top: -75%;
     border-radius: 50%;
-    border: 3px solid hsl(0 0% 100% / 0.2);
+    border: 4px solid hsl(0 0% 100% / 0.2);
     transform: rotateX(75deg);
 }
 

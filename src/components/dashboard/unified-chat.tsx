@@ -326,7 +326,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
               </Button>
               <div className="flex-grow">
                 <CardTitle className="flex items-center gap-2 text-title-foreground">
-                  <MessageSquare className="h-6 w-6" />
+                  <MessageSquare className="h-6 w-6 text-primary" />
                   Unified Chat
                 </CardTitle>
                 <CardDescription>
@@ -487,5 +487,3 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
 });
 
 UnifiedChat.displayName = 'UnifiedChat';
-
-    
