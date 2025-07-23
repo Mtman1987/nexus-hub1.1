@@ -17,12 +17,12 @@ export function SidebarNav({ isCollapsed = false, isMobile = false, className }:
   const pathname = usePathname();
 
   const navClass = "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:bg-muted";
-  const activeClass = "bg-muted font-bold text-foreground";
+  const activeClass = "bg-muted font-bold text-primary";
 
   const navItems = [
-    { href: "/dashboard", icon: <LayoutGrid className="h-5 w-5 text-primary" />, label: "Dashboard" },
-    { href: "/access-control", icon: <Users className="h-5 w-5 text-primary" />, label: "Access Control" },
-    { href: "/spacemountain", icon: <Globe className="h-5 w-5 text-primary" />, label: "Website Viewer" },
+    { href: "/dashboard", icon: <LayoutGrid className="h-5 w-5" />, label: "Dashboard" },
+    { href: "/access-control", icon: <Users className="h-5 w-5" />, label: "Access Control" },
+    { href: "/spacemountain", icon: <Globe className="h-5 w-5" />, label: "Website Viewer" },
   ];
 
   if (isCollapsed) {
