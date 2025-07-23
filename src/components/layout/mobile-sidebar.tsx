@@ -4,17 +4,26 @@
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Menu, SlidersHorizontal } from "lucide-react";
-import { SidebarNav } from "./sidebar-nav";
 import { useControlPanel } from "@/context/ControlPanelContext";
 import { CommandCenterControl } from "../dashboard/command-center-control";
+import { useState, useEffect } from 'react';
 
 export function MobileSidebar() {
   const { isPanelOpen, setPanelOpen } = useControlPanel();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
   
   return (
     <Sheet open={isPanelOpen} onOpenChange={setPanelOpen}>
       <SheetTrigger asChild>
-        <Button variant="outline" size="icon">
+        <Button variant="outline" size="icon" className="md:hidden">
           <Menu className="h-5 w-5" />
           <span className="sr-only">Toggle Control Panel</span>
         </Button>

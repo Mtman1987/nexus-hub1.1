@@ -12,10 +12,10 @@ import React, { useState, useEffect } from 'react';
 
 export function Sidebar() {
   const { isCollapsed, setCollapsed, setHiddenModules } = useSidebar();
-  const [isClient, setIsClient] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
+    setMounted(true);
   }, []);
 
   const handleShowAll = () => {
@@ -25,6 +25,10 @@ export function Sidebar() {
   const handleHideAll = () => {
     setHiddenModules(ALL_MODULES_CONFIG.map(m => m.id));
   };
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <aside className={cn(
@@ -41,8 +45,7 @@ export function Sidebar() {
                 <span className="sr-only">Toggle Sidebar</span>
             </Button>
         </div>
-        {isClient && (
-          <>
+        <>
             <SidebarNav isCollapsed={isCollapsed} />
             <div className="mt-auto p-4 border-t">
                 <div className="grid gap-2">
@@ -57,7 +60,6 @@ export function Sidebar() {
                 </div>
             </div>
           </>
-        )}
     </aside>
   );
 }
