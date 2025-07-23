@@ -17,7 +17,7 @@ export function SidebarNav({ isCollapsed = false, isMobile = false, className }:
   const pathname = usePathname();
 
   const navClass = "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary";
-  const activeClass = "bg-muted text-foreground font-semibold";
+  const activeClass = "bg-muted text-primary";
 
   const navItems = [
     { href: "/dashboard", icon: <LayoutGrid className="h-5 w-5" />, label: "Dashboard" },
@@ -51,7 +51,7 @@ export function SidebarNav({ isCollapsed = false, isMobile = false, className }:
       <nav className={cn("grid items-start gap-1 p-2 text-base font-medium lg:p-4 flex-grow", className)}>
         {navItems.map(item => (
           <Link key={item.label} href={item.href} className={cn(navClass, pathname === item.href && activeClass)} title={item.label}>
-             {React.cloneElement(item.icon, { className: cn("h-5 w-5", pathname === item.href ? "text-primary" : "text-muted-foreground")})}
+             {item.icon}
             {item.label}
           </Link>
         ))}
