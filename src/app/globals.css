@@ -5,26 +5,26 @@
 
 @layer base {
   :root {
-    --background: 262 52% 10%;
+    --background: 0 0% 0%;
     --foreground: 0 0% 100%;
-    --title-foreground: 28 100% 50%;
-    --card: 262 52% 14% / 0.8;
+    --title-foreground: 0 0% 100%;
+    --card: 0 0% 8%;
     --card-foreground: 0 0% 98%;
-    --popover: 262 52% 12% / 0.9;
+    --popover: 0 0% 8%;
     --popover-foreground: 0 0% 98%;
-    --primary: 174 100% 34%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 25% / 0.7;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 25% / 0.7;
-    --muted-foreground: 0 0% 75%;
-    --accent: 174 100% 34%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 25% / 0.8;
-    --input: 0 0% 25% / 0.8;
-    --ring: 174 100% 34%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 63%;
+    --accent: 0 0% 15%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 0 0% 83%;
     --radius: 0.5rem;
 
     --status-positive: 140 60% 45%;
@@ -38,139 +38,5 @@
   }
   body {
     @apply bg-background text-foreground;
-    position: relative;
-    overflow: hidden; /* Prevent body scroll */
-  }
-  
-  .bg-theme {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: -10;
-    background-color: hsl(var(--background));
-    background-image:
-      radial-gradient(ellipse at center, rgba(255, 239, 186, 0.1) 0%, rgba(138, 43, 226, 0.1) 40%, transparent 70%),
-      radial-gradient(2px 2px at 20% 30%, hsla(0, 0%, 100%, 0.4), transparent),
-      radial-gradient(2px 2px at 80% 60%, hsla(0, 0%, 100%, 0.4), transparent),
-      radial-gradient(3px 3px at 50% 80%, hsla(0, 0%, 100%, 0.3), transparent),
-      radial-gradient(3px 3px at 10% 90%, hsla(0, 0%, 100%, 0.3), transparent);
-    background-size: 100% 100%, 200px 200px, 200px 200px, 300px 300px, 300px 300px;
-    background-position: 0 0, 10px 20px, 150px 100px, 50px 250px, 250px 50px;
-    animation: pulse-star-anim 10s ease-in-out infinite alternate;
-  }
-}
-
-.planet {
-    position: absolute;
-    bottom: -21vh;
-    left: -17vw;
-    width: 490px;
-    height: 490px;
-    background-color: hsl(200 80% 70% / 0.5); /* Icy blue planet */
-    border-radius: 50%;
-    box-shadow: 0 0 56px hsl(200 80% 70% / 0.5);
-    z-index: -5;
-}
-
-.planet::before, .planet::after { 
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    border-radius: 50%;
-    transform: rotateX(75deg);
-}
-
-.planet::before {
-    width: 150%;
-    height: 150%;
-    margin-left: -75%;
-    margin-top: -75%;
-    border: 7px solid hsl(0 0% 100% / 0.2);
-}
-
-.planet::after {
-    width: 125%;
-    height: 125%;
-    margin-left: -62.5%;
-    margin-top: -62.5%;
-    border: 4px solid hsl(0 0% 100% / 0.15);
-}
-
-
-.shooting-star, .shooting-star-reverse {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  height: 2px;
-  background: linear-gradient(-45deg, hsl(var(--accent)), rgba(0, 0, 255, 0));
-  border-radius: 999px;
-  filter: drop-shadow(0 0 6px hsl(var(--accent)));
-  z-index: -5;
-}
-
-.shooting-star {
-  animation: shooting-star-anim 15s ease-in-out infinite;
-}
-
-.shooting-star-reverse {
-  animation: shooting-star-reverse-anim 15s ease-in-out infinite;
-}
-
-
-.shooting-star::before, .shooting-star::after,
-.shooting-star-reverse::before, .shooting-star-reverse::after {
-  content: '';
-  position: absolute;
-  top: calc(50% - 1px);
-  right: 0;
-  height: 2px;
-  background: linear-gradient(-45deg, rgba(0, 0, 255, 0), hsl(var(--accent)), rgba(0, 0, 255, 0));
-  transform: translateX(50%) rotateZ(45deg);
-  border-radius: 100%;
-  animation: a-shining 15s ease-in-out infinite;
-}
-
-.shooting-star::after, .shooting-star-reverse::after {
-  transform: translateX(50%) rotateZ(-45deg);
-}
-
-@keyframes shooting-star-anim {
-  0% {
-    transform: rotate(315deg) translateX(50vw);
-    opacity: 1;
-  }
-  70% {
-    opacity: 1;
-  }
-  100% {
-    transform: rotate(315deg) translateX(-50vw);
-    opacity: 0;
-  }
-}
-
-@keyframes shooting-star-reverse-anim {
-  0% {
-    transform: rotate(45deg) translateX(50vw);
-    opacity: 1;
-  }
-  70% {
-    opacity: 1;
-  }
-  100% {
-    transform: rotate(45deg) translateX(-50vw);
-    opacity: 0;
-  }
-}
-
-@keyframes pulse-star-anim {
-  from {
-    background-size: 100% 100%, 200px 200px, 200px 200px, 300px 300px, 300px 300px;
-  }
-  to {
-    background-size: 100% 100%, 210px 210px, 190px 190px, 310px 310px, 290px 290px;
   }
 }
