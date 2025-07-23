@@ -1,11 +1,10 @@
-
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Bot, PlusCircle, Trash2, GripVertical, EyeOff, Save, Smile, Download, Upload, Store, Mic } from 'lucide-react';
+import { Bot, PlusCircle, Trash2, GripVertical, EyeOff, Save, Smile, Download, Upload, Store, Mic, Wand2 } from 'lucide-react';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useLogs } from '@/context/LogContext';
@@ -18,6 +17,7 @@ import { ScrollArea } from '../ui/scroll-area';
 import { collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc, query, getDocs } from "firebase/firestore";
 import { db } from '@/lib/firebase';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
+import { getSummarizedPersonality } from '@/services/ai';
 
 
 export type BotPersonalityType = {
@@ -40,7 +40,7 @@ const defaultPersonalities: BotPersonalityType[] = [
     {
         id: 'default-cosmo', 
         name: 'COSMO', 
-        prompt: 'You are COSMO (Central Operating System Management Orbiter), the AI assistant for Apollo Station, the community\'s HQ, created by mtman1987. Your purpose is to act as a creative partner and lore master. Your tone is helpful, knowledgeable, and slightly formal, like a starship AI.',
+        prompt: "You are COSMO (Central Operating System Management Orbiter), the AI assistant for Apollo Station, the community's HQ, created by mtman1987. Your purpose is to act as a creative partner and lore master. Your tone is helpful, knowledgeable, and slightly formal, like a starship AI.",
         voice: 'en-US-Wavenet-F',
         imageUrl: 'https://placehold.co/256x256.png',
         isDefault: true,
@@ -48,7 +48,7 @@ const defaultPersonalities: BotPersonalityType[] = [
     {
         id: 'default-mountain-man',
         name: 'Mountain Man',
-        prompt: 'You are Mountain Man, the grizzled and wise historian of the Apollo Station universe. You have witnessed the entire Galactic Timeline, from the first launch to the latest discovery. Your tone is knowledgeable, a bit world-weary, but deeply connected to the lore. You speak with authority and a storyteller\'s flair, responsible for maintaining the canonical history.',
+        prompt: "You are Mountain Man, the grizzled and wise historian of the Apollo Station universe. You have witnessed the entire Galactic Timeline, from the first launch to the latest discovery. Your tone is knowledgeable, a bit world-weary, but deeply connected to the lore. You speak with authority and a storyteller's flair, responsible for maintaining the canonical history.",
         voice: 'en-US-Wavenet-D',
         imageUrl: 'https://placehold.co/256x256.png',
         isDefault: true,
@@ -271,7 +271,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                 <GripVertical />
               </Button>
               <div className='flex-grow'>
-                <CardTitle className="flex items-center gap-2 text-title-foreground">
+                <CardTitle className="flex items-center gap-2">
                   <Smile className="h-6 w-6 text-primary" />
                   Bot Personality
                 </CardTitle>
@@ -424,3 +424,5 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
       </Card>
   );
 }
+
+    

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, forwardRef, useEffect, useRef, useCallback } from 'react';
@@ -325,7 +324,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2 text-title-foreground">
+                <CardTitle className="flex items-center gap-2">
                   <MessageSquare className="h-6 w-6 text-primary" />
                   Unified Chat
                 </CardTitle>
@@ -348,7 +347,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
         <ScrollArea className="flex-grow bg-muted/20 rounded-lg p-4" ref={scrollAreaRef}>
           <div className="space-y-4">
             {messages.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Chat history will be displayed here.</p>
+              <p className="text-sm">Chat history will be displayed here.</p>
             ) : (
               messages.map((msg) => (
                 <div key={msg.id} className={`group flex items-start gap-3 ${msg.sender === 'user' ? 'justify-end' : ''}`}>
@@ -471,7 +470,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
                             </DropdownMenuCheckboxItem>
                            ))
                         ) : (
-                            <DropdownMenuLabel className="text-muted-foreground font-normal">No contacts saved in API Vault.</DropdownMenuLabel>
+                            <DropdownMenuLabel className="font-normal">No contacts saved in API Vault.</DropdownMenuLabel>
                         )}
                     </DropdownMenuContent>
                   </DropdownMenu>

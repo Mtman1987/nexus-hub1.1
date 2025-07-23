@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -111,7 +110,7 @@ export function CodeHelper({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2 text-title-foreground">
+                <CardTitle className="flex items-center gap-2">
                   <Code className="h-6 w-6 text-primary" />
                   Cipher (Code Helper)
                 </CardTitle>
@@ -155,7 +154,7 @@ export function CodeHelper({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
 
         <div className="flex-grow overflow-y-auto pr-1">
           {isLoading ? (
-             <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+             <div className="w-full h-full flex items-center justify-center">
                 <Loader2 className="h-8 w-8 animate-spin" />
              </div>
           ) : result && (

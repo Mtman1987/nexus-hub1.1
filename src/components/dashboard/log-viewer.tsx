@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -89,7 +88,7 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2 text-title-foreground">
+                <CardTitle className="flex items-center gap-2">
                   <BookText className="h-6 w-6 text-primary" />
                   Captain's Log
                 </CardTitle>
@@ -121,7 +120,7 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
                         <TableBody>
                             {recentLogs.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={3} className="text-center text-muted-foreground">
+                                <TableCell colSpan={3} className="text-center">
                                 No log entries yet.
                                 </TableCell>
                             </TableRow>
@@ -140,7 +139,7 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
                                     <span className="truncate">{log.message}</span>
                                     </div>
                                 </TableCell>
-                                <TableCell className="text-right text-muted-foreground">{log.timestamp}</TableCell>
+                                <TableCell className="text-right">{log.timestamp}</TableCell>
                                 </TableRow>
                             ))
                             )}
@@ -168,7 +167,7 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
                                         <span className="truncate">{log.message}</span>
                                         </div>
                                     </TableCell>
-                                    <TableCell className="text-right text-muted-foreground">{log.timestamp}</TableCell>
+                                    <TableCell className="text-right">{log.timestamp}</TableCell>
                                     </TableRow>
                                 ))}
                              </TableBody>
@@ -199,7 +198,7 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
                 </div>
                  <div>
                     <h4 className="font-semibold mb-1">Timestamp</h4>
-                    <p className="text-sm text-muted-foreground">{selectedLog.timestamp}</p>
+                    <p className="text-sm">{selectedLog.timestamp}</p>
                 </div>
                 {selectedLog.details && (
                     <div>

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -428,9 +427,9 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
               <GripVertical />
             </Button>
             <div className='flex-grow flex items-center gap-2'>
-              <CommunityLogo className="w-8 text-primary" />
+              <ShieldCheck className="w-8 text-primary" />
               <div>
-                <CardTitle className="flex items-center gap-2 text-title-foreground">
+                <CardTitle className="flex items-center gap-2">
                   API Key Vault
                 </CardTitle>
                 <CardDescription>Manage all your secret keys and connection endpoints here.</CardDescription>
@@ -495,7 +494,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
           <form id="api-settings-form" className="space-y-4" onSubmit={handleSaveChanges}>
             <Accordion type="multiple" value={openAccordions} onValueChange={handleAccordionChange} className="w-full space-y-2">
                 <AccordionItem value="ai-providers">
-                    <AccordionTrigger className="text-lg font-semibold hover:no-underline text-title-foreground">
+                    <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                         <div className="flex items-center gap-2">
                             <Cpu className="h-5 w-5 text-primary"/>
                             AI Providers
@@ -574,7 +573,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                     </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="service-integrations">
-                    <AccordionTrigger className="text-lg font-semibold hover:no-underline text-title-foreground">
+                    <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                         <div className="flex items-center gap-2">
                             <Share2 className="h-5 w-5 text-primary"/>
                             Service Integrations
@@ -622,7 +621,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                     </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="audio-language">
-                    <AccordionTrigger className="text-lg font-semibold hover:no-underline text-title-foreground">
+                    <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                         <div className="flex items-center gap-2">
                             <AudioLines className="h-5 w-5 text-primary"/>
                             Audio & Language
@@ -662,7 +661,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                     </AccordionContent>
                 </AccordionItem>
                  <AccordionItem value="connectivity">
-                    <AccordionTrigger className="text-lg font-semibold hover:no-underline text-title-foreground">
+                    <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                         <div className="flex items-center gap-2">
                            <Link className="h-5 w-5 text-primary"/>
                             Connectivity

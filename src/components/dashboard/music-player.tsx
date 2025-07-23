@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from 'react';
@@ -164,7 +163,7 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     return (
         <>
             <audio ref={audioRef} src={currentTrack?.type === 'audio' ? currentTrack.src : ''} onEnded={nextTrack} />
-            <Card className="flex flex-col bg-card/80">
+            <Card className="flex flex-col h-full">
                 <CardHeader>
                     <div className="flex justify-between items-start">
                         <div className="flex items-center gap-2 flex-grow">
@@ -172,8 +171,8 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                                 <GripVertical />
                             </Button>
                             <div className="flex-grow">
-                                <CardTitle className="flex items-center gap-2 text-title-foreground">
-                                    <Music className="h-6 w-6" />
+                                <CardTitle className="flex items-center gap-2">
+                                    <Music className="h-6 w-6 text-primary" />
                                     Subspace Comms & Music
                                 </CardTitle>
                                 <CardDescription>
@@ -207,7 +206,7 @@ export function MusicPlayer({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                             className="w-full"
                             disabled={currentTrack?.type === 'youtube'}
                         />
-                        <div className="flex justify-between text-xs text-muted-foreground">
+                        <div className="flex justify-between text-xs">
                             <span>{currentTrack?.type === 'audio' ? formatTime(currentTime) : '0:00'}</span>
                             <span>{currentTrack?.type === 'audio' ? formatTime(duration) : 'External'}</span>
                         </div>

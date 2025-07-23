@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -103,7 +102,7 @@ export function UserRoles({ isPoppedOut = false, onPopOut, onHide, dragHandlePro
 
   return (
     <>
-      <Card className="flex flex-col bg-card/80">
+      <Card className="flex flex-col h-full">
         <CardHeader className='shrink-0'>
            <div className="flex justify-between items-start">
             <div className="flex items-center gap-2 flex-grow">
@@ -111,7 +110,7 @@ export function UserRoles({ isPoppedOut = false, onPopOut, onHide, dragHandlePro
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2 text-title-foreground">
+                <CardTitle className="flex items-center gap-2">
                   <Users className="h-6 w-6 text-primary" />
                   Access Control
                 </CardTitle>
@@ -156,7 +155,7 @@ export function UserRoles({ isPoppedOut = false, onPopOut, onHide, dragHandlePro
                         <Select value={user.role} onValueChange={(value) => handleRoleChange(user.id, value)}>
                           <SelectTrigger className="w-[180px]">
                              <div className="flex items-center gap-2">
-                               <Shield className="h-4 w-4 text-muted-foreground" />
+                               <Shield className="h-4 w-4" />
                                <SelectValue placeholder="Select a role" />
                              </div>
                           </SelectTrigger>
@@ -212,7 +211,7 @@ export function UserRoles({ isPoppedOut = false, onPopOut, onHide, dragHandlePro
             </DialogHeader>
             <div className="py-4">
               <p><strong>Role:</strong> {selectedUser.role}</p>
-              <p className="text-sm text-muted-foreground mt-4">
+              <p className="text-sm mt-4">
                 More detailed, module-specific permissions can be configured here in the future.
               </p>
             </div>

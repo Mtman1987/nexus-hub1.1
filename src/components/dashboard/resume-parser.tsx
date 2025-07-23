@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -74,7 +73,7 @@ export function ResumeParser({ onPopOut, isPoppedOut = false, onHide, dragHandle
     }
 
   return (
-    <Card className="flex flex-col bg-card/80">
+    <Card className="flex flex-col h-full">
       <CardHeader>
         <div className="flex justify-between items-start">
              <div className="flex items-center gap-2 flex-grow">
@@ -82,8 +81,8 @@ export function ResumeParser({ onPopOut, isPoppedOut = false, onHide, dragHandle
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2 text-title-foreground">
-                  <FileText className="h-6 w-6" />
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="h-6 w-6 text-primary" />
                   Resume Parser
                 </CardTitle>
                 <CardDescription>
@@ -117,7 +116,7 @@ export function ResumeParser({ onPopOut, isPoppedOut = false, onHide, dragHandle
         
         <ScrollArea className="flex-grow bg-muted/20 rounded-lg p-4">
             {isLoading ? (
-                <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+                <div className="flex flex-col items-center justify-center h-full">
                     <Loader2 className="h-8 w-8 animate-spin mb-2"/>
                     <p>Parsing resume...</p>
                 </div>
@@ -153,8 +152,8 @@ export function ResumeParser({ onPopOut, isPoppedOut = false, onHide, dragHandle
                             <div key={i} className="space-y-1">
                                 <p className="font-semibold">{job.title || 'N/A'}</p>
                                 <p className="flex items-center gap-2"><Building className="h-4 w-4" />{job.company || 'N/A'}</p>
-                                <p className="flex items-center gap-2 text-xs text-muted-foreground"><MapPin className="h-3 w-3" />{job.location?.raw_location || 'N/A'} | {job.start_date || 'N/A'} - {job.end_date || 'Present'}</p>
-                                <p className="text-muted-foreground pt-1">{job.description || ''}</p>
+                                <p className="flex items-center gap-2 text-xs"><MapPin className="h-3 w-3" />{job.location?.raw_location || 'N/A'} | {job.start_date || 'N/A'} - {job.end_date || 'Present'}</p>
+                                <p className="pt-1">{job.description || ''}</p>
                             </div>
                         )) || <p>N/A</p>}
                         </div>
@@ -168,14 +167,14 @@ export function ResumeParser({ onPopOut, isPoppedOut = false, onHide, dragHandle
                             <div key={i} className="space-y-1">
                                 <p className="font-semibold">{edu.establishment || 'N/A'}</p>
                                 <p>{edu.title || 'N/A'}</p>
-                                <p className="text-xs text-muted-foreground">{edu.start_date || 'N/A'} - {edu.end_date || 'N/A'}</p>
+                                <p className="text-xs">{edu.start_date || 'N/A'} - {edu.end_date || 'N/A'}</p>
                             </div>
                         )) || <p>N/A</p>}
                         </div>
                     </div>
                 </div>
             ) : (
-                <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+                <div className="flex flex-col items-center justify-center h-full">
                     <FileText className="h-12 w-12 mb-2" />
                     <p>Parsed resume data will appear here.</p>
                 </div>

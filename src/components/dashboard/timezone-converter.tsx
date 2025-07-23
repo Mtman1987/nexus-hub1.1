@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -146,7 +145,7 @@ export function TimeZoneConverter({ onPopOut, isPoppedOut = false, onHide, dragH
   }
 
   return (
-    <Card className="flex flex-col bg-card/80">
+    <Card className="flex flex-col h-full">
       <CardHeader>
         <div className="flex justify-between items-start">
             <div className="flex items-center gap-2 flex-grow">
@@ -154,8 +153,8 @@ export function TimeZoneConverter({ onPopOut, isPoppedOut = false, onHide, dragH
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2 text-title-foreground">
-                  <Clock className="h-6 w-6" />
+                <CardTitle className="flex items-center gap-2">
+                  <Clock className="h-6 w-6 text-primary" />
                   Time Zone Converter
                 </CardTitle>
                 <CardDescription>
@@ -218,12 +217,12 @@ export function TimeZoneConverter({ onPopOut, isPoppedOut = false, onHide, dragH
             {result && (
                 <div className="space-y-2 pt-4">
                     <div className="p-4 rounded-lg border bg-muted">
-                        <p className="font-semibold text-lg text-title-foreground">{result}</p>
-                        <p className="text-sm text-muted-foreground">in {toTz}</p>
+                        <p className="font-semibold text-lg">{result}</p>
+                        <p className="text-sm">in {toTz}</p>
                     </div>
                      <div className="p-4 rounded-lg border">
                         <p className="font-semibold text-md">{utcResult}</p>
-                        <p className="text-sm text-muted-foreground">in UTC</p>
+                        <p className="text-sm">in UTC</p>
                     </div>
                 </div>
             )}

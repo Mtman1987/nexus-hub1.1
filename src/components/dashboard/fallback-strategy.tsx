@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -22,7 +21,7 @@ export function FallbackStrategy({ onPopOut, isPoppedOut = false, onHide, dragHa
   const { providers, handlePriorityChange, saveStrategy, availableProviderCount } = useFallbackStrategy(isPreview);
   
   return (
-    <Card className="flex flex-col bg-card/80">
+    <Card className="flex flex-col h-full">
       <CardHeader>
         <div className="flex justify-between items-start">
             <div className="flex items-center gap-2 flex-grow">
@@ -30,7 +29,7 @@ export function FallbackStrategy({ onPopOut, isPoppedOut = false, onHide, dragHa
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2 text-title-foreground">
+                <CardTitle className="flex items-center gap-2">
                   <Shuffle className="h-6 w-6 text-primary" />
                   Fallback Strategy
                 </CardTitle>
@@ -54,10 +53,10 @@ export function FallbackStrategy({ onPopOut, isPoppedOut = false, onHide, dragHa
             <div className="space-y-4">
             {providers.map((provider) => (
                 <div key={provider.id} className="flex items-center gap-4 p-3 rounded-lg border bg-card-foreground/5">
-                    <GripVertical className="h-5 w-5 text-muted-foreground cursor-grab" />
+                    <GripVertical className="h-5 w-5 cursor-grab" />
                     <div className="flex-grow">
                         <p className="font-semibold">{provider.name}</p>
-                        <p className="text-sm text-muted-foreground">{provider.description}</p>
+                        <p className="text-sm">{provider.description}</p>
                     </div>
                     <div>
                         <Select
@@ -80,7 +79,7 @@ export function FallbackStrategy({ onPopOut, isPoppedOut = false, onHide, dragHa
             ))}
             </div>
         ) : (
-             <div className="text-center text-muted-foreground py-8">
+             <div className="text-center py-8">
                 <p>No fallback providers are configured and enabled.</p>
                 <p className="text-sm">Please add an API key and enable a provider in the API Key Vault.</p>
             </div>

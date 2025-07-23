@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -102,7 +101,7 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
     };
 
   return (
-    <Card className="flex flex-col bg-card/80">
+    <Card className="flex flex-col h-full">
       <CardHeader>
         <div className="flex justify-between items-start">
              <div className="flex items-center gap-2 flex-grow">
@@ -110,7 +109,7 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2 text-title-foreground">
+                <CardTitle className="flex items-center gap-2">
                   <ImageIcon className="h-6 w-6 text-primary" />
                   Stargate Imagery
                 </CardTitle>
@@ -132,7 +131,7 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
       <CardContent className="flex-grow flex flex-col gap-4 overflow-hidden">
         <div className="flex-grow flex flex-col items-center justify-center bg-muted/50 rounded-lg p-4 relative overflow-y-auto">
             {isLoading ? (
-                <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                <div className="flex flex-col items-center gap-2">
                     <Loader2 className="h-8 w-8 animate-spin"/>
                     <p>Generating image...</p>
                     <p className="text-xs">This may take a moment.</p>
@@ -164,7 +163,7 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
                 )}
                 </div>
             ) : (
-                <div className="text-center text-muted-foreground">
+                <div className="text-center">
                     <ImageIcon className="h-12 w-12 mx-auto mb-2" />
                     <p>Your generated images will appear here.</p>
                 </div>
@@ -200,7 +199,7 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
                     <div className="grid gap-4">
                         <div className="space-y-2">
                             <h4 className="font-medium leading-none">Image Generation Options</h4>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-sm">
                             Configure the generation parameters.
                             </p>
                         </div>

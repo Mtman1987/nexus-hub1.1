@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useRef } from 'react';
@@ -124,7 +123,7 @@ export function Translator({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
     return (
         <>
         <audio ref={ttsAudioRef} className="hidden" />
-        <Card className="flex flex-col bg-card/80">
+        <Card className="flex flex-col h-full">
             <CardHeader>
                 <div className="flex justify-between items-start">
                     <div className="flex items-center gap-2 flex-grow">
@@ -132,7 +131,7 @@ export function Translator({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                             <GripVertical />
                         </Button>
                         <div className="flex-grow">
-                            <CardTitle className="flex items-center gap-2 text-title-foreground">
+                            <CardTitle className="flex items-center gap-2">
                                 <Languages className="h-6 w-6 text-primary" />
                                 Translator
                             </CardTitle>
@@ -180,7 +179,7 @@ export function Translator({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                          <div className="flex items-center justify-between mt-auto gap-2">
                              <div className="flex items-center gap-2">
                                 <Input value={sourceLang} onChange={e => setSourceLang(e.target.value)} className="w-20" placeholder="src"/>
-                                <ArrowRightLeft className="h-4 w-4 text-muted-foreground"/>
+                                <ArrowRightLeft className="h-4 w-4"/>
                                 <Input value={targetLang} onChange={e => setTargetLang(e.target.value)} className="w-20" placeholder="tgt"/>
                              </div>
                              <Button onClick={handleTranslate} disabled={isLoading || !translateText}>
@@ -203,16 +202,16 @@ export function Translator({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                     <TabsContent value="stt" className="flex-grow flex flex-col gap-4 mt-4">
                         <div className="flex-grow flex flex-col gap-4">
                             <div className="flex items-center justify-center w-full">
-                                <Label htmlFor="audio-file" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-muted/50 hover:bg-muted">
+                                <Label htmlFor="audio-file-stt" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-muted/50 hover:bg-muted">
                                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                        <FileAudio className="w-8 h-8 mb-4 text-muted-foreground"/>
-                                        <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-                                        <p className="text-xs text-muted-foreground">Audio File (MP3, WAV, etc.)</p>
+                                        <FileAudio className="w-8 h-8 mb-4"/>
+                                        <p className="mb-2 text-sm"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+                                        <p className="text-xs">Audio File (MP3, WAV, etc.)</p>
                                     </div>
-                                    <Input id="audio-file" type="file" className="hidden" ref={fileInputRef} onChange={e => setAudioFile(e.target.files?.[0] || null)} />
+                                    <Input id="audio-file-stt" type="file" className="hidden" ref={fileInputRef} onChange={e => setAudioFile(e.target.files?.[0] || null)} />
                                 </Label>
                             </div> 
-                            {audioFile && <p className="text-sm text-center text-muted-foreground">Selected: {audioFile.name}</p>}
+                            {audioFile && <p className="text-sm text-center">Selected: {audioFile.name}</p>}
                             {transcribedText && (
                                 <Alert>
                                     <Mic className="h-4 w-4 text-primary" />

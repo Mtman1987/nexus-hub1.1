@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -78,7 +77,7 @@ export function WebsiteViewer({ isPoppedOut = false, onPopOut, onHide, dragHandl
   const siteKeys = Object.keys(SITES);
 
   return (
-    <Card className="flex flex-col bg-card/80">
+    <Card className="flex flex-col h-full">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
         <CardHeader>
           <div className="flex justify-between items-start">
@@ -87,7 +86,7 @@ export function WebsiteViewer({ isPoppedOut = false, onPopOut, onHide, dragHandl
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2 text-title-foreground">
+                <CardTitle className="flex items-center gap-2">
                   <Monitor className="h-6 w-6 text-primary" />
                   Live Website Viewer
                 </CardTitle>

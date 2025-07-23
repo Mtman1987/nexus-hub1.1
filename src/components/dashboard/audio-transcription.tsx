@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useRef } from 'react';
@@ -56,7 +55,7 @@ export function AudioTranscription({ onPopOut, isPoppedOut = false, onHide, drag
     };
     
     return (
-        <Card className="flex flex-col bg-card/80">
+        <Card className="flex flex-col h-full">
             <CardHeader>
                 <div className="flex justify-between items-start">
                     <div className="flex items-center gap-2 flex-grow">
@@ -64,8 +63,8 @@ export function AudioTranscription({ onPopOut, isPoppedOut = false, onHide, drag
                             <GripVertical />
                         </Button>
                         <div className="flex-grow">
-                            <CardTitle className="flex items-center gap-2 text-title-foreground">
-                                <FileAudio className="h-6 w-6" />
+                            <CardTitle className="flex items-center gap-2">
+                                <FileAudio className="h-6 w-6 text-primary" />
                                 Audio Transcription
                             </CardTitle>
                             <CardDescription>
@@ -87,14 +86,14 @@ export function AudioTranscription({ onPopOut, isPoppedOut = false, onHide, drag
                 <div className="flex items-center justify-center w-full">
                     <Label htmlFor="audio-file" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-muted/50 hover:bg-muted">
                         <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <FileAudio className="w-8 h-8 mb-4 text-muted-foreground"/>
-                            <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-                            <p className="text-xs text-muted-foreground">Audio File (MP3, WAV, etc.)</p>
+                            <FileAudio className="w-8 h-8 mb-4"/>
+                            <p className="mb-2 text-sm"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+                            <p className="text-xs">Audio File (MP3, WAV, etc.)</p>
                         </div>
                         <Input id="audio-file" type="file" className="hidden" ref={fileInputRef} onChange={e => setAudioFile(e.target.files?.[0] || null)} accept="audio/*" />
                     </Label>
                 </div> 
-                {audioFile && <p className="text-sm text-center text-muted-foreground">Selected: {audioFile.name}</p>}
+                {audioFile && <p className="text-sm text-center">Selected: {audioFile.name}</p>}
 
                 <div className="flex-grow">
                     {resultText && (

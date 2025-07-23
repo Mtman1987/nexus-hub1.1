@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
@@ -196,24 +195,24 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
         case 'lore':
             return (
                 <div className="flex items-start gap-3">
-                    <FileText className="h-5 w-5 mt-1 text-muted-foreground" />
+                    <FileText className="h-5 w-5 mt-1" />
                     <div className="flex-grow">
                         <p className="font-semibold text-accent">Draft: <span className="font-normal text-foreground">{item.content.prompt}</span></p>
-                        <p className="text-sm text-muted-foreground truncate">{item.content.response}</p>
+                        <p className="text-sm truncate">{item.content.response}</p>
                     </div>
                 </div>
             );
         case 'log':
             return (
                 <div className="flex items-start gap-3">
-                    <BookText className="h-5 w-5 mt-1 text-muted-foreground" />
+                    <BookText className="h-5 w-5 mt-1" />
                     <div className="flex-grow">
                         <div className="flex items-center gap-2">
                             <span className="font-semibold">{item.content.service}</span>
                             <Badge variant={item.content.level === 'error' ? 'destructive' : 'secondary'} className="capitalize">{item.content.level}</Badge>
                         </div>
-                        <p className="text-sm text-muted-foreground">{item.content.message}</p>
-                        <p className="text-xs text-muted-foreground/50 mt-1">{item.content.timestamp}</p>
+                        <p className="text-sm">{item.content.message}</p>
+                        <p className="text-xs mt-1">{item.content.timestamp}</p>
                     </div>
                 </div>
             );
@@ -236,7 +235,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
   
   return (
     <>
-    <Card className="flex flex-col bg-card/80">
+    <Card className="flex flex-col h-full">
       <CardHeader>
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-2 flex-grow">
@@ -244,8 +243,8 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                 <GripVertical />
               </Button>
             <div className="flex-grow">
-              <CardTitle className="flex items-center gap-2 text-title-foreground">
-                <Save className="h-6 w-6" />
+              <CardTitle className="flex items-center gap-2">
+                <Save className="h-6 w-6 text-primary" />
                 Saved Items
               </CardTitle>
               <CardDescription>Your drafts, timeline, and pinned items.</CardDescription>
@@ -268,7 +267,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                 {/* TIMELINE */}
                 <div className="space-y-3">
                     <div className="flex justify-between items-center">
-                        <h4 className="font-semibold text-lg text-title-foreground">Galactic Timeline</h4>
+                        <h4 className="font-semibold text-lg">Galactic Timeline</h4>
                         {timeline.length > 0 && (
                              <AlertDialog>
                                 <AlertDialogTrigger asChild><Button variant="destructive" size="sm">Clear Timeline</Button></AlertDialogTrigger>
@@ -285,12 +284,12 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                               <li key={index} className="ml-6">            
                                 <span className="absolute flex items-center justify-center w-4 h-4 bg-primary rounded-full -left-2 ring-4 ring-background"></span>
                                 <p className="font-semibold">{item.prompt}</p>
-                                <p className="text-sm text-muted-foreground">{item.response}</p>
+                                <p className="text-sm">{item.response}</p>
                               </li>
                            ))}
                         </ol>
                     ) : (
-                        <p className="text-sm text-muted-foreground text-center py-4">The timeline is empty. Finalize a lore draft to begin.</p>
+                        <p className="text-sm text-center py-4">The timeline is empty. Finalize a lore draft to begin.</p>
                     )}
                 </div>
 
@@ -298,7 +297,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                 
                 {/* DRAFTS */}
                 <div className="space-y-3">
-                     <h4 className="font-semibold text-lg text-title-foreground">Idea Drafts</h4>
+                     <h4 className="font-semibold text-lg">Idea Drafts</h4>
                      {loreDrafts.length > 0 ? (
                         loreDrafts.map(item => (
                             <div key={item.id} className="flex items-center gap-2 rounded-lg border p-3">
@@ -308,7 +307,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                             </div>
                         ))
                      ) : (
-                         <p className="text-sm text-muted-foreground text-center py-4">Save lore from the Lore Weaver to create drafts.</p>
+                         <p className="text-sm text-center py-4">Save lore from the Lore Weaver to create drafts.</p>
                      )}
                 </div>
 
@@ -317,7 +316,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                 {/* OTHER ITEMS */}
                  <div className="space-y-3">
                      <div className="flex justify-between items-center">
-                        <h4 className="font-semibold text-lg text-title-foreground">Pinned Items</h4>
+                        <h4 className="font-semibold text-lg">Pinned Items</h4>
                          {otherItems.length > 0 && (
                             <AlertDialog>
                                 <AlertDialogTrigger asChild><Button variant="destructive" size="sm">Clear Items</Button></AlertDialogTrigger>
@@ -338,7 +337,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                             </div>
                         ))
                     ) : (
-                         <p className="text-sm text-muted-foreground text-center py-4">Save chats or logs to pin them here.</p>
+                         <p className="text-sm text-center py-4">Save chats or logs to pin them here.</p>
                     )}
                  </div>
             </div>
@@ -350,7 +349,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
     <Dialog open={!!editingLore} onOpenChange={(isOpen) => !isOpen && setEditingLore(null)}>
         <EditDialogContent className="max-w-2xl">
             <EditDialogHeader>
-                <EditDialogTitle className="text-title-foreground">Finalize Lore Entry</EditDialogTitle>
+                <EditDialogTitle>Finalize Lore Entry</EditDialogTitle>
                 <EditDialogDescription>Refine your lore, ask COSMO for help, and then finalize it to add it to the official timeline.</EditDialogDescription>
             </EditDialogHeader>
             <div className="space-y-4 py-4 max-h-[70vh] overflow-y-auto pr-2">
@@ -365,7 +364,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                 <Separator />
                 <div className="space-y-3 p-3 border rounded-lg">
                     <Label htmlFor="ai-request">Ask COSMO for Help</Label>
-                     <p className="text-xs text-muted-foreground">Ask for ideas, better wording, or to expand on a topic.</p>
+                     <p className="text-xs">Ask for ideas, better wording, or to expand on a topic.</p>
                     <div className="flex gap-2">
                         <Input id="ai-request" placeholder="e.g., 'Give me a better name for this planet'" value={aiRequest} onChange={e => setAiRequest(e.target.value)} />
                         <Button onClick={handleAskCosmo} disabled={isAiLoading || !aiRequest}><Wand2 className="h-4 w-4"/></Button>
