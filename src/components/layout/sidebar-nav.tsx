@@ -41,12 +41,13 @@ export function SidebarNav({ isCollapsed = false, className }: SidebarNavProps) 
             <Tooltip key={module.id} delayDuration={0}>
               <TooltipTrigger asChild>
                  <div className={cn(navClass, "justify-center")}>
-                   {Icon && <Icon className="h-5 w-5 text-primary" />}
                    <Checkbox
                       id={`col-vis-${module.id}`}
+                      className="mr-2"
                       checked={!hiddenModules.includes(module.id)}
                       onCheckedChange={(checked) => handleModuleToggle(module.id, !!checked)}
                    />
+                   {Icon && <Icon className="h-5 w-5 text-primary" />}
                 </div>
               </TooltipTrigger>
               <TooltipContent side="right">
@@ -64,16 +65,20 @@ export function SidebarNav({ isCollapsed = false, className }: SidebarNavProps) 
         <Label className="px-3 py-2 text-xs font-semibold text-muted-foreground">MODULE VISIBILITY</Label>
         <ScrollArea className="w-full">
            <div className="grid gap-1 pr-2">
-            {ALL_MODULES_CONFIG.map(module => (
-              <div key={module.id} className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:bg-muted">
-                <Checkbox
-                  id={`vis-${module.id}`}
-                  checked={!hiddenModules.includes(module.id)}
-                  onCheckedChange={(checked) => handleModuleToggle(module.id, !!checked)}
-                  />
-                <Label htmlFor={`vis-${module.id}`} className="w-full cursor-pointer">{module.title}</Label>
-              </div>
-            ))}
+            {ALL_MODULES_CONFIG.map(module => {
+                const Icon = module.icon;
+                return (
+                  <div key={module.id} className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:bg-muted">
+                    <Checkbox
+                      id={`vis-${module.id}`}
+                      checked={!hiddenModules.includes(module.id)}
+                      onCheckedChange={(checked) => handleModuleToggle(module.id, !!checked)}
+                      />
+                    {Icon && <Icon className="h-4 w-4 text-primary" />}
+                    <Label htmlFor={`vis-${module.id}`} className="w-full cursor-pointer">{module.title}</Label>
+                  </div>
+                )
+            })}
            </div>
         </ScrollArea>
       </nav>

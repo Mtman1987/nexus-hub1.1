@@ -6,10 +6,9 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { arrayMove, SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
 import { DraggableModule } from '@/components/dashboard/draggable-module';
 
-import { Save, Trash2, Eye, LayoutGrid } from 'lucide-react';
+import { Save, Eye, LayoutGrid } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useLogs } from '@/context/LogContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ALL_MODULES_CONFIG } from '@/lib/modules';
@@ -113,7 +112,7 @@ export default function DashboardPage() {
       localStorage.setItem('hiddenModules', JSON.stringify(hiddenModules));
       toast({
         title: "Layout Saved",
-        description: "Your dashboard layout has been saved.",
+        description: "Your dashboard module positions and visibility have been saved.",
       });
       addLog({ service: 'System', level: 'info', message: "User saved the dashboard layout." });
     } catch (error) {
@@ -126,37 +125,6 @@ export default function DashboardPage() {
     }
   };
 
-  const handleClearSettings = () => {
-    try {
-      addLog({ service: 'System', level: 'warn', message: 'User initiated reset of all local settings.' });
-      openPopoutsRef.current.forEach(popout => popout?.close());
-      
-      const allKeys = Object.keys(localStorage);
-      allKeys.forEach(key => localStorage.removeItem(key));
-      
-      toast({
-        title: "Settings Cleared",
-        description: "All local settings have been removed. Reloading application.",
-      });
-      
-      setTimeout(() => window.location.href = '/launcher-ui', 1000);
-
-    } catch (error) {
-       toast({
-        title: "Clear Failed",
-        description: "Could not clear settings. Your browser might be blocking local storage.",
-        variant: "destructive",
-      });
-      addLog({ service: 'System', level: 'error', message: "Failed to clear all local settings.", details: error instanceof Error ? error.stack : String(error) });
-    }
-  };
-
-  const handleHideModule = (moduleId: string) => {
-    const module = ALL_MODULES_CONFIG.find(m => m.id === moduleId);
-    const title = module?.title;
-    addLog({ service: 'System', level: 'info', message: `User hid the '${title}' module.` });
-    setHiddenModules(prev => [...prev, moduleId]);
-  };
 
   const handleShowModule = (moduleId: string) => {
     const module = ALL_MODULES_CONFIG.find(m => m.id === moduleId);
@@ -170,10 +138,10 @@ export default function DashboardPage() {
   const activeModule = activeId ? ALL_MODULES_CONFIG.find(({ id }) => id === activeId) : null;
 
   return (
-    <div className="flex-1 flex flex-col p-4 md:p-6 space-y-6">
+    <div className="flex flex-col p-4 md:p-6 space-y-6">
         <div className="flex items-center justify-between flex-shrink-0">
             <h1 className="text-xl md:text-3xl font-bold tracking-tight text-title-foreground flex items-center gap-3">
-              <CommunityLogo className="h-10 w-auto text-primary" />
+              <CommunityLogo className="h-10 w-auto" />
               Dashboard
             </h1>
             <div className="flex items-center gap-2">
@@ -181,28 +149,6 @@ export default function DashboardPage() {
                     <Save className="mr-2 h-4 w-4" />
                     Save Layout
                 </Button>
-                <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                    <Button variant="destructive" size="sm">
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Reset All
-                    </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                        This will permanently delete all API keys, settings, and layouts from your browser and close all windows.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleClearSettings}>
-                        Yes, reset everything
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
             </div>
         </div>
 
@@ -216,8 +162,8 @@ export default function DashboardPage() {
                         return (
                             <DraggableModule key={id} id={id} className={moduleConfig.defaultSize}>
                               <moduleConfig.component
-                                onHide={() => handleHideModule(id)} 
                                 onPopOut={() => handlePopOut(id, moduleConfig.title)}
+                                onHide={() => setHiddenModules(prev => [...prev, id])}
                               />
                             </DraggableModule>
                         );
