@@ -7,40 +7,52 @@
   :root {
     --background: 240 10% 3.9%;
     --foreground: 210 40% 98%;
+
+    /* Card and Sidebar Background */
     --card: 240 10% 3.9%;
     --card-foreground: 210 40% 98%;
+
     --popover: 240 10% 3.9%;
     --popover-foreground: 210 40% 98%;
 
-    /* Purple for form controls */
+    /* Purple for form controls and input borders */
     --primary: 262 84% 59%;
     --primary-foreground: 210 40% 98%;
     --input: 262 14% 22%;
     --ring: 262 84% 59%;
 
-    /* Teal for actions and highlights */
+    /* Teal for main actions, icons, and progress bars */
     --accent: 173 97% 42%;
     --accent-foreground: 210 40% 98%;
-    --chart-1: 173 97% 42%;
+    --icon-unified-chat: 173 97% 42%;
 
-    --secondary: 240 3.7% 15.9%;
+    /* Orange for titles and specific highlights */
+    --title-unified-chat: 39 98% 50%;
+    
+    /* Secondary elements (e.g., secondary buttons) */
+    --secondary: 240 4% 18%; /* Dark gray with a hint of purple */
     --secondary-foreground: 210 40% 98%;
-    --muted: 240 3.7% 15.9%;
+    
+    /* Muted elements (e.g., subtle backgrounds, code blocks) */
+    --muted: 240 4% 12%; /* Even darker gray */
     --muted-foreground: 210 40% 98%;
     
-    --destructive: 39 98% 50%;
+    /* Destructive/Error states */
+    --destructive: 39 98% 50%; /* Switched to the title orange */
     --destructive-foreground: 210 40% 98%;
     
     --border: 240 3.7% 15.9%;
 
-    --chart-2: 262 84% 59%;
-    --chart-3: 210 40% 98%;
-    --chart-4: 320 84% 59%;
-    --chart-5: 240 5% 64.9%;
-    --icon-unified-chat: 174 100% 29%;
-    --title-unified-chat: 39 98% 50%;
-    --interactive-element: 174 100% 29%;
-    --interactive-element-foreground: 0 0% 100%;
+    /* Chart Palette */
+    --chart-1: 173 97% 42%; /* Teal */
+    --chart-2: 39 98% 50%;  /* Orange */
+    --chart-3: 210 40% 98%; /* White */
+    --chart-4: 262 84% 59%; /* Purple */
+    --chart-5: 320 84% 59%; /* Magenta/Rose */
+
+    /* Custom variables for interactive elements */
+    --interactive-element: 173 97% 42%;
+    --interactive-element-foreground: 210 40% 98%;
   }
 
   .dark {

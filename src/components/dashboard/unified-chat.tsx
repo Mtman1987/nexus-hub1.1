@@ -325,8 +325,8 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2 text-title-foreground text-[hsl(var(--title-unified-chat))]">
-                  <MessageSquare className="h-6 w-6 text-[hsl(var(--icon-unified-chat))]" />
+                <CardTitle className="flex items-center gap-2">
+                  <MessageSquare className="h-6 w-6 text-accent" />
                   Unified Chat
                 </CardTitle>
                 <CardDescription>
@@ -398,7 +398,6 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
                       <Button
                         type="submit"
                         disabled={loading}
-                        className="bg-[hsl(var(--interactive-element))] text-[hsl(var(--interactive-element-foreground))]"
                       >
                         {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                       </Button>
