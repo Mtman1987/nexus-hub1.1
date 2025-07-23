@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from 'react';
@@ -30,10 +31,12 @@ import { Translator } from '@/components/dashboard/translator';
 import { CodeHelper } from '@/components/dashboard/code-helper';
 import { VideoGenerator } from '@/components/dashboard/video-generator';
 import { CustomModule } from '@/components/dashboard/custom-module';
+import { CommandCenterControl } from '@/components/dashboard/command-center-control';
 
 
 // Define all modules with their components
-const ALL_MODULES_CONFIG = [
+export const ALL_MODULES_CONFIG = [
+    { id: 'commandCenterControl', title: 'Command Center Control', component: CommandCenterControl, defaultSize: 'col-span-1 lg:col-span-2' },
     { id: 'unifiedChat', title: 'Unified Chat', component: UnifiedChat, defaultSize: 'col-span-1 lg:col-span-2' },
     { id: 'botPersonality', title: 'Bot Personality', component: BotPersonality, defaultSize: 'col-span-1' },
     { id: 'apiSettings', title: 'API Key Vault', component: ApiSettings, defaultSize: 'col-span-1' },
