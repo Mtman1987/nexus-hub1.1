@@ -9,26 +9,28 @@
     --foreground: 210 40% 98%;
 
     /* Card and Sidebar Background */
-    --card: 240 10% 3.9%;
+    --card: 240 4% 12%;
     --card-foreground: 210 40% 98%;
 
     --popover: 240 10% 3.9%;
     --popover-foreground: 210 40% 98%;
 
-    /* Purple for form controls and input borders */
+    /* Purple for form controls and major actions */
     --primary: 262 84% 59%;
     --primary-foreground: 210 40% 98%;
-    --input: 262 14% 22%;
-    --ring: 262 84% 59%;
-
-    /* Teal for main actions, icons, and progress bars */
+    
+    /* Teal for accents, icons, and progress bars */
     --accent: 173 97% 42%;
     --accent-foreground: 210 40% 98%;
-    --icon-unified-chat: 173 97% 42%;
-
-    /* Orange for titles and specific highlights */
-    --title-unified-chat: 39 98% 50%;
     
+    /* Yellow-Orange for titles and destructive/warning states */
+    --destructive: 39 98% 50%;
+    --destructive-foreground: 210 40% 98%;
+
+    /* Custom variables for specific UI elements, tied to the main theme */
+    --icon-unified-chat: var(--accent);
+    --title-unified-chat: var(--destructive);
+
     /* Secondary elements (e.g., secondary buttons) */
     --secondary: 240 4% 18%; /* Dark gray with a hint of purple */
     --secondary-foreground: 210 40% 98%;
@@ -37,18 +39,16 @@
     --muted: 240 4% 12%; /* Even darker gray */
     --muted-foreground: 210 40% 98%;
     
-    /* Destructive/Error states */
-    --destructive: 39 98% 50%; /* Switched to the title orange */
-    --destructive-foreground: 210 40% 98%;
-    
     --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%; /* Use border color for inputs */
+    --ring: 262 84% 59%; /* Purple for focus rings */
 
     /* Chart Palette */
-    --chart-1: 173 97% 42%; /* Teal */
-    --chart-2: 39 98% 50%;  /* Orange */
-    --chart-3: 210 40% 98%; /* White */
-    --chart-4: 262 84% 59%; /* Purple */
-    --chart-5: 320 84% 59%; /* Magenta/Rose */
+    --chart-1: hsl(var(--accent));   /* Teal */
+    --chart-2: hsl(var(--destructive)); /* Yellow-Orange */
+    --chart-3: hsl(var(--primary));  /* Purple */
+    --chart-4: hsl(var(--foreground)); /* White */
+    --chart-5: 210 40% 98%; /* A different shade if needed */
 
     /* Custom variables for interactive elements */
     --interactive-element: 173 97% 42%;
@@ -56,7 +56,7 @@
   }
 
   .dark {
-    /* Keeping dark theme same as root for now */
+    /* Dark theme inherits from root */
   }
 }
 
