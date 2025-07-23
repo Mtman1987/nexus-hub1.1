@@ -39,6 +39,7 @@
   body {
     background-color: hsl(var(--background));
     position: relative;
+    overflow: hidden; /* Prevent body scroll */
   }
   
   .bg-theme {
@@ -64,29 +65,41 @@
 
 .planet {
     position: absolute;
-    bottom: -5vh; /* Move to bottom */
-    right: 5vw; /* Move to right */
-    width: 120px; /* Make it bigger */
-    height: 120px; /* Make it bigger */
+    bottom: -10vh; 
+    left: -8vw;
+    width: 250px; 
+    height: 250px;
     background-color: hsl(200 80% 70% / 0.5); /* Icy blue planet */
     border-radius: 50%;
-    box-shadow: 0 0 30px hsl(200 80% 70% / 0.5);
+    box-shadow: 0 0 40px hsl(200 80% 70% / 0.5);
     z-index: -5;
 }
 
-.planet::before { /* Ring */
+.planet::before, .planet::after { 
     content: '';
     position: absolute;
     top: 50%;
     left: 50%;
+    border-radius: 50%;
+    transform: rotateX(75deg);
+}
+
+.planet::before { /* Main Ring */
     width: 150%;
     height: 150%;
     margin-left: -75%;
     margin-top: -75%;
-    border-radius: 50%;
-    border: 4px solid hsl(0 0% 100% / 0.2);
-    transform: rotateX(75deg);
+    border: 5px solid hsl(0 0% 100% / 0.2);
 }
+
+.planet::after { /* Second, inner ring */
+    width: 125%;
+    height: 125%;
+    margin-left: -62.5%;
+    margin-top: -62.5%;
+    border: 3px solid hsl(0 0% 100% / 0.15);
+}
+
 
 .shooting-star, .shooting-star-reverse {
   position: absolute;

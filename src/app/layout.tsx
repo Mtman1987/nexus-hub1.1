@@ -30,25 +30,17 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
         <meta name="theme-color" content="#1A1A1A" />
       </head>
-      <body className="font-body antialiased text-foreground overflow-x-hidden">
-        <div className="bg-theme">
-            <div className="planet"></div>
-            <div className="shooting-star" style={{ top: '10vh', left: '40vw', animationDelay: '-1s' }}></div>
-            <div className="shooting-star" style={{ top: '50vh', left: '60vw', animationDelay: '-3.4s' }}></div>
-            <div className="shooting-star" style={{ top: '80vh', left: '90vw', animationDelay: '-5.8s' }}></div>
-            <div className="shooting-star-reverse" style={{ top: '20vh', left: '10vw', animationDelay: '-2.2s' }}></div>
-            <div className="shooting-star-reverse" style={{ top: '60vh', left: '80vw', animationDelay: '-4.1s' }}></div>
-            <div className="shooting-star-reverse" style={{ top: '90vh', left: '30vw', animationDelay: '-0.5s' }}></div>
-        </div>
+      <body className="font-body antialiased text-foreground">
+        <div className="bg-theme"></div>
         <LogProvider>
           <BotNameProvider>
             <SidebarProvider>
               <ControlPanelProvider>
-                <div className="flex min-h-screen w-full">
+                <div className="flex h-screen w-screen overflow-hidden">
                     <Sidebar />
-                    <div className="flex flex-col flex-1">
+                    <div className="flex flex-col flex-1 h-screen">
                        <Header />
-                        <main className="flex-1 flex flex-col overflow-auto">
+                        <main className="flex-1 overflow-auto">
                           {children}
                         </main>
                     </div>

@@ -36,7 +36,7 @@ type Profile = {
 
 const defaultSettings: CommandCenterSettings = {
     visibleModules: ALL_MODULES_CONFIG.map(m => m.id),
-    theme: { background: '', primary: '', accent: '' },
+    theme: { background: '262 52% 10%', primary: '174 100% 34%', accent: '174 100% 34%' },
     fontSize: 16,
 };
 
@@ -133,6 +133,67 @@ export function CommandCenterControl({ isPoppedOut = false }: CommandCenterContr
         saveSettings(defaultSettings);
         toast({title: "Settings Reset", description: "Command Center settings have been reset to default."});
     }
+    
+    const parseHslString = (hsl: string): string => {
+        if (!hsl) return '#000000';
+        const [h, s, l] = hsl.split(' ');
+        return `hsl(${h} ${s} ${l})`;
+    };
+    
+    const hslToHex = (hslStr: string) => {
+      if (!hslStr) return "#000000";
+      const [h, s, l] = hslStr.split(" ").map(Number);
+      const sNormalized = s / 100;
+      const lNormalized = l / 100;
+      let c = (1 - Math.abs(2 * lNormalized - 1)) * sNormalized;
+      let x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+      let m = lNormalized - c / 2;
+      let r = 0, g = 0, b = 0;
+      if (0 <= h && h < 60) {
+        r = c; g = x; b = 0;
+      } else if (60 <= h && h < 120) {
+        r = x; g = c; b = 0;
+      } else if (120 <= h && h < 180) {
+        r = 0; g = c; b = x;
+      } else if (180 <= h && h < 240) {
+        r = 0; g = x; b = c;
+      } else if (240 <= h && h < 300) {
+        r = x; g = 0; b = c;
+      } else if (300 <= h && h < 360) {
+        r = c; g = 0; b = x;
+      }
+      r = Math.round((r + m) * 255);
+      g = Math.round((g + m) * 255);
+      b = Math.round((b + m) * 255);
+      return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+    };
+
+    const hexToHsl = (hex: string): string => {
+        let r = 0, g = 0, b = 0;
+        if (hex.length == 4) {
+            r = parseInt(hex[1] + hex[1], 16);
+            g = parseInt(hex[2] + hex[2], 16);
+            b = parseInt(hex[3] + hex[3], 16);
+        } else if (hex.length == 7) {
+            r = parseInt(hex.substring(1, 3), 16);
+            g = parseInt(hex.substring(3, 5), 16);
+            b = parseInt(hex.substring(5, 7), 16);
+        }
+        r /= 255; g /= 255; b /= 255;
+        let cmin = Math.min(r,g,b), cmax = Math.max(r,g,b), delta = cmax - cmin;
+        let h = 0, s = 0, l = 0;
+        if (delta == 0) h = 0;
+        else if (cmax == r) h = ((g - b) / delta) % 6;
+        else if (cmax == g) h = (b - r) / delta + 2;
+        else h = (r - g) / delta + 4;
+        h = Math.round(h * 60);
+        if (h < 0) h += 360;
+        l = (cmax + cmin) / 2;
+        s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+        s = +(s * 100).toFixed(1);
+        l = +(l * 100).toFixed(1);
+        return `${h} ${s}% ${l}%`;
+    }
 
     const modulesToShow = ALL_MODULES_CONFIG;
 
@@ -206,15 +267,15 @@ export function CommandCenterControl({ isPoppedOut = false }: CommandCenterContr
                         <div className="grid grid-cols-3 gap-2">
                            <div className="space-y-1">
                                 <Label htmlFor="bg-color">Background</Label>
-                                <Input id="bg-color" type="color" value={settings.theme.background} onChange={e => handleThemeChange('background', e.target.value)} />
+                                <Input id="bg-color" type="color" value={hslToHex(settings.theme.background)} onChange={e => handleThemeChange('background', hexToHsl(e.target.value))} />
                            </div>
                            <div className="space-y-1">
                                 <Label htmlFor="pri-color">Primary</Label>
-                                <Input id="pri-color" type="color" value={settings.theme.primary} onChange={e => handleThemeChange('primary', e.target.value)} />
+                                <Input id="pri-color" type="color" value={hslToHex(settings.theme.primary)} onChange={e => handleThemeChange('primary', hexToHsl(e.target.value))} />
                            </div>
                            <div className="space-y-1">
                                 <Label htmlFor="acc-color">Accent</Label>
-                                <Input id="acc-color" type="color" value={settings.theme.accent} onChange={e => handleThemeChange('accent', e.target.value)} />
+                                <Input id="acc-color" type="color" value={hslToHex(settings.theme.accent)} onChange={e => handleThemeChange('accent', hexToHsl(e.target.value))} />
                            </div>
                         </div>
                     </div>
