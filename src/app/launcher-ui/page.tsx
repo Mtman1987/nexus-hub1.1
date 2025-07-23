@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -18,7 +17,7 @@ export default function LauncherPage() {
   useEffect(() => {
     // Check for the primary required key to determine if setup is needed.
     const hasApiKey = !!localStorage.getItem('edenApiKey');
-    setIsSetupComplete(hasKey);
+    setIsSetupComplete(hasApiKey);
     if (!hasApiKey) {
       setShowSetup(true);
     }
