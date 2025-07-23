@@ -272,8 +272,8 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                 <GripVertical />
               </Button>
               <div className='flex-grow'>
-                <CardTitle className="flex items-center gap-2 text-title-foreground">
-                  <Smile className="h-6 w-6 text-primary" />
+                <CardTitle className="flex items-center gap-2">
+                  <Smile className="h-6 w-6" />
                   Bot Personality
                 </CardTitle>
                 <CardDescription>Customize your AI assistant's name and behavior.</CardDescription>
@@ -281,7 +281,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
             </div>
             <div className="flex items-center gap-2">
               {!isPoppedOut && onHide && (
-                 <Button variant="ghost" size="icon" onClick={onHide} className="text-primary">
+                 <Button variant="ghost" size="icon" onClick={onHide}>
                   <EyeOff className="h-4 w-4" />
                 </Button>
               )}
@@ -306,7 +306,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                           </SelectContent>
                       </Select>
                       <Button type="button" variant="outline" size="icon" onClick={handleAddNewPersonality} title="Add New Personality"><PlusCircle className="h-4 w-4"/></Button>
-                      <Button type="button" size="icon" onClick={handleDeletePersonality} disabled={isSelectedPersonalityDefault} title="Delete Personality" className="bg-red-600 hover:bg-red-700 text-white disabled:bg-red-600/50 disabled:cursor-not-allowed"><Trash2 className="h-4 w-4"/></Button>
+                      <Button type="button" variant="destructive" size="icon" onClick={handleDeletePersonality} disabled={isSelectedPersonalityDefault} title="Delete Personality"><Trash2 className="h-4 w-4"/></Button>
                   </div>
               </div>
 
@@ -333,7 +333,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                               >
                                   <SelectTrigger id="bot-voice">
                                       <div className="flex items-center gap-2">
-                                          <Mic className="h-4 w-4 text-primary" />
+                                          <Mic className="h-4 w-4" />
                                           <SelectValue placeholder="Select a voice..."/>
                                       </div>
                                   </SelectTrigger>
@@ -379,7 +379,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                        <Select onValueChange={handleImportFromStore}>
                           <SelectTrigger>
                               <div className="flex items-center gap-2">
-                                  <Store className="h-4 w-4 text-primary" />
+                                  <Store className="h-4 w-4" />
                                   <SelectValue placeholder="Import from store..."/>
                               </div>
                           </SelectTrigger>
@@ -425,5 +425,3 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
       </Card>
   );
 }
-
-    

@@ -110,8 +110,8 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2 text-title-foreground">
-                  <ImageIcon className="h-6 w-6 text-primary" />
+                <CardTitle className="flex items-center gap-2">
+                  <ImageIcon className="h-6 w-6" />
                   Stargate Imagery
                 </CardTitle>
                 <CardDescription>
@@ -121,7 +121,7 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
             </div>
             <div className="flex items-center">
               {!isPoppedOut && onHide && (
-                <Button variant="ghost" size="icon" onClick={onHide} className="text-primary">
+                <Button variant="ghost" size="icon" onClick={onHide}>
                   <EyeOff className="h-4 w-4" />
                 </Button>
               )}
@@ -165,15 +165,15 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
                 </div>
             ) : (
                 <div className="text-center">
-                    <ImageIcon className="h-12 w-12 mx-auto mb-2" />
-                    <p>Your generated images will appear here.</p>
+                    <ImageIcon className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
+                    <p className="text-muted-foreground">Your generated images will appear here.</p>
                 </div>
             )}
         </div>
         
         {result && result.enhancedPrompt && (
             <Alert variant="default" className="shrink-0">
-                <Sparkles className="h-4 w-4 text-primary" />
+                <Sparkles className="h-4 w-4" />
                 <AlertTitle>Optimized Prompt</AlertTitle>
                 <AlertDescription>{result.enhancedPrompt}</AlertDescription>
             </Alert>
@@ -191,7 +191,7 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
             <Popover>
                 <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full justify-start">
-                        <Settings className="mr-2 h-4 w-4 text-primary" />
+                        <Settings className="mr-2 h-4 w-4" />
                         Options
                         <ChevronDown className="ml-auto h-4 w-4" />
                     </Button>
@@ -200,7 +200,7 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
                     <div className="grid gap-4">
                         <div className="space-y-2">
                             <h4 className="font-medium leading-none">Image Generation Options</h4>
-                            <p className="text-sm">
+                            <p className="text-sm text-muted-foreground">
                             Configure the generation parameters.
                             </p>
                         </div>
@@ -236,7 +236,7 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
                             </div>
                              <div className="flex items-center justify-between">
                                 <Label htmlFor="optimize-prompt" className="flex items-center gap-2">
-                                    <Wand2 className="h-4 w-4 text-primary"/>
+                                    <Wand2 className="h-4 w-4"/>
                                     Optimize Prompt
                                 </Label>
                                 <Switch id="optimize-prompt" checked={optimizePrompt} onCheckedChange={setOptimizePrompt} />

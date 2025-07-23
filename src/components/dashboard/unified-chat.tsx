@@ -301,11 +301,11 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
 
 
   const targetOptions = [
-    { id: 'AI Bot', icon: <Bot className="h-4 w-4 text-primary" /> },
-    { id: 'Discord', icon: <DiscordLogo className="h-4 w-4 text-primary" /> },
-    { id: 'Twitch', icon: <Twitch className="h-4 w-4 text-primary" /> },
-    { id: 'Streamer.bot', icon: <Radio className="h-4 w-4 text-primary" /> },
-    { id: 'Website', icon: <Globe className="h-4 w-4 text-primary" /> },
+    { id: 'AI Bot', icon: <Bot className="h-4 w-4" /> },
+    { id: 'Discord', icon: <DiscordLogo className="h-4 w-4" /> },
+    { id: 'Twitch', icon: <Twitch className="h-4 w-4" /> },
+    { id: 'Streamer.bot', icon: <Radio className="h-4 w-4" /> },
+    { id: 'Website', icon: <Globe className="h-4 w-4" /> },
   ];
 
   const handleNexusTargetSelect = (url: string) => {
@@ -326,7 +326,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
               </Button>
               <div className="flex-grow">
                 <CardTitle className="flex items-center gap-2">
-                  <MessageSquare className="h-6 w-6 text-accent" />
+                  <MessageSquare className="h-6 w-6" />
                   Unified Chat
                 </CardTitle>
                 <CardDescription>
@@ -336,7 +336,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
             </div>
              <div className="flex items-center">
               {!isPoppedOut && onHide && (
-                <Button variant="ghost" size="icon" onClick={onHide} className="text-primary">
+                <Button variant="ghost" size="icon" onClick={onHide}>
                   <EyeOff className="h-4 w-4" />
                 </Button>
               )}
@@ -354,7 +354,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
                 <div key={msg.id} className={`group flex items-start gap-3 ${msg.sender === 'user' ? 'justify-end' : ''}`}>
                   {msg.sender === 'ai' && (
                     <div className="flex flex-col gap-1 items-center">
-                        <Bot className="h-6 w-6 text-primary" />
+                        <Bot className="h-6 w-6" />
                         {loadingAudio === msg.id ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
@@ -454,7 +454,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
                                 }}
                             />
                             <Label htmlFor="nexus-connect-trigger" className="flex items-center gap-1.5 cursor-pointer">
-                                <Link className="h-4 w-4 text-primary" />
+                                <Link className="h-4 w-4" />
                                 Nexus Connect {selectedNexusTargets.length > 0 && `(${selectedNexusTargets.length})`}
                             </Label>
                          </div>

@@ -93,18 +93,18 @@ export function VideoGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2 text-title-foreground">
-                  <Video className="h-6 w-6 text-primary" />
+                <CardTitle className="flex items-center gap-2">
+                  <Video className="h-6 w-6" />
                   Avatar Forge
                 </CardTitle>
-                <CardDescription className="text-muted-foreground">
+                <CardDescription>
                   Generate animated avatars from text and images.
                 </CardDescription>
               </div>
             </div>
             <div className="flex items-center">
               {!isPoppedOut && onHide && (
-                <Button variant="ghost" size="icon" onClick={onHide} className="text-primary">
+                <Button variant="ghost" size="icon" onClick={onHide}>
                   <EyeOff className="h-4 w-4" />
                 </Button>
               )}
@@ -151,7 +151,7 @@ export function VideoGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
                 <Label htmlFor="image-file">Starting Image (Optional)</Label>
                 <div className="flex items-center gap-2">
                     <Input id="image-file" type="file" onChange={e => setImageFile(e.target.files?.[0] || null)} accept="image/png, image/jpeg" />
-                    <Button size="icon" onClick={() => setImageFile(null)} disabled={!imageFile} className="bg-red-600 hover:bg-red-700 text-white disabled:bg-red-600/50 disabled:cursor-not-allowed">
+                    <Button variant="destructive" size="icon" onClick={() => setImageFile(null)} disabled={!imageFile}>
                         <Trash2 className="h-4 w-4" />
                     </Button>
                 </div>
@@ -161,7 +161,7 @@ export function VideoGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
             <Popover>
                 <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full justify-start">
-                        <Settings className="mr-2 h-4 w-4 text-primary" />
+                        <Settings className="mr-2 h-4 w-4" />
                         Options
                         <ChevronDown className="ml-auto h-4 w-4" />
                     </Button>

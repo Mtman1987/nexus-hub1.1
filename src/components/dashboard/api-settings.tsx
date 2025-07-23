@@ -104,10 +104,10 @@ const defaultSettings: Partial<Settings> = {
 }
 
 const PROVIDER_CONFIG = {
-    eden: { name: 'Eden AI', icon: <Star className="h-5 w-5 text-primary" /> },
-    google: { name: 'Google AI', icon: <Bot className="h-5 w-5 text-primary" /> },
-    openai: { name: 'OpenAI', icon: <Bot className="h-5 w-5 text-primary" /> },
-    groq: { name: 'Groq', icon: <Bot className="h-5 w-5 text-primary" /> },
+    eden: { name: 'Eden AI', icon: <Star className="h-5 w-5" /> },
+    google: { name: 'Google AI', icon: <Bot className="h-5 w-5" /> },
+    openai: { name: 'OpenAI', icon: <Bot className="h-5 w-5" /> },
+    groq: { name: 'Groq', icon: <Bot className="h-5 w-5" /> },
 };
 
 
@@ -121,12 +121,12 @@ const ServiceStatusToggle: React.FC<{
   isLocked: boolean;
 }> = ({ providerId, isConfigured, providerStatus, onStatusChange, isLocked }) => {
   const isEnabled = providerStatus[providerId] === 'enabled';
-  const lightColor = !isConfigured ? 'bg-status-neutral' : isEnabled ? 'bg-status-positive' : 'bg-destructive-new';
+  const lightColor = !isConfigured ? 'bg-status-neutral' : isEnabled ? 'bg-status-positive' : 'bg-destructive';
 
   return (
     <div className="space-y-2">
       <Label htmlFor={`${providerId}-status`} className="flex items-center gap-2 text-xs">
-        <Power className="h-4 w-4 text-primary" />
+        <Power className="h-4 w-4" />
         Service Status
       </Label>
       <div className="flex items-center gap-3">
@@ -447,9 +447,9 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview }:
               <GripVertical />
             </Button>
             <div className='flex-grow flex items-center gap-2'>
-              <ShieldCheck className="w-8 h-8 text-primary" />
+              <ShieldCheck className="w-8 h-8" />
               <div>
-                <CardTitle className="text-title-foreground">
+                <CardTitle>
                   API Key Vault
                 </CardTitle>
                 <CardDescription>Manage all your secret keys and connection endpoints here.</CardDescription>
@@ -508,7 +508,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview }:
                 <AccordionItem value="ai-providers">
                     <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                         <div className="flex items-center gap-2">
-                            <Cpu className="h-5 w-5 text-primary"/>
+                            <Cpu className="h-5 w-5"/>
                             AI Providers
                         </div>
                     </AccordionTrigger>
@@ -585,13 +585,13 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview }:
                 <AccordionItem value="service-integrations">
                     <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                         <div className="flex items-center gap-2">
-                            <Share2 className="h-5 w-5 text-primary"/>
+                            <Share2 className="h-5 w-5"/>
                             Service Integrations
                         </div>
                     </AccordionTrigger>
                     <AccordionContent className="space-y-4 pt-4 pl-2 border-l-2 border-primary/20">
                         <div className="space-y-4 p-3 border rounded-md">
-                           <h4 className="font-semibold flex items-center gap-2"><Bot className="h-5 w-5 text-primary"/> Discord</h4>
+                           <h4 className="font-semibold flex items-center gap-2"><Bot className="h-5 w-5"/> Discord</h4>
                            <ServiceStatusToggle providerId="discord" isConfigured={!!settings.discordWebhook || !!settings.discordToken} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
                            <div className="space-y-2">
                                 <Label htmlFor="discord-token">Discord Bot Token (For Python Bot)</Label>
@@ -603,7 +603,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview }:
                            </div>
                         </div>
                         <div className="space-y-4 p-3 border rounded-md">
-                           <h4 className="font-semibold flex items-center gap-2"><Bot className="h-5 w-5 text-primary"/> Twitch</h4>
+                           <h4 className="font-semibold flex items-center gap-2"><Bot className="h-5 w-5"/> Twitch</h4>
                            <ServiceStatusToggle providerId="twitch" isConfigured={!!settings.twitchToken} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
                             <div className="space-y-2">
                                 <Label htmlFor="twitch-token">Twitch Bot Token (Optional)</Label>
@@ -611,7 +611,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview }:
                             </div>
                         </div>
                         <div className="space-y-4 p-3 border rounded-md">
-                           <h4 className="font-semibold flex items-center gap-2"><Radio className="h-5 w-5 text-primary"/> Streamer.bot</h4>
+                           <h4 className="font-semibold flex items-center gap-2"><Radio className="h-5 w-5"/> Streamer.bot</h4>
                            <ServiceStatusToggle providerId="streamerbot" isConfigured={true} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
@@ -633,7 +633,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview }:
                 <AccordionItem value="audio-language">
                     <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                         <div className="flex items-center gap-2">
-                            <AudioLines className="h-5 w-5 text-primary"/>
+                            <AudioLines className="h-5 w-5"/>
                             Audio & Language
                         </div>
                     </AccordionTrigger>
@@ -673,13 +673,13 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview }:
                  <AccordionItem value="connectivity">
                     <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                         <div className="flex items-center gap-2">
-                           <Link className="h-5 w-5 text-primary"/>
+                           <Link className="h-5 w-5"/>
                             Connectivity
                         </div>
                     </AccordionTrigger>
                     <AccordionContent className="space-y-4 pt-4 pl-2 border-l-2 border-primary/20">
                         <div className="space-y-4 p-3 border rounded-md">
-                           <h4 className="font-semibold flex items-center gap-2"><Server className="h-5 w-5 text-primary"/> Remote Access</h4>
+                           <h4 className="font-semibold flex items-center gap-2"><Server className="h-5 w-5"/> Remote Access</h4>
                            <div className="space-y-2">
                                <Label htmlFor="remote-hub-address">Remote Hub Address</Label>
                                <Input 
@@ -713,7 +713,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview }:
                            </div>
                         </div>
                         <div className="space-y-4 p-3 border rounded-md">
-                            <h4 className="font-semibold flex items-center gap-2"><Link className="h-5 w-5 text-primary"/> Nexus Connect</h4>
+                            <h4 className="font-semibold flex items-center gap-2"><Link className="h-5 w-5"/> Nexus Connect</h4>
                              <ServiceStatusToggle providerId="nexusconnect" isConfigured={true} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
                             <div className="space-y-2">
                                 <Label htmlFor="nexus-webhook-url">Your Inbound Webhook URL (Share this)</Label>
@@ -744,7 +744,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview }:
                     </AccordionContent>
                  </AccordionItem>
                  <AccordionItem value="danger-zone">
-                    <AccordionTrigger className="text-lg font-semibold hover:no-underline text-destructive-new">
+                    <AccordionTrigger className="text-lg font-semibold hover:no-underline text-destructive">
                         <div className="flex items-center gap-2">
                             <AlertTriangle className="h-5 w-5"/>
                             Danger Zone
@@ -753,7 +753,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview }:
                     <AccordionContent className="space-y-4 pt-4 pl-2 border-l-2 border-destructive/20">
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
-                            <Button className="bg-red-600 hover:bg-red-700 text-white" disabled={isLocked}>
+                            <Button variant="destructive" disabled={isLocked}>
                                 <Trash2 className="mr-2 h-4 w-4" />
                                 Reset All Application Data
                             </Button>
@@ -789,5 +789,3 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview }:
     </Card>
   );
 }
-
-    

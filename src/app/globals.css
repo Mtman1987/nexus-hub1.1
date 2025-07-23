@@ -5,38 +5,42 @@
 
 @layer base {
   :root {
-    --background: 240 5% 16%;
+    /* Main Background & Text */
+    --background: 240 5% 19%; /* Dark Gray: #303030 */
     --foreground: 210 40% 98%;
 
-    /* Card and Sidebar Background */
+    /* Card, Popover, and Sidebar Background */
     --card: 240 4% 12%;
     --card-foreground: 210 40% 98%;
 
     --popover: 240 10% 3.9%;
     --popover-foreground: 210 40% 98%;
 
-    /* Primary color: Deep purple for major actions */
-    --primary: 262 52% 47%;
+    /* Primary color: Deep Purple */
+    --primary: 262 52% 47%; /* #673AB7 */
     --primary-foreground: 210 40% 98%;
 
-    /* Accent color: Teal for highlights and interactive elements */
-    --accent: 174 100% 29%;
+    /* Title Foreground Color */
+    --title-foreground: 210 40% 98%;
+
+    /* Accent color: Teal */
+    --accent: 174 100% 29%; /* #009688 */
     --accent-foreground: 210 40% 98%;
     
-    /* Destructive color: Yellow-Orange for warnings */
-    --destructive: 39 98% 50%;
-    --destructive-foreground: 210 40% 98%;
+    /* Destructive color: Yellow-Orange */
+    --destructive: 39 98% 50%; /* Orange */
+    --destructive-foreground: 240 5% 19%; /* Dark Gray for contrast */
 
-    /* Secondary elements (e.g., secondary buttons) */
+    /* Secondary elements */
     --secondary: 240 4% 18%;
     --secondary-foreground: 210 40% 98%;
     
-    /* Muted elements (e.g., subtle backgrounds, code blocks) */
-    --muted: 240 4% 12%;
+    /* Muted elements */
+    --muted: 240 4% 20%;
     --muted-foreground: 210 40% 98%;
     
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
+    --border: 240 4% 25%;
+    --input: 240 4% 22%;
     --ring: 262 52% 47%; /* Purple for focus rings */
 
     /* Chart Palette */
@@ -45,6 +49,8 @@
     --chart-3: 262 52% 47%;  /* Purple */
     --chart-4: 210 40% 98%;  /* White */
     --chart-5: 210 40% 98%;
+
+    --radius: 0.5rem;
   }
 
   .dark {
@@ -59,5 +65,11 @@
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
+  }
+}
+
+@layer utilities {
+  .text-title-foreground {
+    color: hsl(var(--title-foreground));
   }
 }

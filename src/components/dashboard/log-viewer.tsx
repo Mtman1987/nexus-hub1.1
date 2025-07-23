@@ -24,12 +24,12 @@ interface LogViewerProps {
 }
 
 const serviceIcons: { [key: string]: React.ReactNode } = {
-  Discord: <DiscordLogo className="h-4 w-4 text-primary" />,
-  Twitch: <Twitch className="h-4 w-4 text-primary" />,
-  'Eden': <Bot className="h-4 w-4 text-primary" />,
-  'Google AI': <Bot className="h-4 w-4 text-primary" />,
-  'Streamer.bot': <Radio className="h-4 w-4 text-primary" />,
-  System: <BookText className="h-4 w-4 text-primary" />,
+  Discord: <DiscordLogo className="h-4 w-4" />,
+  Twitch: <Twitch className="h-4 w-4" />,
+  'Eden': <Bot className="h-4 w-4" />,
+  'Google AI': <Bot className="h-4 w-4" />,
+  'Streamer.bot': <Radio className="h-4 w-4" />,
+  System: <BookText className="h-4 w-4" />,
 };
 
 const levelColors = {
@@ -89,8 +89,8 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2 text-title-foreground">
-                  <BookText className="h-6 w-6 text-primary" />
+                <CardTitle className="flex items-center gap-2">
+                  <BookText className="h-6 w-6" />
                   Captain's Log
                 </CardTitle>
                 <CardDescription>Live feed of all service activities. Click a row for more details.</CardDescription>
@@ -98,7 +98,7 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
             </div>
             <div className="flex items-center">
               {!isPoppedOut && onHide && (
-                <Button variant="ghost" size="icon" onClick={onHide} className="text-primary">
+                <Button variant="ghost" size="icon" onClick={onHide}>
                   <EyeOff className="h-4 w-4" />
                 </Button>
               )}
@@ -130,7 +130,7 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
                                 <TableRow key={index} onClick={() => handleRowClick(log)} className="cursor-pointer">
                                 <TableCell>
                                     <div className="flex items-center gap-2">
-                                    {serviceIcons[log.service] || <BookText className="h-4 w-4 text-primary" />}
+                                    {serviceIcons[log.service] || <BookText className="h-4 w-4" />}
                                     <span className="font-medium">{log.service}</span>
                                     </div>
                                 </TableCell>
@@ -158,7 +158,7 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
                                     <TableRow key={index} onClick={() => handleRowClick(log)} className="cursor-pointer">
                                     <TableCell>
                                         <div className="flex items-center gap-2">
-                                        {serviceIcons[log.service] || <BookText className="h-4 w-4 text-primary" />}
+                                        {serviceIcons[log.service] || <BookText className="h-4 w-4" />}
                                         <span className="font-medium">{log.service}</span>
                                         </div>
                                     </TableCell>
@@ -184,8 +184,8 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
         <Dialog open={!!selectedLog} onOpenChange={(isOpen) => !isOpen && handleCloseDialog()}>
           <DialogContent className="sm:max-w-2xl">
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-3 text-primary">
-                {serviceIcons[selectedLog.service] || <Info className="h-6 w-6 text-primary" />}
+              <DialogTitle className="flex items-center gap-3">
+                {serviceIcons[selectedLog.service] || <Info className="h-6 w-6" />}
                 Log Details
               </DialogTitle>
               <DialogDescription>
