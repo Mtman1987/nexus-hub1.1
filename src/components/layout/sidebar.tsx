@@ -5,11 +5,20 @@ import { SidebarNav } from './sidebar-nav';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useSidebar } from '@/context/SidebarContext';
-import { PanelLeftClose, PanelRightClose } from 'lucide-react';
+import { PanelLeftClose, PanelRightClose, Eye, EyeOff } from 'lucide-react';
 import { CommunityLogo } from '../icons/community-logo';
+import { ALL_MODULES_CONFIG } from '@/lib/modules';
 
 export function Sidebar() {
-  const { isCollapsed, setCollapsed } = useSidebar();
+  const { isCollapsed, setCollapsed, setHiddenModules } = useSidebar();
+
+  const handleShowAll = () => {
+    setHiddenModules([]);
+  };
+  
+  const handleHideAll = () => {
+    setHiddenModules(ALL_MODULES_CONFIG.map(m => m.id));
+  };
 
   return (
     <aside className={cn(
@@ -27,9 +36,16 @@ export function Sidebar() {
             </Button>
         </div>
         <SidebarNav isCollapsed={isCollapsed} />
-        <div className="mt-auto p-4">
-            <div className={cn("text-xs text-muted-foreground", isCollapsed ? "text-center" : "text-left")}>
-                {!isCollapsed && "© 2024 mtman1987"}
+        <div className="mt-auto p-4 border-t">
+             <div className="grid gap-2">
+                <Button variant="outline" size="sm" onClick={handleShowAll} disabled={isCollapsed}>
+                    <Eye className="mr-2 h-4 w-4"/>
+                    Show All
+                </Button>
+                <Button variant="secondary" size="sm" onClick={handleHideAll} disabled={isCollapsed}>
+                    <EyeOff className="mr-2 h-4 w-4"/>
+                    Hide All
+                </Button>
             </div>
         </div>
     </aside>

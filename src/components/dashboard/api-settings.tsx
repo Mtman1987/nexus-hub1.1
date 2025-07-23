@@ -1,10 +1,11 @@
+
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { ShieldCheck, Save, LifeBuoy, Power, Bot, PlusCircle, Trash2, Link, Copy, Server, KeyRound, RefreshCw, Radio, GripVertical, EyeOff, Lock, Unlock, Cpu, Share2, Star, Languages, AudioLines } from 'lucide-react';
+import { ShieldCheck, Save, LifeBuoy, Power, Bot, PlusCircle, Trash2, Link, Copy, Server, KeyRound, RefreshCw, Radio, GripVertical, EyeOff, Lock, Unlock, Cpu, Share2, Star, Languages, AudioLines, AlertTriangle } from 'lucide-react';
 import React, { useState, useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useLogs } from '@/context/LogContext';
@@ -17,6 +18,8 @@ import { PopOutButton } from './pop-out-button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import VaultConfig from '@/../vault.config.json';
 import { CommunityLogo } from '../icons/community-logo';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+
 
 const UNLOCK_DURATION_MS = 5 * 60 * 1000; // 5 minutes
 
@@ -146,14 +149,12 @@ const ServiceStatusToggle: React.FC<{
 
 
 interface ApiSettingsProps {
-    onPopOut?: () => void;
     isPoppedOut?: boolean;
-    onHide?: () => void;
     dragHandleProps?: any;
     isPreview?: boolean;
 }
 
-export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleProps, isPreview }: ApiSettingsProps) {
+export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview }: ApiSettingsProps) {
   const { toast } = useToast();
   const [settings, setSettings] = useState<Settings>(defaultSettings);
   const [providerStatus, setProviderStatus] = useState<ProviderStatus>(defaultProviderStatus);
@@ -175,12 +176,10 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
   useEffect(() => {
     if (isPreview) return;
     
-    // Check for password in the config file first
     if (VaultConfig && VaultConfig.password) {
         setVaultPassword(VaultConfig.password);
         setIsPasswordFromFile(true);
     } else {
-        // Fallback to local storage
         setVaultPassword(localStorage.getItem('vaultPassword'));
         setIsPasswordFromFile(false);
     }
@@ -221,7 +220,6 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
         const finalSettings = { ...defaultSettings, ...loadedSettings };
         setSettings(finalSettings);
 
-        // Check for custom models on load
         const tempCustomModels: { [key: string]: string } = {};
         Object.keys(defaultModels).forEach(key => {
             const modelKey = key as keyof typeof defaultModels;
@@ -244,7 +242,6 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     }
   }, [addLog, isPreview]);
   
-  // Timer effect
   useEffect(() => {
     if (unlockTimestamp) {
         countdownRef.current = setInterval(() => {
@@ -267,7 +264,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
   }, [unlockTimestamp, toast, addLog]);
 
   useEffect(() => {
-    return () => { // Cleanup timers on unmount
+    return () => { 
       if (lockTimerRef.current) clearTimeout(lockTimerRef.current);
       if (countdownRef.current) clearInterval(countdownRef.current);
     }
@@ -303,7 +300,6 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
         handleInputChange(key, 'custom');
     } else {
         handleInputChange(key, value);
-        // Clear custom model input if a standard one is chosen
         setCustomModels(prev => {
             const newCustoms = { ...prev };
             delete newCustoms[key];
@@ -404,6 +400,30 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     });
   };
 
+  const handleClearSettings = () => {
+    try {
+      addLog({ service: 'System', level: 'warn', message: 'User initiated reset of all local settings.' });
+      
+      const allKeys = Object.keys(localStorage);
+      allKeys.forEach(key => localStorage.removeItem(key));
+      
+      toast({
+        title: "Settings Cleared",
+        description: "All local settings have been removed. Reloading application.",
+      });
+      
+      setTimeout(() => window.location.href = '/launcher-ui', 1000);
+
+    } catch (error) {
+       toast({
+        title: "Clear Failed",
+        description: "Could not clear settings. Your browser might be blocking local storage.",
+        variant: "destructive",
+      });
+      addLog({ service: 'System', level: 'error', message: "Failed to clear all local settings.", details: error instanceof Error ? error.stack : String(error) });
+    }
+  };
+
   const timeFormatter = new Intl.DateTimeFormat('en', { minute: '2-digit', second: '2-digit' });
 
   const getEdenProviderFromModel = () => {
@@ -411,7 +431,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     if (model.includes('/')) {
         return model.split('/')[0];
     }
-    return 'openai'; // Fallback
+    return 'openai';
   };
 
   const edenProvider = getEdenProviderFromModel();
@@ -435,14 +455,6 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                 <CardDescription>Manage all your secret keys and connection endpoints here.</CardDescription>
               </div>
             </div>
-          </div>
-          <div className="flex items-center gap-2">
-            {!isPoppedOut && onHide && (
-               <Button variant="ghost" size="icon" onClick={onHide}>
-                <EyeOff className="h-4 w-4" />
-              </Button>
-            )}
-            {!isPoppedOut && onPopOut && <PopOutButton onClick={onPopOut} />}
           </div>
         </div>
       </CardHeader>
@@ -501,7 +513,6 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                         </div>
                     </AccordionTrigger>
                     <AccordionContent className="space-y-4 pt-4 pl-2 border-l-2 border-primary/20">
-                         {/* Eden AI */}
                         <div className="space-y-4 p-3 border rounded-md">
                             <h4 className="font-semibold flex items-center gap-2">{PROVIDER_CONFIG.eden.icon} {PROVIDER_CONFIG.eden.name} (Primary)</h4>
                             <div className="space-y-2">
@@ -535,7 +546,6 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                                 </div>
                             </div>
                         </div>
-                        {/* Fallback Providers */}
                         {(['google', 'openai', 'groq'] as const).map((providerId) => (
                              <div key={providerId} className="space-y-4 p-3 border rounded-md">
                                 <h4 className="font-semibold flex items-center gap-2">{PROVIDER_CONFIG[providerId].icon} {PROVIDER_CONFIG[providerId].name} (Fallback)</h4>
@@ -733,6 +743,39 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                         </div>
                     </AccordionContent>
                  </AccordionItem>
+                 <AccordionItem value="danger-zone">
+                    <AccordionTrigger className="text-lg font-semibold hover:no-underline text-destructive">
+                        <div className="flex items-center gap-2">
+                            <AlertTriangle className="h-5 w-5"/>
+                            Danger Zone
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="space-y-4 pt-4 pl-2 border-l-2 border-destructive/20">
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                            <Button variant="destructive" disabled={isLocked}>
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Reset All Application Data
+                            </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                This will permanently delete all API keys, settings, and layouts from your browser. This action cannot be undone.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={handleClearSettings}>
+                                Yes, reset everything
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                         <p className="text-xs text-muted-foreground">This will wipe all data stored in your browser for this application, including all saved API keys, bot personalities, and layout settings.</p>
+                    </AccordionContent>
+                </AccordionItem>
             </Accordion>
           </form>
         </ScrollArea>
