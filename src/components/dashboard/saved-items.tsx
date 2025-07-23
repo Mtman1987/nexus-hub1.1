@@ -240,7 +240,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
       <CardHeader>
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-2 flex-grow">
-             <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto">
+             <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto text-accent">
                 <GripVertical />
               </Button>
             <div className="flex-grow">
@@ -253,7 +253,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
           </div>
           <div className="flex items-center gap-2">
              {!isPoppedOut && onHide && (
-                <Button variant="ghost" size="icon" onClick={onHide}>
+                <Button variant="ghost" size="icon" onClick={onHide} className="text-primary">
                   <EyeOff className="h-4 w-4" />
                 </Button>
               )}
@@ -392,5 +392,3 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
     </>
   );
 }
-
-    

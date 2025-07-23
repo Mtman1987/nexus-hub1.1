@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -25,7 +26,7 @@ export function FallbackStrategy({ onPopOut, isPoppedOut = false, onHide, dragHa
       <CardHeader>
         <div className="flex justify-between items-start">
             <div className="flex items-center gap-2 flex-grow">
-               <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto">
+               <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto text-accent">
                 <GripVertical />
               </Button>
               <div className="flex-grow">
@@ -40,7 +41,7 @@ export function FallbackStrategy({ onPopOut, isPoppedOut = false, onHide, dragHa
             </div>
             <div className="flex items-center">
               {!isPoppedOut && onHide && (
-                <Button variant="ghost" size="icon" onClick={onHide}>
+                <Button variant="ghost" size="icon" onClick={onHide} className="text-primary">
                   <EyeOff className="h-4 w-4" />
                 </Button>
               )}
@@ -53,7 +54,7 @@ export function FallbackStrategy({ onPopOut, isPoppedOut = false, onHide, dragHa
             <div className="space-y-4">
             {providers.map((provider) => (
                 <div key={provider.id} className="flex items-center gap-4 p-3 rounded-lg border bg-card-foreground/5">
-                    <GripVertical className="h-5 w-5 cursor-grab" />
+                    <GripVertical className="h-5 w-5 cursor-grab text-accent" />
                     <div className="flex-grow">
                         <p className="font-semibold">{provider.name}</p>
                         <p className="text-sm">{provider.description}</p>

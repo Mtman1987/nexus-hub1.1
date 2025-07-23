@@ -443,7 +443,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview }:
       <CardHeader>
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-2 flex-grow">
-            <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto">
+            <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto text-accent">
               <GripVertical />
             </Button>
             <div className='flex-grow flex items-center gap-2'>
