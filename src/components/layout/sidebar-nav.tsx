@@ -18,7 +18,7 @@ export function SidebarNav({ isCollapsed = false, isMobile = false, className }:
   const activeClass = "bg-muted text-primary font-semibold";
 
   const navItems = [
-    { href: "/", icon: <Home className="h-5 w-5" />, label: "Dashboard" },
+    { href: "/dashboard", icon: <Home className="h-5 w-5" />, label: "Dashboard" },
     { href: "/access-control", icon: <Users className="h-5 w-5" />, label: "Access Control" },
     { href: "/spacemountain", icon: <Globe className="h-5 w-5" />, label: "Website Viewer" },
   ];

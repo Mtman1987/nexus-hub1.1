@@ -26,6 +26,7 @@ import { Loader2 } from 'lucide-react';
 import { LogProvider } from '@/context/LogContext';
 import { BotNameProvider } from '@/context/BotNameContext';
 import { SidebarProvider } from '@/context/SidebarContext';
+import { AudioTranscription } from '@/components/dashboard/audio-transcription';
 
 const moduleMap: { [key: string]: React.ComponentType<any> } = {
   logViewer: LogViewer,
@@ -45,6 +46,7 @@ const moduleMap: { [key: string]: React.ComponentType<any> } = {
   translator: Translator,
   codeHelper: CodeHelper,
   customModule: CustomModule,
+  audioTranscription: AudioTranscription,
 };
 
 function PopoutContent({ slug }: { slug: string }) {
