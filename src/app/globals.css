@@ -31,6 +31,8 @@
     --chart-5: 0 62.8% 30.6%;
     --icon-unified-chat: 174 100% 29%;
     --title-unified-chat: 39 98% 50%;
+    --interactive-element: 174 100% 29%;
+    --interactive-element-foreground: 0 0% 100%;
   }
 
   .dark {

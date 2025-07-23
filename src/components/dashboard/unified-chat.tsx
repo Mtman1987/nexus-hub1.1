@@ -395,7 +395,11 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
                   <FormControl>
                     <div className="flex items-center gap-2">
                       <Input ref={ref} placeholder="Type your message..." className="flex-grow" {...field} />
-                      <Button type="submit" disabled={loading}>
+                      <Button
+                        type="submit"
+                        disabled={loading}
+                        className="bg-[hsl(var(--interactive-element))] text-[hsl(var(--interactive-element-foreground))]"
+                      >
                         {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                       </Button>
                     </div>
