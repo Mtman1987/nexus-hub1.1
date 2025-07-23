@@ -28,15 +28,15 @@
     --muted: 240 3.7% 15.9%;
     --muted-foreground: 240 5% 64.9%;
     
-    --destructive: 0 72% 51%;
+    --destructive: 39 98% 50%;
     --destructive-foreground: 210 40% 98%;
     
     --border: 240 3.7% 15.9%;
 
-    --chart-2: 210 40% 98%;
-    --chart-3: 240 3.7% 15.9%;
-    --chart-4: 240 5% 64.9%;
-    --chart-5: 0 62.8% 30.6%;
+    --chart-2: 262 84% 59%;
+    --chart-3: 210 40% 98%;
+    --chart-4: 320 84% 59%;
+    --chart-5: 240 5% 64.9%;
     --icon-unified-chat: 174 100% 29%;
     --title-unified-chat: 39 98% 50%;
     --interactive-element: 174 100% 29%;
