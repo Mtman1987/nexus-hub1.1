@@ -301,11 +301,11 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
 
 
   const targetOptions = [
-    { id: 'AI Bot', icon: <Bot className="h-4 w-4" /> },
-    { id: 'Discord', icon: <DiscordLogo className="h-4 w-4" /> },
-    { id: 'Twitch', icon: <Twitch className="h-4 w-4" /> },
-    { id: 'Streamer.bot', icon: <Radio className="h-4 w-4" /> },
-    { id: 'Website', icon: <Globe className="h-4 w-4" /> },
+    { id: 'AI Bot', icon: <Bot className="h-4 w-4 text-primary" /> },
+    { id: 'Discord', icon: <DiscordLogo className="h-4 w-4 text-primary" /> },
+    { id: 'Twitch', icon: <Twitch className="h-4 w-4 text-primary" /> },
+    { id: 'Streamer.bot', icon: <Radio className="h-4 w-4 text-primary" /> },
+    { id: 'Website', icon: <Globe className="h-4 w-4 text-primary" /> },
   ];
 
   const handleNexusTargetSelect = (url: string) => {
@@ -451,7 +451,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
                                 }}
                             />
                             <Label htmlFor="nexus-connect-trigger" className="flex items-center gap-1.5 cursor-pointer">
-                                <Link className="h-4 w-4" />
+                                <Link className="h-4 w-4 text-primary" />
                                 Nexus Connect {selectedNexusTargets.length > 0 && `(${selectedNexusTargets.length})`}
                             </Label>
                          </div>

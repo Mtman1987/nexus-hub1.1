@@ -112,7 +112,7 @@ export function CodeHelper({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
               </Button>
               <div className="flex-grow">
                 <CardTitle className="flex items-center gap-2 text-title-foreground">
-                  <Code className="h-6 w-6" />
+                  <Code className="h-6 w-6 text-primary" />
                   Cipher (Code Helper)
                 </CardTitle>
                 <CardDescription>

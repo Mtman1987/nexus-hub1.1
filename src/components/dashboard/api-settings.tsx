@@ -495,7 +495,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
           <form id="api-settings-form" className="space-y-4" onSubmit={handleSaveChanges}>
             <Accordion type="multiple" value={openAccordions} onValueChange={handleAccordionChange} className="w-full space-y-2">
                 <AccordionItem value="ai-providers">
-                    <AccordionTrigger className="text-lg font-semibold hover:no-underline">
+                    <AccordionTrigger className="text-lg font-semibold hover:no-underline text-title-foreground">
                         <div className="flex items-center gap-2">
                             <Cpu className="h-5 w-5 text-primary"/>
                             AI Providers
@@ -574,7 +574,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                     </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="service-integrations">
-                    <AccordionTrigger className="text-lg font-semibold hover:no-underline">
+                    <AccordionTrigger className="text-lg font-semibold hover:no-underline text-title-foreground">
                         <div className="flex items-center gap-2">
                             <Share2 className="h-5 w-5 text-primary"/>
                             Service Integrations
@@ -622,7 +622,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                     </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="audio-language">
-                    <AccordionTrigger className="text-lg font-semibold hover:no-underline">
+                    <AccordionTrigger className="text-lg font-semibold hover:no-underline text-title-foreground">
                         <div className="flex items-center gap-2">
                             <AudioLines className="h-5 w-5 text-primary"/>
                             Audio & Language
@@ -662,7 +662,7 @@ export function ApiSettings({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                     </AccordionContent>
                 </AccordionItem>
                  <AccordionItem value="connectivity">
-                    <AccordionTrigger className="text-lg font-semibold hover:no-underline">
+                    <AccordionTrigger className="text-lg font-semibold hover:no-underline text-title-foreground">
                         <div className="flex items-center gap-2">
                            <Link className="h-5 w-5 text-primary"/>
                             Connectivity

@@ -90,7 +90,7 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
               </Button>
               <div className="flex-grow">
                 <CardTitle className="flex items-center gap-2 text-title-foreground">
-                  <BookText className="h-6 w-6" />
+                  <BookText className="h-6 w-6 text-primary" />
                   Captain's Log
                 </CardTitle>
                 <CardDescription>Live feed of all service activities. Click a row for more details.</CardDescription>

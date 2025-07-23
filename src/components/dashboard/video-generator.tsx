@@ -94,7 +94,7 @@ export function VideoGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
               </Button>
               <div className="flex-grow">
                 <CardTitle className="flex items-center gap-2 text-title-foreground">
-                  <Video className="h-6 w-6" />
+                  <Video className="h-6 w-6 text-primary" />
                   Avatar Forge
                 </CardTitle>
                 <CardDescription>
