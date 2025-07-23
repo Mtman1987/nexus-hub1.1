@@ -30,12 +30,12 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
         <meta name="theme-color" content="#000000" />
       </head>
-      <body className="font-body antialiased text-foreground bg-background">
+      <body className="font-body antialiased text-foreground">
         <LogProvider>
           <BotNameProvider>
             <SidebarProvider>
               <ControlPanelProvider>
-                <div className="flex h-screen w-screen overflow-hidden">
+                <div className="flex h-screen w-screen overflow-hidden bg-background">
                     <Sidebar />
                     <div className="flex flex-col flex-1 h-screen overflow-hidden">
                        <Header />
