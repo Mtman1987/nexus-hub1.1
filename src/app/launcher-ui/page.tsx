@@ -18,7 +18,7 @@ export default function LauncherPage() {
   useEffect(() => {
     // Check for the primary required key to determine if setup is needed.
     const hasApiKey = !!localStorage.getItem('edenApiKey');
-    setIsSetupComplete(hasApiKey);
+    setIsSetupComplete(hasKey);
     if (!hasApiKey) {
       setShowSetup(true);
     }
@@ -42,7 +42,7 @@ export default function LauncherPage() {
              </p>
           </div>
           
-          <Button size="lg" onClick={handleLaunch} className="w-full" variant="outline">
+          <Button size="lg" onClick={handleLaunch} className="w-full">
             <Rocket className="mr-2 h-5 w-5" />
             Launch Dashboard
           </Button>
