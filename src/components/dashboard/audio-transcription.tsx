@@ -63,7 +63,7 @@ export function AudioTranscription({ onPopOut, isPoppedOut = false, onHide, drag
                             <GripVertical />
                         </Button>
                         <div className="flex-grow">
-                            <CardTitle className="flex items-center gap-2">
+                            <CardTitle className="flex items-center gap-2 text-title-foreground">
                                 <FileAudio className="h-6 w-6 text-primary" />
                                 Audio Transcription
                             </CardTitle>
@@ -98,7 +98,7 @@ export function AudioTranscription({ onPopOut, isPoppedOut = false, onHide, drag
                 <div className="flex-grow">
                     {resultText && (
                         <Alert>
-                            <Mic className="h-4 w-4" />
+                            <Mic className="h-4 w-4 text-primary" />
                             <AlertTitle>Transcription Result</AlertTitle>
                             <ScrollArea className="h-32 mt-2">
                                 <AlertDescription>{resultText}</AlertDescription>

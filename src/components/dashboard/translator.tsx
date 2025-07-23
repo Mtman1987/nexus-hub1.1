@@ -131,7 +131,7 @@ export function Translator({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                             <GripVertical />
                         </Button>
                         <div className="flex-grow">
-                            <CardTitle className="flex items-center gap-2">
+                            <CardTitle className="flex items-center gap-2 text-title-foreground">
                                 <Languages className="h-6 w-6 text-primary" />
                                 Translator
                             </CardTitle>

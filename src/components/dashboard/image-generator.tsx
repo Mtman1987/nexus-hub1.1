@@ -109,7 +109,7 @@ export function ImageGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-title-foreground">
                   <ImageIcon className="h-6 w-6 text-primary" />
                   Stargate Imagery
                 </CardTitle>

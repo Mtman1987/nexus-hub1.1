@@ -125,7 +125,7 @@ export function LoreWeaver({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-title-foreground">
                   <ScrollText className="h-6 w-6 text-primary" />
                   Lore Weaver
                 </CardTitle>
@@ -160,7 +160,7 @@ export function LoreWeaver({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
               <Alert className="flex flex-col">
                   <div className="flex justify-between items-start shrink-0">
                       <AlertTitle className="flex items-center gap-2">
-                          <Wand2 className="h-4 w-4" />
+                          <Wand2 className="h-4 w-4 text-primary" />
                           COSMO's Transmission
                       </AlertTitle>
                       <Button variant="outline" size="sm" onClick={handleSaveTransmission}>

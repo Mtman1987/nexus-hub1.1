@@ -353,7 +353,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
                 <div key={msg.id} className={`group flex items-start gap-3 ${msg.sender === 'user' ? 'justify-end' : ''}`}>
                   {msg.sender === 'ai' && (
                     <div className="flex flex-col gap-1 items-center">
-                        <Bot className="h-6 w-6 text-accent flex-shrink-0" />
+                        <Bot className="h-6 w-6 text-primary" />
                         {loadingAudio === msg.id ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (

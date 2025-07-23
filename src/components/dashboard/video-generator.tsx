@@ -160,7 +160,7 @@ export function VideoGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
             <Popover>
                 <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full justify-start">
-                        <Settings className="mr-2 h-4 w-4" />
+                        <Settings className="mr-2 h-4 w-4 text-primary" />
                         Options
                         <ChevronDown className="ml-auto h-4 w-4" />
                     </Button>

@@ -195,7 +195,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
         case 'lore':
             return (
                 <div className="flex items-start gap-3">
-                    <FileText className="h-5 w-5 mt-1" />
+                    <FileText className="h-5 w-5 mt-1 text-primary" />
                     <div className="flex-grow">
                         <p className="font-semibold text-accent">Draft: <span className="font-normal text-foreground">{item.content.prompt}</span></p>
                         <p className="text-sm truncate">{item.content.response}</p>
@@ -205,7 +205,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
         case 'log':
             return (
                 <div className="flex items-start gap-3">
-                    <BookText className="h-5 w-5 mt-1" />
+                    <BookText className="h-5 w-5 mt-1 text-primary" />
                     <div className="flex-grow">
                         <div className="flex items-center gap-2">
                             <span className="font-semibold">{item.content.service}</span>
@@ -219,7 +219,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
         case 'chat':
             return (
                 <div className="flex items-start gap-3">
-                    {item.content.sender === 'ai' ? <Bot className="h-5 w-5 mt-1 text-accent" /> : <User className="h-5 w-5 mt-1" />}
+                    {item.content.sender === 'ai' ? <Bot className="h-5 w-5 mt-1 text-primary" /> : <User className="h-5 w-5 mt-1" />}
                     <div className="flex-grow">
                         <p className="text-sm">{item.content.text}</p>
                     </div>
@@ -243,7 +243,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                 <GripVertical />
               </Button>
             <div className="flex-grow">
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-title-foreground">
                 <Save className="h-6 w-6 text-primary" />
                 Saved Items
               </CardTitle>
@@ -359,7 +359,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="lore-response">Lore Content</Label>
-                    <Textarea id="lore-response" value={draftContent.response} onChange={(e) => setDraftContent({...draftContent, response: e.target.value})} className="h-32" />
+                    <Textarea id="lore-response" value={draftContent.response} onChange={e => setDraftContent({...draftContent, response: e.target.value})} className="h-32" />
                 </div>
                 <Separator />
                 <div className="space-y-3 p-3 border rounded-lg">
@@ -372,7 +372,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                     {isAiLoading && <Loader2 className="h-5 w-5 animate-spin mx-auto" />}
                     {aiSuggestion && (
                         <UiAlert>
-                            <Wand2 className="h-4 w-4" />
+                            <Wand2 className="h-4 w-4 text-primary" />
                             <UiAlertTitle>COSMO Suggests</UiAlertTitle>
                             <UiAlertDescription>{aiSuggestion}</UiAlertDescription>
                         </UiAlert>
