@@ -5,7 +5,7 @@
 
 @layer base {
   :root {
-    --background: 240 10% 3.9%;
+    --background: 240 5% 16%;
     --foreground: 210 40% 98%;
 
     /* Card and Sidebar Background */
@@ -15,44 +15,36 @@
     --popover: 240 10% 3.9%;
     --popover-foreground: 210 40% 98%;
 
-    /* Purple for form controls and major actions */
-    --primary: 262 84% 59%;
+    /* Primary color: Deep purple for major actions */
+    --primary: 262 52% 47%;
     --primary-foreground: 210 40% 98%;
-    
-    /* Teal for accents, icons, and progress bars */
-    --accent: 173 97% 42%;
+
+    /* Accent color: Teal for highlights and interactive elements */
+    --accent: 174 100% 29%;
     --accent-foreground: 210 40% 98%;
     
-    /* Yellow-Orange for titles and destructive/warning states */
+    /* Destructive color: Yellow-Orange for warnings */
     --destructive: 39 98% 50%;
     --destructive-foreground: 210 40% 98%;
 
-    /* Custom variables for specific UI elements, tied to the main theme */
-    --icon-unified-chat: var(--accent);
-    --title-unified-chat: var(--destructive);
-
     /* Secondary elements (e.g., secondary buttons) */
-    --secondary: 240 4% 18%; /* Dark gray with a hint of purple */
+    --secondary: 240 4% 18%;
     --secondary-foreground: 210 40% 98%;
     
     /* Muted elements (e.g., subtle backgrounds, code blocks) */
-    --muted: 240 4% 12%; /* Even darker gray */
+    --muted: 240 4% 12%;
     --muted-foreground: 210 40% 98%;
     
     --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%; /* Use border color for inputs */
-    --ring: 262 84% 59%; /* Purple for focus rings */
+    --input: 240 3.7% 15.9%;
+    --ring: 262 52% 47%; /* Purple for focus rings */
 
     /* Chart Palette */
-    --chart-1: hsl(var(--accent));   /* Teal */
-    --chart-2: hsl(var(--destructive)); /* Yellow-Orange */
-    --chart-3: hsl(var(--primary));  /* Purple */
-    --chart-4: hsl(var(--foreground)); /* White */
-    --chart-5: 210 40% 98%; /* A different shade if needed */
-
-    /* Custom variables for interactive elements */
-    --interactive-element: 173 97% 42%;
-    --interactive-element-foreground: 210 40% 98%;
+    --chart-1: 174 100% 29%; /* Teal */
+    --chart-2: 39 98% 50%;   /* Yellow-Orange */
+    --chart-3: 262 52% 47%;  /* Purple */
+    --chart-4: 210 40% 98%;  /* White */
+    --chart-5: 210 40% 98%;
   }
 
   .dark {
