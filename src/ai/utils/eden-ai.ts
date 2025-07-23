@@ -102,14 +102,23 @@ export async function callEdenAiChat(
         
         // Handle potential variations in the response structure
         const responseProvider = result[provider];
-        if (!responseProvider) {
-             throw new Error(`Provider '${provider}' not found in Eden AI response. Full response: ${JSON.stringify(result)}`);
-        }
+        let text = '';
 
-        const text = responseProvider.generated_text;
+        if (responseProvider && responseProvider.generated_text) {
+             text = responseProvider.generated_text;
+        } else if (result.choices && result.choices[0]?.message?.content) {
+            // Handle cases where the response is not nested under the provider key
+            text = result.choices[0].message.content;
+        } else if (responseProvider) {
+            // If the provider key exists but something else is wrong
+             throw new Error(`Unexpected response format from Eden AI. Expected 'generated_text' string. Got: ${JSON.stringify(responseProvider)}`);
+        } else {
+            // If the provider key is missing entirely
+            throw new Error(`Provider '${provider}' not found in Eden AI response. Full response: ${JSON.stringify(result)}`);
+        }
         
         if (typeof text !== 'string') {
-             throw new Error(`Unexpected response format from Eden AI. Expected 'generated_text' string. Got: ${JSON.stringify(responseProvider)}`);
+             throw new Error(`Unexpected response format from Eden AI. 'generated_text' was not a string. Got: ${JSON.stringify(responseProvider || result)}`);
         }
         
         logs.push({ service: 'Eden', level: 'info', message: 'Successfully received response from Eden AI.' });
