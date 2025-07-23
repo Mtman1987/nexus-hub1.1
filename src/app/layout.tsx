@@ -5,8 +5,11 @@ import { Toaster } from "@/components/ui/toaster";
 import { LogProvider } from '@/context/LogContext';
 import { BotNameProvider } from '@/context/BotNameContext';
 import { SidebarProvider } from '@/context/SidebarContext';
-import { MobileSidebar } from '@/components/layout/mobile-sidebar';
 import { Sidebar } from '@/components/layout/sidebar';
+import { Header } from '@/components/layout/header';
+import { ControlPanelProvider } from '@/context/ControlPanelContext';
+import { ControlPanel } from '@/components/layout/control-panel';
+
 
 export const metadata: Metadata = {
   title: 'Apollo Station',
@@ -38,15 +41,18 @@ export default function RootLayout({
         <LogProvider>
           <BotNameProvider>
             <SidebarProvider>
-              <div className="flex min-h-screen w-full">
-                <Sidebar />
-                <div className="md:hidden p-4">
-                  <MobileSidebar />
+              <ControlPanelProvider>
+                <div className="flex min-h-screen w-full">
+                    <Sidebar />
+                    <div className="flex flex-col flex-1">
+                       <Header />
+                        <main className="flex-1 flex flex-col overflow-auto">
+                          {children}
+                        </main>
+                    </div>
+                    <ControlPanel />
                 </div>
-                <main className="flex-1 flex flex-col overflow-auto">
-                  {children}
-                </main>
-              </div>
+              </ControlPanelProvider>
             </SidebarProvider>
           </BotNameProvider>
         </LogProvider>
@@ -55,5 +61,3 @@ export default function RootLayout({
     </html>
   );
 }
-
-    

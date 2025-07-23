@@ -4,8 +4,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { PopOutButton } from './pop-out-button';
-import { SlidersHorizontal, GripVertical, EyeOff, Monitor, Palette, CaseUpper, Save, Check, RefreshCw } from 'lucide-react';
+import { Monitor, Palette, CaseUpper, Save, RefreshCw, SlidersHorizontal, X } from 'lucide-react';
 import { useLogs } from '@/context/LogContext';
 import { useToast } from '@/hooks/use-toast';
 import { Checkbox } from '../ui/checkbox';
@@ -15,6 +14,7 @@ import { Input } from '../ui/input';
 import { Slider } from '../ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ALL_MODULES_CONFIG } from '@/lib/modules';
+import { useControlPanel } from '@/context/ControlPanelContext';
 
 const SETTINGS_KEY = 'commandCenterSettings';
 const PROFILES_KEY = 'commandCenterProfiles';
@@ -41,16 +41,13 @@ const defaultSettings: CommandCenterSettings = {
 };
 
 interface CommandCenterControlProps {
-    onPopOut?: () => void;
     isPoppedOut?: boolean;
-    onHide?: () => void;
-    dragHandleProps?: any;
-    isPreview?: boolean;
 }
 
-export function CommandCenterControl({ onPopOut, isPoppedOut = false, onHide, dragHandleProps, isPreview }: CommandCenterControlProps) {
+export function CommandCenterControl({ isPoppedOut = false }: CommandCenterControlProps) {
     const { addLog } = useLogs();
     const { toast } = useToast();
+    const { setPanelOpen } = useControlPanel();
     const [settings, setSettings] = useState<CommandCenterSettings>(defaultSettings);
     const [profiles, setProfiles] = useState<Profile[]>([]);
     const [selectedProfile, setSelectedProfile] = useState<string>('profile1');
@@ -79,7 +76,6 @@ export function CommandCenterControl({ onPopOut, isPoppedOut = false, onHide, dr
     }, [addLog, broadcastSettings]);
     
     useEffect(() => {
-        if (isPreview) return;
         try {
             const saved = localStorage.getItem(SETTINGS_KEY);
             if(saved) setSettings(JSON.parse(saved));
@@ -91,7 +87,7 @@ export function CommandCenterControl({ onPopOut, isPoppedOut = false, onHide, dr
         } catch(e) {
             console.error("Failed to load command center settings", e);
         }
-    }, [isPreview, addLog]);
+    }, [addLog]);
 
     const handleModuleToggle = (moduleId: string) => {
         const newVisible = settings.visibleModules.includes(moduleId)
@@ -141,36 +137,30 @@ export function CommandCenterControl({ onPopOut, isPoppedOut = false, onHide, dr
     const modulesToShow = ALL_MODULES_CONFIG;
 
     return (
-        <Card className="flex flex-col bg-card/80">
+        <Card className="flex flex-col bg-card/80 h-full border-0 rounded-none">
             <CardHeader>
                 <div className="flex justify-between items-start">
-                    <div className="flex items-center gap-2 flex-grow">
-                        <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto">
-                            <GripVertical />
-                        </Button>
-                        <div className="flex-grow">
-                            <CardTitle className="flex items-center gap-2 text-title-foreground">
-                                <SlidersHorizontal className="h-6 w-6" />
-                                Command Center Control
-                            </CardTitle>
-                            <CardDescription>
-                                Remotely configure your separate dashboard window.
-                            </CardDescription>
-                        </div>
+                    <div className="flex-grow">
+                        <CardTitle className="flex items-center gap-2 text-title-foreground">
+                            <SlidersHorizontal className="h-6 w-6" />
+                            Control Panel
+                        </CardTitle>
+                        <CardDescription>
+                            Remotely configure your separate dashboard window.
+                        </CardDescription>
                     </div>
-                    <div className="flex items-center">
-                        <Button asChild variant="outline" size="sm" className="mr-2">
-                           <a href="/dashboard" target="_blank" rel="noopener noreferrer">
-                             <Monitor className="mr-2 h-4 w-4"/>
-                             Open Command Center
-                           </a>
-                        </Button>
-                        {!isPoppedOut && onHide && ( <Button variant="ghost" size="icon" onClick={onHide}> <EyeOff className="h-4 w-4" /> </Button>)}
-                        {!isPoppedOut && onPopOut && <PopOutButton onClick={onPopOut} />}
-                    </div>
+                    <Button variant="ghost" size="icon" onClick={() => setPanelOpen(false)}>
+                        <X className="h-5 w-5"/>
+                    </Button>
                 </div>
             </CardHeader>
-            <CardContent className="flex-grow flex flex-col gap-4">
+            <CardContent className="flex-grow flex flex-col gap-4 overflow-y-auto">
+                 <Button asChild variant="outline" size="sm" className="w-full">
+                   <a href="/dashboard" target="_blank" rel="noopener noreferrer">
+                     <Monitor className="mr-2 h-4 w-4"/>
+                     Open Command Center
+                   </a>
+                </Button>
                 <div className="space-y-4">
                      {/* Profile Management */}
                      <div className="p-3 border rounded-lg space-y-3">
@@ -193,7 +183,7 @@ export function CommandCenterControl({ onPopOut, isPoppedOut = false, onHide, dr
                     </div>
                     {/* Module Visibility */}
                     <div className="p-3 border rounded-lg space-y-2">
-                         <Label className="text-base font-semibold flex items-center gap-2"><EyeOff className="h-5 w-5"/>Visible Modules</Label>
+                         <Label className="text-base font-semibold flex items-center gap-2">Visible Modules</Label>
                         <ScrollArea className="h-32">
                            <div className="grid grid-cols-2 gap-2 pr-4">
                             {modulesToShow.map(module => (
@@ -251,5 +241,3 @@ export function CommandCenterControl({ onPopOut, isPoppedOut = false, onHide, dr
         </Card>
     );
 }
-
-    
