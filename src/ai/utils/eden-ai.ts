@@ -99,26 +99,22 @@ export async function callEdenAiChat(
         }
 
         const result = await response.json();
-        
-        // Handle potential variations in the response structure
-        const responseProvider = result[provider];
         let text = '';
 
-        if (responseProvider && responseProvider.generated_text) {
-             text = responseProvider.generated_text;
+        // Robustly parse the response, trying different expected structures.
+        if (result[provider] && result[provider].generated_text) {
+            // Standard Eden AI format
+            text = result[provider].generated_text;
         } else if (result.choices && result.choices[0]?.message?.content) {
-            // Handle cases where the response is not nested under the provider key
+            // Direct proxy format (like OpenAI's raw response)
             text = result.choices[0].message.content;
-        } else if (responseProvider) {
-            // If the provider key exists but something else is wrong
-             throw new Error(`Unexpected response format from Eden AI. Expected 'generated_text' string. Got: ${JSON.stringify(responseProvider)}`);
         } else {
-            // If the provider key is missing entirely
-            throw new Error(`Provider '${provider}' not found in Eden AI response. Full response: ${JSON.stringify(result)}`);
+            // If neither of the above work, the format is unexpected.
+            throw new Error(`Unexpected response format from Eden AI provider '${provider}'. Full response: ${JSON.stringify(result)}`);
         }
         
         if (typeof text !== 'string') {
-             throw new Error(`Unexpected response format from Eden AI. 'generated_text' was not a string. Got: ${JSON.stringify(responseProvider || result)}`);
+             throw new Error(`Unexpected response format from Eden AI. 'generated_text' was not a string. Got: ${JSON.stringify(result)}`);
         }
         
         logs.push({ service: 'Eden', level: 'info', message: 'Successfully received response from Eden AI.' });
