@@ -27,8 +27,8 @@
     --accent: 262 52% 47%; /* #673AB7 */
     --accent-foreground: 210 40% 98%;
     
-    /* Destructive color now uses Primary for consistency */
-    --destructive: 174 100% 29%; /* Teal */
+    /* Destructive color now uses Title Orange for consistency */
+    --destructive: 39 98% 50%; /* Orange */
     --destructive-foreground: 210 40% 98%;
 
     /* Secondary elements: Deep Purple */

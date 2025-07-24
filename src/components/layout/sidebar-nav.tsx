@@ -61,7 +61,7 @@ export function SidebarNav({ isCollapsed = false, className }: SidebarNavProps) 
 
   return (
       <nav className={cn("flex flex-col items-start gap-1 p-2 text-base font-medium lg:p-4", className)}>
-        <Label className="px-3 py-2 text-sm font-semibold text-primary">MODULE VISIBILITY</Label>
+        <Label className="px-3 py-2 text-sm font-semibold text-title-foreground">MODULE VISIBILITY</Label>
            <div className="grid gap-1 pr-2 w-full">
             {ALL_MODULES_CONFIG.map(module => {
                 const Icon = module.icon;
