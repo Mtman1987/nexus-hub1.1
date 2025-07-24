@@ -9,7 +9,6 @@ import { PanelLeftClose, PanelRightClose, Eye, EyeOff } from 'lucide-react';
 import { CommunityLogo } from '../icons/community-logo';
 import { ALL_MODULES_CONFIG } from '@/lib/modules';
 import React, { useState, useEffect } from 'react';
-import { ScrollArea } from '../ui/scroll-area';
 
 export function Sidebar() {
   const { isCollapsed, setCollapsed, setHiddenModules } = useSidebar();
@@ -28,9 +27,8 @@ export function Sidebar() {
   };
 
   if (!isClient) {
-    // Render a placeholder on the server to avoid layout shift,
-    // but without any of the client-side dependent logic.
-    return <aside className="sticky top-0 h-screen w-64 flex-col border-r bg-primary/20 hidden md:flex" />;
+    // Return null on the server to prevent hydration mismatch
+    return null;
   }
 
   return (
