@@ -32,11 +32,11 @@ export default function RootLayout({
           <BotNameProvider>
             <SidebarProvider>
               <ControlPanelProvider>
-                <div className="flex min-h-screen w-full bg-background text-foreground">
+                <div className="flex h-screen w-full bg-background text-foreground overflow-hidden">
                     <Sidebar />
-                    <div className="flex flex-col flex-1">
+                    <div className="flex flex-col flex-1 overflow-hidden">
                        <Header />
-                        <main className="flex-1">
+                        <main className="flex-1 overflow-y-auto">
                           {children}
                         </main>
                     </div>
