@@ -1,7 +1,6 @@
-
 // Import the functions you need from the SDKs you need
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
+import { getFirestore, Firestore } from "firebase/firestore";
 
 // Function to safely get items from localStorage, only on the client side.
 const getLocalStorageItem = (key: string): string | null => {
@@ -11,23 +10,28 @@ const getLocalStorageItem = (key: string): string | null => {
   return null;
 };
 
+let app: FirebaseApp | null = null;
+let db: Firestore | null = null;
+
 // Your web app's Firebase configuration
 // This will now be dynamically loaded from localStorage.
 const firebaseConfig = {
-  apiKey: getLocalStorageItem('firebaseApiKey') || "FIRE_BASE_API_HERE",
-  authDomain: getLocalStorageItem('firebaseAuthDomain') || "sample-firebase-ai-app-58f71.firebaseapp.com",
-  projectId: getLocalStorageItem('firebaseProjectId') || "sample-firebase-ai-app-58f71",
-  storageBucket: getLocalStorageItem('firebaseStorageBucket') || "sample-firebase-ai-app-58f71.appspot.com",
-  messagingSenderId: getLocalStorageItem('firebaseMessagingSenderId') || "376700116772",
-  appId: getLocalStorageItem('firebaseAppId') || "1:376700116772:web:f85ead3bc5ec9d5a759db1",
+  apiKey: getLocalStorageItem('firebaseApiKey'),
+  authDomain: getLocalStorageItem('firebaseAuthDomain'),
+  projectId: getLocalStorageItem('firebaseProjectId'),
+  storageBucket: getLocalStorageItem('firebaseStorageBucket'),
+  messagingSenderId: getLocalStorageItem('firebaseMessagingSenderId'),
+  appId: getLocalStorageItem('firebaseAppId'),
 };
 
-// Initialize Firebase
-// We check if the essential config is present before initializing.
-const isConfigured = firebaseConfig.apiKey && firebaseConfig.apiKey !== "FIRE_BASE_API_HERE";
-const app = !getApps().length && isConfigured ? initializeApp(firebaseConfig) : (getApps().length > 0 ? getApp() : null);
-const db = app ? getFirestore(app) : null;
+// Initialize Firebase only if the config is valid and it hasn't been initialized yet.
+// This check prevents errors when the app first loads without any keys in localStorage.
+if (firebaseConfig.apiKey && !getApps().length) {
+  app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+} else if (getApps().length) {
+  app = getApp();
+  db = getFirestore(app);
+}
 
 export { app, db };
-
-    

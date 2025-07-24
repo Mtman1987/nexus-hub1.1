@@ -75,7 +75,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
 
   // Load bot store from Firebase
   useEffect(() => {
-    if (isPreview) return;
+    if (isPreview || !db) return; // Do nothing if in preview or if db is not initialized
     try {
       // The collection ID "bot-personalities" is defined here.
       const q = query(collection(db, "bot-personalities"));
@@ -85,17 +85,22 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
           store.push({ id: doc.id, ...doc.data() } as BotPersonalityType);
         });
         setBotStore(store);
+      }, (error) => {
+        console.error("Firebase onSnapshot error:", error);
+        addLog({ service: 'System', level: 'error', message: 'Failed to connect to Bot Store.', details: error.message });
       });
       return () => unsubscribe();
     } catch (e) {
-      console.error("Firebase connection error. Have you configured src/lib/firebase.ts?", e)
+      const err = e as Error;
+      console.error("Firebase connection error. Have you configured your API keys in the vault?", err);
       toast({
         title: "Firebase Error",
-        description: "Could not connect to the Bot Store. Please ensure your firebase.ts config is correct.",
+        description: "Could not connect to the Bot Store. Please ensure your Firebase keys are correct in the API Vault.",
         variant: "destructive"
-      })
+      });
+      addLog({ service: 'System', level: 'error', message: 'Failed to connect to Bot Store.', details: err.stack });
     }
-  }, [isPreview, toast]);
+  }, [isPreview, toast, addLog]);
 
   // Load local personalities
   useEffect(() => {
@@ -181,6 +186,10 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
   };
 
   const handleShareToStore = async () => {
+    if (!db) {
+      toast({ title: "Firebase Not Configured", description: "Please configure Firebase in the API Vault to share personalities.", variant: "destructive" });
+      return;
+    }
     const personalityToExport = personalities.find(p => p.id === selectedPersonalityId);
     if (!personalityToExport || personalityToExport.isDefault) {
         toast({ title: "Share Failed", description: "You can only share custom personalities.", variant: "destructive" });
@@ -391,7 +400,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                                   <SelectItem key={p.id} value={p.name}>{p.name}</SelectItem>
                               ))
                              ) : (
-                              <div className="p-2 text-sm text-muted-foreground">Store is empty.</div>
+                              <div className="p-2 text-sm text-muted-foreground">Store is empty or not configured.</div>
                              )}
                           </SelectContent>
                       </Select>
