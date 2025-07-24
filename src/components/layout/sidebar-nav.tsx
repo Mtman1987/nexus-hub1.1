@@ -39,11 +39,11 @@ export function SidebarNav({ isCollapsed = false, className }: SidebarNavProps) 
             return(
             <Tooltip key={module.id} delayDuration={0}>
               <TooltipTrigger asChild>
-                 <div className={cn(navClass, "justify-center px-0")}>
+                 <div className="flex items-center justify-between rounded-lg px-2 py-2 text-muted-foreground transition-all hover:bg-secondary/20">
                    {Icon && <Icon className="h-5 w-5 text-secondary" />}
                    <Checkbox
                       id={`col-vis-${module.id}`}
-                      className="ml-2 data-[state=checked]:bg-primary"
+                      className="data-[state=checked]:bg-primary"
                       checked={!hiddenModules.includes(module.id)}
                       onCheckedChange={(checked) => handleModuleToggle(module.id, !!checked)}
                    />

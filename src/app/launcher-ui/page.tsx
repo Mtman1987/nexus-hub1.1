@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -36,7 +37,7 @@ export default function LauncherPage() {
   return (
     <>
       <SetupDialog open={showSetup} onOpenChange={setShowSetup} />
-      <div className="flex h-screen w-screen items-center justify-center text-foreground">
+      <div className="flex h-screen w-screen items-center justify-center overflow-hidden text-foreground">
         <div className="relative flex flex-col items-center gap-6 text-center p-8 rounded-lg max-w-md mx-auto">
             <CommunityLogo className="w-24 h-auto" />
           
