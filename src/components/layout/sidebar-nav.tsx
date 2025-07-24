@@ -49,11 +49,11 @@ export function SidebarNav({ isCollapsed = false, className }: SidebarNavProps) 
                       checked={!hiddenModules.includes(module.id)}
                       onCheckedChange={(checked) => handleModuleToggle(module.id, !!checked)}
                    />
-                   {Icon && <Icon className="h-5 w-5 text-[hsl(var(--icon-unified-chat))]" />}
+                   {Icon && <Icon className="h-5 w-5" />}
                 </div>
               </TooltipTrigger>
               <TooltipContent side="right">
-                <span className="text-[hsl(var(--title-unified-chat))]">{module.title}</span>
+                <span className="text-title-foreground">{module.title}</span>
               </TooltipContent>
             </Tooltip>
           )})}
@@ -63,10 +63,9 @@ export function SidebarNav({ isCollapsed = false, className }: SidebarNavProps) 
   }
 
   return (
-      <nav className={cn("flex flex-col items-start gap-1 p-2 text-base font-medium lg:p-4 flex-grow", className)}>
+      <nav className={cn("flex flex-col items-start gap-1 p-2 text-base font-medium lg:p-4 flex-grow overflow-y-auto", className)}>
         <Label className="px-3 py-2 text-xs font-semibold text-muted-foreground">MODULE VISIBILITY</Label>
-        <ScrollArea className="w-full">
-           <div className="grid gap-1 pr-2">
+           <div className="grid gap-1 pr-2 w-full">
             {ALL_MODULES_CONFIG.map(module => {
                 const Icon = module.icon;
                 return (
@@ -76,13 +75,12 @@ export function SidebarNav({ isCollapsed = false, className }: SidebarNavProps) 
                       checked={!hiddenModules.includes(module.id)}
                       onCheckedChange={(checked) => handleModuleToggle(module.id, !!checked)}
                       />
-                    {Icon && <Icon className="h-4 w-4 text-[hsl(var(--icon-unified-chat))]" />}
-                    <Label htmlFor={`vis-${module.id}`} className="w-full cursor-pointer text-[hsl(var(--title-unified-chat))]">{module.title}</Label>
+                    {Icon && <Icon className="h-4 w-4" />}
+                    <Label htmlFor={`vis-${module.id}`} className="w-full cursor-pointer">{module.title}</Label>
                   </div>
                 )
             })}
            </div>
-        </ScrollArea>
       </nav>
   );
 }
