@@ -15,9 +15,9 @@ import { Slider } from '../ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ALL_MODULES_CONFIG } from '@/lib/modules';
 import { useControlPanel } from '@/context/ControlPanelContext';
+import { useSidebar } from '@/context/SidebarContext';
 
-const SETTINGS_KEY = 'commandCenterSettings';
-const PROFILES_KEY = 'commandCenterProfiles';
+const PROFILES_KEY_PREFIX = 'commandCenterProfile_';
 
 export type CommandCenterSettings = {
     visibleModules: string[];
@@ -25,6 +25,7 @@ export type CommandCenterSettings = {
         background: string;
         primary: string;
         accent: string;
+        title: string;
     };
     fontSize: number;
 };
@@ -36,7 +37,12 @@ type Profile = {
 
 const defaultSettings: CommandCenterSettings = {
     visibleModules: ALL_MODULES_CONFIG.map(m => m.id),
-    theme: { background: '262 52% 10%', primary: '174 100% 34%', accent: '174 100% 34%' },
+    theme: { 
+        background: '240 5% 19%', 
+        primary: '174 100% 29%', 
+        accent: '262 52% 47%',
+        title: '39 98% 50%',
+    },
     fontSize: 16,
 };
 
@@ -48,8 +54,12 @@ export function CommandCenterControl({ isPoppedOut = false }: CommandCenterContr
     const { addLog } = useLogs();
     const { toast } = useToast();
     const { setPanelOpen } = useControlPanel();
-    const [settings, setSettings] = useState<CommandCenterSettings>(defaultSettings);
-    const [profiles, setProfiles] = useState<Profile[]>([]);
+    const { hiddenModules, setHiddenModules } = useSidebar();
+
+    // Local state for UI controls
+    const [theme, setTheme] = useState(defaultSettings.theme);
+    const [fontSize, setFontSize] = useState(defaultSettings.fontSize);
+    
     const [selectedProfile, setSelectedProfile] = useState<string>('profile1');
     const [profileNames, setProfileNames] = useState<{[key: string]: string}>({
         profile1: "Default",
@@ -57,92 +67,90 @@ export function CommandCenterControl({ isPoppedOut = false }: CommandCenterContr
         profile3: "Profile 3",
         profile4: "Profile 4",
     });
-
-    const broadcastSettings = useCallback((newSettings: CommandCenterSettings) => {
-        try {
-            const channel = new BroadcastChannel('command-center-settings');
-            channel.postMessage(newSettings);
-            channel.close();
-        } catch (e) {
-            console.error("BroadcastChannel failed", e);
-        }
-    }, []);
-
-    const saveSettings = useCallback((newSettings: CommandCenterSettings) => {
-        setSettings(newSettings);
-        localStorage.setItem(SETTINGS_KEY, JSON.stringify(newSettings));
-        broadcastSettings(newSettings);
-        addLog({ service: 'System', level: 'info', message: 'Command Center settings updated.' });
-    }, [addLog, broadcastSettings]);
     
-    useEffect(() => {
-        try {
-            const saved = localStorage.getItem(SETTINGS_KEY);
-            if(saved) setSettings(JSON.parse(saved));
+    // Function to apply styles to the document
+    const applySettings = useCallback((settings: CommandCenterSettings) => {
+        // Apply theme
+        document.documentElement.style.setProperty('--background', settings.theme.background);
+        document.documentElement.style.setProperty('--primary', settings.theme.primary);
+        document.documentElement.style.setProperty('--accent', settings.theme.accent);
+        document.documentElement.style.setProperty('--title-foreground', settings.theme.title);
 
-            const savedProfiles = localStorage.getItem(PROFILES_KEY);
-            if(savedProfiles) setProfiles(JSON.parse(savedProfiles));
+        // Apply font size
+        document.documentElement.style.fontSize = `${settings.fontSize}px`;
 
-            addLog({ service: 'System', level: 'info', message: 'Command Center Control initialized.' });
-        } catch(e) {
-            console.error("Failed to load command center settings", e);
-        }
-    }, [addLog]);
+        // Update local state
+        setTheme(settings.theme);
+        setFontSize(settings.fontSize);
+
+        // Update module visibility
+        const modulesToHide = ALL_MODULES_CONFIG.map(m => m.id).filter(id => !settings.visibleModules.includes(id));
+        setHiddenModules(modulesToHide);
+    }, [setHiddenModules]);
 
     const handleModuleToggle = (moduleId: string) => {
-        const newVisible = settings.visibleModules.includes(moduleId)
-            ? settings.visibleModules.filter(id => id !== moduleId)
-            : [...settings.visibleModules, moduleId];
-        saveSettings({ ...settings, visibleModules: newVisible });
+        const newHidden = hiddenModules.includes(moduleId)
+            ? hiddenModules.filter(id => id !== moduleId)
+            : [...hiddenModules, moduleId];
+        setHiddenModules(newHidden);
     };
     
-    const handleThemeChange = (colorType: 'background' | 'primary' | 'accent', value: string) => {
-        saveSettings({ ...settings, theme: { ...settings.theme, [colorType]: value } });
+    const handleThemeChange = (colorType: keyof typeof theme, value: string) => {
+        const newTheme = { ...theme, [colorType]: value };
+        setTheme(newTheme);
+        document.documentElement.style.setProperty(`--${colorType}`, value);
+        if (colorType === 'title') {
+             document.documentElement.style.setProperty('--title-foreground', value);
+        }
     };
 
     const handleFontSizeChange = (value: number[]) => {
-        saveSettings({ ...settings, fontSize: value[0] });
+        const newSize = value[0];
+        setFontSize(newSize);
+        document.documentElement.style.fontSize = `${newSize}px`;
     };
 
     const handleSaveProfile = () => {
-        const newProfiles = [...profiles];
-        const existingIndex = newProfiles.findIndex(p => p.name === selectedProfile);
-        const profileData = { name: selectedProfile, settings: settings };
-        if(existingIndex > -1) {
-            newProfiles[existingIndex] = profileData;
-        } else {
-            newProfiles.push(profileData);
+        const currentSettings: CommandCenterSettings = {
+            visibleModules: ALL_MODULES_CONFIG.map(m => m.id).filter(id => !hiddenModules.includes(id)),
+            theme,
+            fontSize,
+        };
+        
+        try {
+            localStorage.setItem(`${PROFILES_KEY_PREFIX}${selectedProfile}`, JSON.stringify(currentSettings));
+            toast({title: "Profile Saved", description: `Configuration saved to ${profileNames[selectedProfile]}.`});
+            addLog({ service: 'System', level: 'info', message: `User saved settings to profile: ${profileNames[selectedProfile]}` });
+        } catch (e) {
+            toast({title: "Save Failed", description: "Could not save profile.", variant: "destructive"});
         }
-        setProfiles(newProfiles);
-        localStorage.setItem(PROFILES_KEY, JSON.stringify(newProfiles));
-        toast({title: "Profile Saved", description: `Configuration saved to ${profileNames[selectedProfile]}.`})
     };
 
     const handleLoadProfile = (profileId: string) => {
         setSelectedProfile(profileId);
-        const profile = profiles.find(p => p.name === profileId);
-        if(profile) {
-            saveSettings(profile.settings);
-            toast({title: "Profile Loaded", description: `Loaded configuration from ${profileNames[profileId]}.`})
-        } else {
-            toast({title: "Profile Empty", description: `No saved settings found for ${profileNames[profileId]}.`, variant: "destructive"})
+        try {
+            const profileJSON = localStorage.getItem(`${PROFILES_KEY_PREFIX}${profileId}`);
+            if (profileJSON) {
+                const savedSettings: CommandCenterSettings = JSON.parse(profileJSON);
+                applySettings(savedSettings);
+                toast({title: "Profile Loaded", description: `Loaded configuration from ${profileNames[profileId]}.`});
+                addLog({ service: 'System', level: 'info', message: `User loaded settings from profile: ${profileNames[profileId]}` });
+            } else {
+                toast({title: "Profile Empty", description: `No saved settings found for ${profileNames[profileId]}.`, variant: "destructive"});
+            }
+        } catch(e) {
+             toast({title: "Load Failed", description: "Could not load profile.", variant: "destructive"});
         }
     };
     
     const handleResetToDefault = () => {
-        saveSettings(defaultSettings);
-        toast({title: "Settings Reset", description: "Command Center settings have been reset to default."});
+        applySettings(defaultSettings);
+        toast({title: "Settings Reset", description: "Control Panel settings have been reset to default."});
     }
-    
-    const parseHslString = (hsl: string): string => {
-        if (!hsl) return '#000000';
-        const [h, s, l] = hsl.split(' ');
-        return `hsl(${h} ${s} ${l})`;
-    };
     
     const hslToHex = (hslStr: string) => {
       if (!hslStr) return "#000000";
-      const [h, s, l] = hslStr.split(" ").map(Number);
+      const [h, s, l] = hslStr.replace(/%/g, '').split(" ").map(Number);
       const sNormalized = s / 100;
       const lNormalized = l / 100;
       let c = (1 - Math.abs(2 * lNormalized - 1)) * sNormalized;
@@ -170,11 +178,11 @@ export function CommandCenterControl({ isPoppedOut = false }: CommandCenterContr
 
     const hexToHsl = (hex: string): string => {
         let r = 0, g = 0, b = 0;
-        if (hex.length == 4) {
+        if (hex.length === 4) {
             r = parseInt(hex[1] + hex[1], 16);
             g = parseInt(hex[2] + hex[2], 16);
             b = parseInt(hex[3] + hex[3], 16);
-        } else if (hex.length == 7) {
+        } else if (hex.length === 7) {
             r = parseInt(hex.substring(1, 3), 16);
             g = parseInt(hex.substring(3, 5), 16);
             b = parseInt(hex.substring(5, 7), 16);
@@ -182,14 +190,14 @@ export function CommandCenterControl({ isPoppedOut = false }: CommandCenterContr
         r /= 255; g /= 255; b /= 255;
         let cmin = Math.min(r,g,b), cmax = Math.max(r,g,b), delta = cmax - cmin;
         let h = 0, s = 0, l = 0;
-        if (delta == 0) h = 0;
-        else if (cmax == r) h = ((g - b) / delta) % 6;
-        else if (cmax == g) h = (b - r) / delta + 2;
+        if (delta === 0) h = 0;
+        else if (cmax === r) h = ((g - b) / delta) % 6;
+        else if (cmax === g) h = (b - r) / delta + 2;
         else h = (r - g) / delta + 4;
         h = Math.round(h * 60);
         if (h < 0) h += 360;
         l = (cmax + cmin) / 2;
-        s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+        s = delta === 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
         s = +(s * 100).toFixed(1);
         l = +(l * 100).toFixed(1);
         return `${h} ${s}% ${l}%`;
@@ -207,7 +215,7 @@ export function CommandCenterControl({ isPoppedOut = false }: CommandCenterContr
                             Control Panel
                         </CardTitle>
                         <CardDescription>
-                            Remotely configure your separate dashboard window.
+                            Configure your local dashboard's appearance and modules.
                         </CardDescription>
                     </div>
                     <Button variant="ghost" size="icon" onClick={() => setPanelOpen(false)}>
@@ -216,12 +224,6 @@ export function CommandCenterControl({ isPoppedOut = false }: CommandCenterContr
                 </div>
             </CardHeader>
             <CardContent className="flex-grow flex flex-col gap-4 overflow-y-auto">
-                 <Button asChild variant="outline" size="sm" className="w-full">
-                   <a href="/dashboard" target="_blank" rel="noopener noreferrer">
-                     <Monitor className="mr-2 h-4 w-4"/>
-                     Open Command Center
-                   </a>
-                </Button>
                 <div className="space-y-4">
                      {/* Profile Management */}
                      <div className="p-3 border rounded-lg space-y-3">
@@ -251,7 +253,7 @@ export function CommandCenterControl({ isPoppedOut = false }: CommandCenterContr
                                 <div key={module.id} className="flex items-center gap-2">
                                     <Checkbox 
                                         id={`vis-${module.id}`}
-                                        checked={settings.visibleModules.includes(module.id)}
+                                        checked={!hiddenModules.includes(module.id)}
                                         onCheckedChange={() => handleModuleToggle(module.id)}
                                     />
                                     <Label htmlFor={`vis-${module.id}`} className="text-sm font-normal cursor-pointer">{module.title}</Label>
@@ -264,27 +266,31 @@ export function CommandCenterControl({ isPoppedOut = false }: CommandCenterContr
                     {/* Theming */}
                     <div className="p-3 border rounded-lg space-y-3">
                         <Label className="text-base font-semibold flex items-center gap-2"><Palette className="h-5 w-5"/>Theme</Label>
-                        <div className="grid grid-cols-3 gap-2">
+                        <div className="grid grid-cols-2 gap-4">
                            <div className="space-y-1">
                                 <Label htmlFor="bg-color">Background</Label>
-                                <Input id="bg-color" type="color" value={hslToHex(settings.theme.background)} onChange={e => handleThemeChange('background', hexToHsl(e.target.value))} />
+                                <Input id="bg-color" type="color" value={hslToHex(theme.background)} onChange={e => handleThemeChange('background', hexToHsl(e.target.value))} />
                            </div>
                            <div className="space-y-1">
                                 <Label htmlFor="pri-color">Primary</Label>
-                                <Input id="pri-color" type="color" value={hslToHex(settings.theme.primary)} onChange={e => handleThemeChange('primary', hexToHsl(e.target.value))} />
+                                <Input id="pri-color" type="color" value={hslToHex(theme.primary)} onChange={e => handleThemeChange('primary', hexToHsl(e.target.value))} />
                            </div>
                            <div className="space-y-1">
                                 <Label htmlFor="acc-color">Accent</Label>
-                                <Input id="acc-color" type="color" value={hslToHex(settings.theme.accent)} onChange={e => handleThemeChange('accent', hexToHsl(e.target.value))} />
+                                <Input id="acc-color" type="color" value={hslToHex(theme.accent)} onChange={e => handleThemeChange('accent', hexToHsl(e.target.value))} />
+                           </div>
+                            <div className="space-y-1">
+                                <Label htmlFor="title-color">Title</Label>
+                                <Input id="title-color" type="color" value={hslToHex(theme.title)} onChange={e => handleThemeChange('title', hexToHsl(e.target.value))} />
                            </div>
                         </div>
                     </div>
 
                      {/* Font Size */}
                      <div className="p-3 border rounded-lg space-y-3">
-                         <Label className="text-base font-semibold flex items-center gap-2"><CaseUpper className="h-5 w-5"/>Font Size ({settings.fontSize}px)</Label>
+                         <Label className="text-base font-semibold flex items-center gap-2"><CaseUpper className="h-5 w-5"/>Font Size ({fontSize}px)</Label>
                          <Slider 
-                            value={[settings.fontSize]}
+                            value={[fontSize]}
                             min={12}
                             max={24}
                             step={1}
@@ -302,5 +308,3 @@ export function CommandCenterControl({ isPoppedOut = false }: CommandCenterContr
         </Card>
     );
 }
-
-    

@@ -5,19 +5,10 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { CommandCenterControl } from "../dashboard/command-center-control";
-import { useState, useEffect } from 'react';
+import { useControlPanel } from "@/context/ControlPanelContext";
 
 export function MobileSidebar() {
-  const [isPanelOpen, setPanelOpen] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted) {
-    return null;
-  }
+  const { isPanelOpen, setPanelOpen } = useControlPanel();
   
   return (
     <Sheet open={isPanelOpen} onOpenChange={setPanelOpen}>
