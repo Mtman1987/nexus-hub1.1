@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { ShieldCheck, Save, LifeBuoy, Power, Bot, PlusCircle, Trash2, Link, Copy, Server, KeyRound, RefreshCw, Radio, GripVertical, EyeOff, Lock, Unlock, Cpu, Share2, Star, Languages, AudioLines, AlertTriangle } from 'lucide-react';
+import { ShieldCheck, Save, LifeBuoy, Power, Bot, PlusCircle, Trash2, Link, Copy, Server, KeyRound, RefreshCw, Radio, GripVertical, EyeOff, Lock, Unlock, Cpu, Share2, Star, Languages, AudioLines, AlertTriangle, Database } from 'lucide-react';
 import React, { useState, useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useLogs } from '@/context/LogContext';
@@ -29,7 +29,8 @@ export const settingKeys = [
   'discordToken', 'discordWebhook', 'twitchToken', 'providerStatus',
   'streamerbotServerAddress', 'streamerbotServerPort', 'streamerbotRequestType', 'streamerbotActionName', 'streamerbotVariableName', 'streamerbotWebhookUrl',
   'nexusConnectWebhookUrl', 'nexusConnectConnections', 'remoteHubAddress', 'remoteAccessSecret',
-  'ttsProvider', 'sttProvider', 'translationProvider', 'vaultPassword'
+  'ttsProvider', 'sttProvider', 'translationProvider', 'vaultPassword',
+  'firebaseApiKey', 'firebaseAuthDomain', 'firebaseProjectId', 'firebaseStorageBucket', 'firebaseMessagingSenderId', 'firebaseAppId'
 ] as const;
 
 export type SettingKey = typeof settingKeys[number];
@@ -594,6 +595,43 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview, o
                         ))}
                     </AccordionContent>
                 </AccordionItem>
+                 <AccordionItem value="firebase-config">
+                    <AccordionTrigger className="text-lg font-semibold hover:no-underline">
+                        <div className="flex items-center gap-2">
+                            <Database className="h-5 w-5 text-primary"/>
+                            Firebase Configuration
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="space-y-4 pt-4 pl-2 border-l-2 border-primary/20">
+                        <div className="space-y-4 p-3 border rounded-md bg-primary">
+                           <p className="text-sm text-muted-foreground">These settings are required for the "Shared Bot Store" feature. You can find them in your Firebase project settings.</p>
+                            <div className="space-y-2">
+                                <Label htmlFor="firebaseApiKey">API Key</Label>
+                                <Input id="firebaseApiKey" type="password" placeholder="Firebase Web API Key" value={settings.firebaseApiKey || ''} onChange={(e) => handleInputChange('firebaseApiKey', e.target.value)} disabled={isLocked} className="bg-secondary"/>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="firebaseAuthDomain">Auth Domain</Label>
+                                <Input id="firebaseAuthDomain" type="text" placeholder="your-project.firebaseapp.com" value={settings.firebaseAuthDomain || ''} onChange={(e) => handleInputChange('firebaseAuthDomain', e.target.value)} disabled={isLocked} className="bg-secondary"/>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="firebaseProjectId">Project ID</Label>
+                                <Input id="firebaseProjectId" type="text" placeholder="your-project-id" value={settings.firebaseProjectId || ''} onChange={(e) => handleInputChange('firebaseProjectId', e.target.value)} disabled={isLocked} className="bg-secondary"/>
+                            </div>
+                             <div className="space-y-2">
+                                <Label htmlFor="firebaseStorageBucket">Storage Bucket</Label>
+                                <Input id="firebaseStorageBucket" type="text" placeholder="your-project.appspot.com" value={settings.firebaseStorageBucket || ''} onChange={(e) => handleInputChange('firebaseStorageBucket', e.target.value)} disabled={isLocked} className="bg-secondary"/>
+                            </div>
+                             <div className="space-y-2">
+                                <Label htmlFor="firebaseMessagingSenderId">Messaging Sender ID</Label>
+                                <Input id="firebaseMessagingSenderId" type="text" placeholder="1234567890" value={settings.firebaseMessagingSenderId || ''} onChange={(e) => handleInputChange('firebaseMessagingSenderId', e.target.value)} disabled={isLocked} className="bg-secondary"/>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="firebaseAppId">App ID</Label>
+                                <Input id="firebaseAppId" type="text" placeholder="1:12345:web:67890" value={settings.firebaseAppId || ''} onChange={(e) => handleInputChange('firebaseAppId', e.target.value)} disabled={isLocked} className="bg-secondary"/>
+                            </div>
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
                 <AccordionItem value="service-integrations">
                     <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                         <div className="flex items-center gap-2">
@@ -804,3 +842,5 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview, o
     </Card>
   );
 }
+
+    
