@@ -6,10 +6,20 @@ import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { CommandCenterControl } from "../dashboard/command-center-control";
 import { useControlPanel } from "@/context/ControlPanelContext";
+import React, { useState, useEffect } from 'react';
 
 export function MobileSidebar() {
   const { isPanelOpen, setPanelOpen } = useControlPanel();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
   
+  if (!isClient) {
+    return null;
+  }
+
   return (
     <Sheet open={isPanelOpen} onOpenChange={setPanelOpen}>
       <SheetTrigger asChild>
