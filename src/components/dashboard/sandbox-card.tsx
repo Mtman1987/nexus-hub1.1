@@ -14,18 +14,6 @@ interface SandboxCardProps {
     isPreview?: boolean;
 }
 
-// AI-Generated Code Block
-const generatedCode = `
-def fibonacci(n):
-    if n <= 0:
-        return 0
-    elif n == 1:
-        return 1
-    else:
-        return fibonacci(n-1) + fibonacci(n-2)
-`;
-
-
 export function SandboxCard({ onPopOut, isPoppedOut = false, onHide, dragHandleProps, isPreview }: SandboxCardProps) {
     return (
         <Card className="flex flex-col h-full bg-secondary/20">
@@ -55,13 +43,8 @@ export function SandboxCard({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                     </div>
                 </div>
             </CardHeader>
-            <CardContent className="flex-grow flex flex-col items-center justify-center text-center">
-                <p className="mb-4">AI test successful! Code generated:</p>
-                <pre className="bg-muted p-4 rounded-lg overflow-x-auto text-sm text-left">
-                    <code className="language-python">
-                       {generatedCode}
-                    </code>
-                 </pre>
+            <CardContent>
+                <p>Waiting for AI-generated code...</p>
             </CardContent>
         </Card>
     );
