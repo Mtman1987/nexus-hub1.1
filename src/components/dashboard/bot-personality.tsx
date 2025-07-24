@@ -305,8 +305,8 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                               ))}
                           </SelectContent>
                       </Select>
-                      <Button type="button" variant="outline" size="icon" onClick={handleAddNewPersonality} title="Add New Personality"><PlusCircle className="h-4 w-4"/></Button>
-                      <Button type="button" variant="destructive" size="icon" onClick={handleDeletePersonality} disabled={isSelectedPersonalityDefault} title="Delete Personality"><Trash2 className="h-4 w-4"/></Button>
+                      <Button type="button" variant="outline" size="icon" onClick={handleAddNewPersonality} title="Add New Personality" className="bg-secondary"><PlusCircle className="h-4 w-4"/></Button>
+                      <Button type="button" variant="destructive" size="icon" onClick={handleDeletePersonality} disabled={isSelectedPersonalityDefault} title="Delete Personality" className="bg-secondary"><Trash2 className="h-4 w-4"/></Button>
                   </div>
               </div>
 
@@ -379,7 +379,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                   <Label>Shared Bot Store</Label>
                    <div className="flex items-center gap-2">
                        <Select onValueChange={handleImportFromStore}>
-                          <SelectTrigger>
+                          <SelectTrigger className="bg-secondary">
                               <div className="flex items-center gap-2">
                                   <Store className="h-4 w-4" />
                                   <SelectValue placeholder="Import from store..."/>
@@ -400,7 +400,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                             <TooltipTrigger asChild>
                                 {/* The button is wrapped in a span so the tooltip works when the button is disabled */}
                                 <span tabIndex={isSelectedPersonalityDefault ? 0 : undefined}>
-                                    <Button type="button" variant="outline" onClick={handleShareToStore} disabled={isSelectedPersonalityDefault}>
+                                    <Button type="button" variant="outline" onClick={handleShareToStore} disabled={isSelectedPersonalityDefault} className="bg-secondary">
                                         <Upload className="mr-2 h-4 w-4"/> Share
                                     </Button>
                                 </span>
