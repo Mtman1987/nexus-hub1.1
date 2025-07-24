@@ -21,7 +21,7 @@
     --primary-foreground: 210 40% 98%;
 
     /* Title Foreground Color */
-    --title-foreground: 210 40% 98%;
+    --title-foreground: 39 98% 50%; /* Orange */
 
     /* Accent color: Teal */
     --accent: 174 100% 29%; /* #009688 */
