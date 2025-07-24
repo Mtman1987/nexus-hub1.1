@@ -61,12 +61,12 @@ export function SidebarNav({ isCollapsed = false, className }: SidebarNavProps) 
 
   return (
       <nav className={cn("flex flex-col items-start gap-1 p-2 text-base font-medium lg:p-4 flex-grow", className)}>
-        <Label className="px-3 py-2 text-xs font-semibold text-muted-foreground">MODULE VISIBILITY</Label>
+        <Label className="px-3 py-2 text-sm font-semibold text-primary">MODULE VISIBILITY</Label>
            <div className="grid gap-1 pr-2 w-full">
             {ALL_MODULES_CONFIG.map(module => {
                 const Icon = module.icon;
                 return (
-                  <div key={module.id} className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:bg-muted">
+                  <div key={module.id} className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:bg-secondary/20">
                     <Checkbox
                       id={`vis-${module.id}`}
                       checked={!hiddenModules.includes(module.id)}
