@@ -5,10 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { LogProvider } from '@/context/LogContext';
 import { BotNameProvider } from '@/context/BotNameContext';
 import { SidebarProvider } from '@/context/SidebarContext';
-import { Sidebar } from '@/components/layout/sidebar';
-import { Header } from '@/components/layout/header';
 import { ControlPanelProvider } from '@/context/ControlPanelContext';
-import { ControlPanel } from '@/components/layout/control-panel';
+import { DashboardLayout } from '@/components/layout/dashboard-layout';
 
 
 export const metadata: Metadata = {
@@ -32,16 +30,9 @@ export default function RootLayout({
           <BotNameProvider>
             <SidebarProvider>
               <ControlPanelProvider>
-                <div className="relative flex min-h-screen w-full bg-background text-foreground">
-                    <Sidebar />
-                    <div className="flex flex-col flex-1">
-                       <Header />
-                        <main className="flex-1">
-                          {children}
-                        </main>
-                    </div>
-                </div>
-                <ControlPanel />
+                <DashboardLayout>
+                  {children}
+                </DashboardLayout>
               </ControlPanelProvider>
             </SidebarProvider>
           </BotNameProvider>
