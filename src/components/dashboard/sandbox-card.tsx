@@ -1,14 +1,14 @@
-
 "use client";
 
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PopOutButton } from './pop-out-button';
-import { Beaker, GripVertical, EyeOff, Save } from 'lucide-react';
+import { Beaker, GripVertical, EyeOff, Save, Loader2 } from 'lucide-react';
 import { Textarea } from '../ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Label } from '../ui/label';
+import { saveToSandbox } from '@/ai/flows/save-to-sandbox-flow';
 
 interface SandboxCardProps {
     onPopOut?: () => void;
@@ -20,16 +20,43 @@ interface SandboxCardProps {
 
 export function SandboxCard({ onPopOut, isPoppedOut = false, onHide, dragHandleProps, isPreview }: SandboxCardProps) {
     const [code, setCode] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const { toast } = useToast();
 
-    const handleSave = () => {
-        // In a real dynamic environment, this would trigger a build or update.
-        // For our purposes, this "saves" the code to the component's state.
-        // The next step would be to tell the AI assistant to apply this code permanently.
-        toast({
-            title: 'Code Saved to Sandbox',
-            description: 'Your code is now in the sandbox. Ask the AI to apply it permanently.',
-        });
+    const handleSave = async () => {
+        if (!code) {
+            toast({
+                title: 'Nothing to Save',
+                description: 'Please paste some code into the text area first.',
+                variant: 'destructive'
+            });
+            return;
+        }
+        setIsLoading(true);
+        try {
+            const result = await saveToSandbox({
+                code,
+                filePath: 'src/components/sandbox/generated-card.tsx'
+            });
+
+            if (result.success) {
+                toast({
+                    title: 'Code Saved to Sandbox',
+                    description: 'Your code has been written to the sandbox file. A page refresh may be needed to see changes.',
+                });
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            const err = error as Error;
+            toast({
+                title: 'Save Failed',
+                description: err.message,
+                variant: 'destructive'
+            });
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -72,8 +99,8 @@ export function SandboxCard({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                     />
                 </div>
                 <div className="flex justify-end">
-                    <Button onClick={handleSave}>
-                        <Save className="mr-2 h-4 w-4" />
+                    <Button onClick={handleSave} disabled={isLoading}>
+                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4" />}
                         Save Code to Sandbox
                     </Button>
                 </div>
