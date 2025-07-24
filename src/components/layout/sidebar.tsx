@@ -5,19 +5,48 @@ import { SidebarNav } from './sidebar-nav';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useSidebar } from '@/context/SidebarContext';
-import { PanelLeftClose, PanelRightClose, Eye, EyeOff } from 'lucide-react';
+import { PanelLeftClose, PanelRightClose, Eye, EyeOff, SlidersHorizontal } from 'lucide-react';
 import { CommunityLogo } from '../icons/community-logo';
 import { ALL_MODULES_CONFIG } from '@/lib/modules';
 import React, { useState, useEffect } from 'react';
 import { ScrollArea } from '../ui/scroll-area';
+import { useControlPanel } from '@/context/ControlPanelContext';
+import { useToast } from '@/hooks/use-toast';
+import { useLogs } from '@/context/LogContext';
 
 export function Sidebar() {
   const { isCollapsed, setCollapsed, setHiddenModules } = useSidebar();
   const [isClient, setIsClient] = useState(false);
+  const { setPanelOpen } = useControlPanel();
+  const { toast } = useToast();
+  const { addLog } = useLogs();
 
   useEffect(() => {
     setIsClient(true);
   }, []);
+  
+  const handleSaveLayout = () => {
+    try {
+      const moduleOrder = localStorage.getItem('moduleOrder'); // Assuming this is set elsewhere
+      const hiddenModules = localStorage.getItem('hiddenModules');
+      
+      if(moduleOrder) localStorage.setItem('moduleOrder', moduleOrder);
+      if(hiddenModules) localStorage.setItem('hiddenModules', hiddenModules);
+
+      toast({
+        title: "Layout Saved",
+        description: "Your dashboard module positions and visibility have been saved.",
+      });
+      addLog({ service: 'System', level: 'info', message: "User saved the dashboard layout." });
+    } catch (error) {
+       toast({
+        title: "Save Failed",
+        description: "Could not save layout. Your browser might be blocking local storage.",
+        variant: "destructive",
+      });
+      addLog({ service: 'System', level: 'error', message: "Failed to save dashboard layout.", details: error instanceof Error ? error.stack : String(error) });
+    }
+  };
 
   const handleShowAll = () => {
     setHiddenModules([]);
@@ -51,6 +80,10 @@ export function Sidebar() {
         </ScrollArea>
         <div className="mt-auto p-4 border-t flex-shrink-0">
             <div className="grid gap-2">
+                <Button variant="default" size="sm" onClick={() => setPanelOpen(true)} disabled={isCollapsed}>
+                    <SlidersHorizontal className="mr-2 h-4 w-4"/>
+                    Settings
+                </Button>
                 <Button variant="secondary" size="sm" onClick={handleShowAll} disabled={isCollapsed}>
                     <Eye className="mr-2 h-4 w-4"/>
                     Show All
@@ -64,3 +97,5 @@ export function Sidebar() {
     </aside>
   );
 }
+
+    

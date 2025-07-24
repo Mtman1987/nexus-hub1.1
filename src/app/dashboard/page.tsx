@@ -118,25 +118,6 @@ export default function DashboardPage() {
       });
     }
   };
-  
-  const handleSaveLayout = () => {
-    try {
-      localStorage.setItem('moduleOrder', JSON.stringify(moduleOrder));
-      localStorage.setItem('hiddenModules', JSON.stringify(hiddenModules));
-      toast({
-        title: "Layout Saved",
-        description: "Your dashboard module positions and visibility have been saved.",
-      });
-      addLog({ service: 'System', level: 'info', message: "User saved the dashboard layout." });
-    } catch (error) {
-       toast({
-        title: "Save Failed",
-        description: "Could not save layout. Your browser might be blocking local storage.",
-        variant: "destructive",
-      });
-      addLog({ service: 'System', level: 'error', message: "Failed to save dashboard layout.", details: error instanceof Error ? error.stack : String(error) });
-    }
-  };
 
 
   const handleShowModule = (moduleId: string) => {
@@ -165,12 +146,6 @@ export default function DashboardPage() {
               <CommunityLogo className="h-10 w-auto" />
               Dashboard
             </h1>
-            <div className="flex items-center gap-2">
-                <Button size="sm" onClick={handleSaveLayout}>
-                    <Save className="mr-2 h-4 w-4" />
-                    Save Layout
-                </Button>
-            </div>
         </div>
         <div className="p-4 md:p-6 pt-0 space-y-6">
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
@@ -266,3 +241,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    

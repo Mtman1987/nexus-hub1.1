@@ -302,3 +302,5 @@ export function CommandCenterControl({ isPoppedOut = false }: CommandCenterContr
         </Card>
     );
 }
+
+    
