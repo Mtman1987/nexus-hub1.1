@@ -40,8 +40,8 @@ export async function setupAssistantFlow(input: SetupAssistantInput): Promise<{r
             { role: 'user', text: userPrompt }
         ],
         true, // Request JSON response
-        'google', // Force provider
-        'gemini-1.5-flash-latest' // Force model
+        'openai', // Force provider
+        'gpt-3.5-turbo' // Force model
     );
     
     const allLogs = [...initialLogs, ...logs];

@@ -144,7 +144,7 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
         const tempConfigForAI = { 
             edenApiKey: apiKeys.edenApiKey,
             // Provide a default model for the call structure, even though the flow overrides it.
-            edenAiModel: 'google/gemini-1.5-flash-latest',
+            edenAiModel: 'openai/gpt-3.5-turbo',
         };
         const input: SetupAssistantInput = {
             topic: steps[currentStep].topic,
@@ -207,6 +207,7 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
                     placeholder={`Enter your ${stepConfig.title}...`}
                     value={apiKeys[stepConfig.field as string] || ''}
                     onChange={(e) => handleInputChange(stepConfig.field as string, e.target.value)}
+                    className="bg-card"
                 />
             ) : (
                 <>
@@ -214,11 +215,11 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
                      <div className="space-y-4 p-4 border rounded-lg bg-background">
                          <div className="space-y-2">
                              <Label htmlFor="vault-password">New Password</Label>
-                             <Input id="vault-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                             <Input id="vault-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="bg-card" />
                          </div>
                          <div className="space-y-2">
                              <Label htmlFor="confirm-password">Confirm Password</Label>
-                             <Input id="confirm-password" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                             <Input id="confirm-password" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="bg-card" />
                          </div>
                          {password && confirmPassword && password !== confirmPassword && (
                             <Alert variant="destructive">
@@ -232,11 +233,11 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
                     <div className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="discord-token">Discord Bot Token</Label>
-                            <Input id="discord-token" type="password" placeholder="Bot token for Discord" value={apiKeys.discordToken || ''} onChange={(e) => handleInputChange('discordToken', e.target.value)} />
+                            <Input id="discord-token" type="password" placeholder="Bot token for Discord" value={apiKeys.discordToken || ''} onChange={(e) => handleInputChange('discordToken', e.target.value)} className="bg-card" />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="discord-webhook">Discord Webhook URL</Label>
-                            <Input id="discord-webhook" type="text" placeholder="Webhook URL for a Discord channel" value={apiKeys.discordWebhook || ''} onChange={(e) => handleInputChange('discordWebhook', e.target.value)} />
+                            <Input id="discord-webhook" type="text" placeholder="Webhook URL for a Discord channel" value={apiKeys.discordWebhook || ''} onChange={(e) => handleInputChange('discordWebhook', e.target.value)} className="bg-card" />
                         </div>
                     </div>
                 )}
@@ -244,7 +245,7 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
                     <div className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="twitch-token">Twitch Bot Token</Label>
-                            <Input id="twitch-token" type="password" placeholder="Bot token for Twitch chat" value={apiKeys.twitchToken || ''} onChange={(e) => handleInputChange('twitchToken', e.target.value)} />
+                            <Input id="twitch-token" type="password" placeholder="Bot token for Twitch chat" value={apiKeys.twitchToken || ''} onChange={(e) => handleInputChange('twitchToken', e.target.value)} className="bg-card" />
                         </div>
                     </div>
                 )}
@@ -252,11 +253,11 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
                     <div className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="streamerbot-address">Streamer.bot Server Address</Label>
-                            <Input id="streamerbot-address" type="text" placeholder="e.g., 127.0.0.1" value={apiKeys.streamerbotServerAddress || ''} onChange={(e) => handleInputChange('streamerbotServerAddress', e.target.value)} />
+                            <Input id="streamerbot-address" type="text" placeholder="e.g., 127.0.0.1" value={apiKeys.streamerbotServerAddress || ''} onChange={(e) => handleInputChange('streamerbotServerAddress', e.target.value)} className="bg-card" />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="streamerbot-port">Streamer.bot Server Port</Label>
-                            <Input id="streamerbot-port" type="text" placeholder="e.g., 8080" value={apiKeys.streamerbotServerPort || ''} onChange={(e) => handleInputChange('streamerbotServerPort', e.target.value)} />
+                            <Input id="streamerbot-port" type="text" placeholder="e.g., 8080" value={apiKeys.streamerbotServerPort || ''} onChange={(e) => handleInputChange('streamerbotServerPort', e.target.value)} className="bg-card" />
                         </div>
                     </div>
                 )}
@@ -276,7 +277,7 @@ export function SetupDialog({ open, onOpenChange }: SetupDialogProps) {
                        <div className="space-y-2">
                          <Label htmlFor="ai-question">Ask COSMO</Label>
                          <div className="flex items-center gap-2">
-                            <Input id="ai-question" placeholder={`e.g., "How do I get a ${stepConfig.topic} key?"`} value={aiQuestion} onChange={e => setAiQuestion(e.target.value)} />
+                            <Input id="ai-question" placeholder={`e.g., "How do I get a ${stepConfig.topic} key?"`} value={aiQuestion} onChange={e => setAiQuestion(e.target.value)} className="bg-card" />
                             <Button onClick={handleAiHelp} disabled={aiIsLoading} size="icon">
                                 {aiIsLoading ? <Loader2 className="h-4 w-4 animate-spin"/> : <Sparkles className="h-4 w-4"/>}
                             </Button>
