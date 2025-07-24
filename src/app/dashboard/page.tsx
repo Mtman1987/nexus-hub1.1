@@ -146,8 +146,8 @@ export default function DashboardPage() {
   const activeModule = activeId ? ALL_MODULES_CONFIG.find(({ id }) => id === activeId) : null;
 
   return (
-    <div className="flex flex-col p-4 md:p-6 space-y-6">
-        <div className="flex items-center justify-between flex-shrink-0">
+    <div className="flex flex-col h-full overflow-hidden">
+        <div className="flex items-center justify-between flex-shrink-0 p-4 md:p-6">
             <h1 className="text-xl md:text-3xl font-bold tracking-tight text-title-foreground flex items-center gap-3">
               <CommunityLogo className="h-10 w-auto" />
               Dashboard
@@ -159,57 +159,58 @@ export default function DashboardPage() {
                 </Button>
             </div>
         </div>
-
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-            <SortableContext items={visibleModuleIds} strategy={rectSortingStrategy}>
-                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                    {visibleModuleIds.map(id => {
-                        const moduleConfig = ALL_MODULES_CONFIG.find(m => m.id === id);
-                        if (!moduleConfig) return null;
-                        
-                        return (
-                            <DraggableModule key={id} id={id} className={moduleConfig.defaultSize}>
-                              <moduleConfig.component
-                                onPopOut={() => handlePopOut(id, moduleConfig.title)}
-                                onHide={() => setHiddenModules(prev => [...prev, id])}
-                              />
-                            </DraggableModule>
-                        );
-                    })}
-                </div>
-            </SortableContext>
-             <DragOverlay>
-                {activeId && activeModule ? (
-                    (() => {
-                        const ModuleComponent = activeModule.component;
-                        return (
-                           <div className={activeModule.defaultSize}>
-                             <ModuleComponent isPreview={true} />
-                           </div>
-                        );
-                    })()
-                ) : null}
-            </DragOverlay>
-        </DndContext>
-        
-        {trulyHiddenModules.length > 0 && (
-            <Card className="mt-8">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-title-foreground">
-                        <LayoutGrid className="h-5 w-5 text-primary" />
-                        Hidden Modules
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="flex flex-wrap gap-2">
-                    {trulyHiddenModules.map(module => (
-                        <Button key={module.id} variant="outline" size="sm" onClick={() => handleShowModule(module.id)}>
-                            <Eye className="mr-2 h-4 w-4"/>
-                            {module.title}
-                        </Button>
-                    ))}
-                </CardContent>
-            </Card>
-        )}
+        <div className="flex-grow overflow-y-auto p-4 md:p-6 pt-0 space-y-6">
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+                <SortableContext items={visibleModuleIds} strategy={rectSortingStrategy}>
+                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                        {visibleModuleIds.map(id => {
+                            const moduleConfig = ALL_MODULES_CONFIG.find(m => m.id === id);
+                            if (!moduleConfig) return null;
+                            
+                            return (
+                                <DraggableModule key={id} id={id} className={moduleConfig.defaultSize}>
+                                  <moduleConfig.component
+                                    onPopOut={() => handlePopOut(id, moduleConfig.title)}
+                                    onHide={() => setHiddenModules(prev => [...prev, id])}
+                                  />
+                                </DraggableModule>
+                            );
+                        })}
+                    </div>
+                </SortableContext>
+                 <DragOverlay>
+                    {activeId && activeModule ? (
+                        (() => {
+                            const ModuleComponent = activeModule.component;
+                            return (
+                               <div className={activeModule.defaultSize}>
+                                 <ModuleComponent isPreview={true} />
+                               </div>
+                            );
+                        })()
+                    ) : null}
+                </DragOverlay>
+            </DndContext>
+            
+            {trulyHiddenModules.length > 0 && (
+                <Card className="mt-8">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-title-foreground">
+                            <LayoutGrid className="h-5 w-5 text-primary" />
+                            Hidden Modules
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex flex-wrap gap-2">
+                        {trulyHiddenModules.map(module => (
+                            <Button key={module.id} variant="outline" size="sm" onClick={() => handleShowModule(module.id)}>
+                                <Eye className="mr-2 h-4 w-4"/>
+                                {module.title}
+                            </Button>
+                        ))}
+                    </CardContent>
+                </Card>
+            )}
+        </div>
     </div>
   );
 }
