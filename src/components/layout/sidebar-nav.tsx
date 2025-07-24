@@ -1,9 +1,7 @@
 
 "use client";
 
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Users, Globe, LayoutGrid, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { ComponentProps } from 'react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -12,7 +10,6 @@ import { ALL_MODULES_CONFIG } from '@/lib/modules';
 import { Checkbox } from '../ui/checkbox';
 import { Label } from '../ui/label';
 import { useSidebar } from '@/context/SidebarContext';
-import { ScrollArea } from '../ui/scroll-area';
 
 type SidebarNavProps = ComponentProps<'nav'> & {
   isCollapsed?: boolean;
@@ -63,7 +60,7 @@ export function SidebarNav({ isCollapsed = false, className }: SidebarNavProps) 
   }
 
   return (
-      <nav className={cn("flex flex-col items-start gap-1 p-2 text-base font-medium lg:p-4 flex-grow overflow-y-auto", className)}>
+      <nav className={cn("flex flex-col items-start gap-1 p-2 text-base font-medium lg:p-4 flex-grow", className)}>
         <Label className="px-3 py-2 text-xs font-semibold text-muted-foreground">MODULE VISIBILITY</Label>
            <div className="grid gap-1 pr-2 w-full">
             {ALL_MODULES_CONFIG.map(module => {
