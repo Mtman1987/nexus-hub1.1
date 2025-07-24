@@ -10,10 +10,10 @@ import { googleCloud } from '@genkit-ai/google-cloud';
 
 // Initialize Genkit with plugins for Google AI (for Gemini models)
 // and Google Cloud (for logging and tracing).
-// This is the correct syntax for Genkit v1.x.
+// This is the correct syntax for Genkit v1.x. Both plugins must be called as functions.
 export const ai = genkit({
   plugins: [
     googleAI(),
-    googleCloud,
+    googleCloud(),
   ],
 });
