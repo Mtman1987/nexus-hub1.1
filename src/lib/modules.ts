@@ -17,6 +17,7 @@ import { Translator } from '@/components/dashboard/translator';
 import { CodeHelper } from '@/components/dashboard/code-helper';
 import { VideoGenerator } from '@/components/dashboard/video-generator';
 import { CustomModule } from '@/components/dashboard/custom-module';
+import { SandboxCard } from '@/components/dashboard/sandbox-card';
 import { CommandCenterControl } from '@/components/dashboard/command-center-control';
 
 import {
@@ -37,7 +38,8 @@ import {
     Monitor,
     Save,
     ScrollText,
-    Puzzle
+    Puzzle,
+    Beaker
 } from 'lucide-react';
 
 export const ALL_MODULES_CONFIG = [
@@ -58,5 +60,6 @@ export const ALL_MODULES_CONFIG = [
     { id: 'websiteViewer', title: 'Website Viewer', component: WebsiteViewer, defaultSize: 'col-span-1 lg:col-span-2', icon: Monitor },
     { id: 'savedItems', title: 'Saved Items', component: SavedItems, defaultSize: 'col-span-1 lg:col-span-2', icon: Save },
     { id: 'loreWeaver', title: 'Lore Weaver', component: LoreWeaver, defaultSize: 'col-span-1', icon: ScrollText },
+    { id: 'sandboxCard', title: 'AI Sandbox', component: SandboxCard, defaultSize: 'col-span-1', icon: Beaker },
     { id: 'customModule', title: 'Custom Module', component: CustomModule, defaultSize: 'col-span-1', icon: Puzzle },
 ];
