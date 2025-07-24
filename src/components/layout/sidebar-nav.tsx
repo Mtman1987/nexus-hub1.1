@@ -33,7 +33,7 @@ export function SidebarNav({ isCollapsed = false, className }: SidebarNavProps) 
   if (isCollapsed) {
     return (
       <TooltipProvider>
-        <nav className={cn("grid items-start gap-1 p-2 text-base font-medium lg:px-4", className)}>
+        <nav className={cn("grid items-start gap-1 p-2 text-base font-medium lg:px-4 pr-2", className)}>
           {ALL_MODULES_CONFIG.map(module => {
             const Icon = module.icon;
             return(

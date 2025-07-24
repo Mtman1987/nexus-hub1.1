@@ -28,13 +28,12 @@ export function Sidebar() {
   };
 
   if (!isClient) {
-    // Return null on the server to prevent hydration mismatch
     return null;
   }
 
   return (
     <aside className={cn(
-        "h-screen flex-col border-r bg-primary/20 hidden md:flex transition-all duration-300 ease-in-out",
+        "sticky top-0 h-screen flex-col border-r bg-primary/20 hidden md:flex transition-all duration-300 ease-in-out",
         isCollapsed ? "w-16" : "w-64"
     )}>
         <div className="flex h-14 flex-shrink-0 items-center border-b px-4 lg:h-[60px] justify-between">
