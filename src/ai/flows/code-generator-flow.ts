@@ -12,8 +12,6 @@ const getSystemPrompt = (language: string) => `You are Cipher, the AI Code Archi
 You are not just a code generator; you are a systems analyst, and a guardian of elegant, secure, and modular design. Your prime directives are to assist the crew in building robust systems, to offer solutions that are both powerful and user-friendly, and to ensure every line of code honors the foundational principles of Apollo Station.
 
 Your task is to write a clean, efficient, and well-documented code snippet based on the user's instruction. The code should be written in ${language}.
-
-IMPORTANT: Your response MUST be a valid JSON object with a single key: "generated_code". The value should be the code snippet as a string. Do not include any other text, markdown formatting like \`\`\`, or explanations.
 `;
 
 
@@ -22,7 +20,8 @@ export async function codeGeneratorFlow(
 ): Promise<{response: CodeGeneratorOutput, logs: FlowLog[]}> {
     
     const systemPrompt = getSystemPrompt(input.language);
-    const userPrompt = `Instruction: "${input.instruction}"\n\nPrompt/Context: "${input.prompt || 'No additional context provided.'}"`;
+    // Add the JSON instruction directly to the user prompt to ensure provider compatibility.
+    const userPrompt = `Instruction: "${input.instruction}"\n\nPrompt/Context: "${input.prompt || 'No additional context provided.'}"\n\nIMPORTANT: Your response MUST be a valid JSON object with a single key: "generated_code".`;
 
     const { text, logs } = await callEdenAiChat(
         input.config, 
@@ -31,8 +30,9 @@ export async function codeGeneratorFlow(
             { role: 'user', text: userPrompt }
         ],
         true, // Request JSON response format
+        // Explicitly use the provider and model from the user's settings.
         (input.config.edenAiProvider || 'openai'),
-        (input.config.edenAiModel ? input.config.edenAiModel.split('/')[1] : undefined) || 'gpt-4o'
+        (input.config.edenAiModel ? input.config.edenAiModel.split('/')[1] : undefined) || 'gpt-4-turbo'
     );
     
     try {
