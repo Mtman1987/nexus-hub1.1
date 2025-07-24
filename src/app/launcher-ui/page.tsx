@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -53,7 +52,7 @@ export default function LauncherPage() {
             Launch Dashboard
           </Button>
           
-          <Button variant="outline" size="sm" onClick={() => setShowSetup(true)} className="w-full">
+          <Button variant="secondary" size="sm" onClick={() => setShowSetup(true)} className="w-full">
             <Settings className="mr-2 h-4 w-4" />
             {isSetupComplete ? 'Re-run Setup Wizard' : 'Start Setup'}
           </Button>
