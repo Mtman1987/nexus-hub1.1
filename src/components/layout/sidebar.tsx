@@ -32,7 +32,7 @@ export function Sidebar() {
   if (!isClient) {
     // Render a placeholder on the server to avoid layout shift,
     // but without any of the client-side dependent logic.
-    return <aside className={cn("sticky top-0 h-screen flex-col border-r bg-primary/20 hidden md:flex", isCollapsed ? "w-16" : "w-64")} />;
+    return <aside className={cn("sticky top-0 h-screen flex-col border-r bg-primary/20 hidden md:flex", "w-64")} />;
   }
 
   return (
