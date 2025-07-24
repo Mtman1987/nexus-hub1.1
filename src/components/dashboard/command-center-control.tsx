@@ -212,7 +212,7 @@ export function CommandCenterControl({ isPoppedOut = false }: CommandCenterContr
                     <div className="flex-grow">
                         <CardTitle className="flex items-center gap-2 text-title-foreground">
                             <SlidersHorizontal className="h-6 w-6" />
-                            Control Panel
+                            Settings
                         </CardTitle>
                         <CardDescription>
                             Configure your local dashboard's appearance and modules.
@@ -240,7 +240,7 @@ export function CommandCenterControl({ isPoppedOut = false }: CommandCenterContr
                             </Select>
                             <Button onClick={handleSaveProfile} variant="outline" size="sm">
                                 <Save className="mr-2 h-4 w-4"/>
-                                Save Current
+                                Save Profile
                             </Button>
                         </div>
                     </div>

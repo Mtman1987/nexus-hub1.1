@@ -11,42 +11,16 @@ import { ALL_MODULES_CONFIG } from '@/lib/modules';
 import React, { useState, useEffect } from 'react';
 import { ScrollArea } from '../ui/scroll-area';
 import { useControlPanel } from '@/context/ControlPanelContext';
-import { useToast } from '@/hooks/use-toast';
-import { useLogs } from '@/context/LogContext';
 
 export function Sidebar() {
   const { isCollapsed, setCollapsed, hiddenModules, setHiddenModules } = useSidebar();
   const [isClient, setIsClient] = useState(false);
   const { setPanelOpen } = useControlPanel();
-  const { toast } = useToast();
-  const { addLog } = useLogs();
 
   useEffect(() => {
     setIsClient(true);
   }, []);
   
-  const handleSaveLayout = () => {
-    try {
-      // Get the current order from the DOM if needed, or assume it's managed elsewhere
-      // For this implementation, we only save the visibility state.
-      localStorage.setItem('hiddenModules', JSON.stringify(hiddenModules));
-
-      toast({
-        title: "Layout Saved",
-        description: "Your module visibility has been saved.",
-      });
-      addLog({ service: 'System', level: 'info', message: "User saved the dashboard layout." });
-    } catch (error) {
-       toast({
-        title: "Save Failed",
-        description: "Could not save layout. Your browser might be blocking local storage.",
-        variant: "destructive",
-      });
-      addLog({ service: 'System', level: 'error', message: "Failed to save dashboard layout.", details: error instanceof Error ? error.stack : String(error) });
-    }
-  };
-
-
   const handleShowAll = () => {
     setHiddenModules([]);
   };
@@ -56,7 +30,9 @@ export function Sidebar() {
   };
 
   if (!isClient) {
-    return null;
+    // Render a placeholder on the server to avoid layout shift,
+    // but without any of the client-side dependent logic.
+    return <aside className={cn("sticky top-0 h-screen flex-col border-r bg-primary/20 hidden md:flex", isCollapsed ? "w-16" : "w-64")} />;
   }
 
   return (
@@ -81,13 +57,9 @@ export function Sidebar() {
             <div className="grid gap-2">
                 <Button variant="secondary" size="sm" onClick={() => setPanelOpen(true)} disabled={isCollapsed}>
                     <SlidersHorizontal className="mr-2 h-4 w-4"/>
-                    Control Panel
+                    Settings
                 </Button>
-                 <Button variant="default" size="sm" onClick={handleSaveLayout} disabled={isCollapsed}>
-                    <Save className="mr-2 h-4 w-4"/>
-                    Save Layout
-                </Button>
-                <Button variant="outline" size="sm" onClick={handleShowAll} disabled={isCollapsed}>
+                <Button variant="default" size="sm" onClick={handleShowAll} disabled={isCollapsed}>
                     <Eye className="mr-2 h-4 w-4"/>
                     Show All
                 </Button>

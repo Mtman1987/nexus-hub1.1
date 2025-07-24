@@ -15,7 +15,7 @@ export function MobileSidebar() {
       <SheetTrigger asChild>
         <Button variant="outline" size="icon" className="md:hidden">
           <Menu className="h-5 w-5" />
-          <span className="sr-only">Toggle Control Panel</span>
+          <span className="sr-only">Toggle Settings</span>
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="p-0 w-96">
