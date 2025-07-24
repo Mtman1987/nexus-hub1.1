@@ -745,8 +745,8 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview }:
                  </AccordionItem>
                  <AccordionItem value="danger-zone">
                     <AccordionTrigger className="text-lg font-semibold hover:no-underline">
-                        <div className="flex items-center gap-2 text-destructive">
-                            <AlertTriangle className="h-5 w-5"/>
+                        <div className="flex items-center gap-2">
+                            <AlertTriangle className="h-5 w-5 text-destructive"/>
                             Danger Zone
                         </div>
                     </AccordionTrigger>

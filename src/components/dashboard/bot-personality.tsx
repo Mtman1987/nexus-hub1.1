@@ -273,7 +273,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
               </Button>
               <div className='flex-grow'>
                 <CardTitle className="flex items-center gap-2">
-                  <Smile className="h-6 w-6" />
+                  <Smile className="h-6 w-6 text-primary" />
                   Bot Personality
                 </CardTitle>
                 <CardDescription>Customize your AI assistant's name and behavior.</CardDescription>
