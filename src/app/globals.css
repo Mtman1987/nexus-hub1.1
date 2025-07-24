@@ -16,23 +16,23 @@
     --popover: 240 10% 3.9%;
     --popover-foreground: 210 40% 98%;
 
-    /* Primary color: Deep Purple */
-    --primary: 262 52% 47%; /* #673AB7 */
+    /* Primary color: Teal */
+    --primary: 174 100% 29%; /* #009688 */
     --primary-foreground: 210 40% 98%;
 
     /* Title Foreground Color */
     --title-foreground: 39 98% 50%; /* Orange */
 
-    /* Accent color: Teal */
-    --accent: 174 100% 29%; /* #009688 */
+    /* Accent color: Deep Purple */
+    --accent: 262 52% 47%; /* #673AB7 */
     --accent-foreground: 210 40% 98%;
     
     /* Destructive color: Yellow-Orange */
     --destructive: 39 98% 50%; /* Orange */
     --destructive-foreground: 240 5% 19%; /* Dark Gray for contrast */
 
-    /* Secondary elements */
-    --secondary: 240 4% 18%;
+    /* Secondary elements: Deep Purple */
+    --secondary: 262 52% 47%;
     --secondary-foreground: 210 40% 98%;
     
     /* Muted elements */
@@ -41,7 +41,7 @@
     
     --border: 240 4% 25%;
     --input: 240 4% 22%;
-    --ring: 262 52% 47%; /* Purple for focus rings */
+    --ring: 174 100% 29%; /* Teal for focus rings */
 
     /* Chart Palette */
     --chart-1: 174 100% 29%; /* Teal */
