@@ -179,9 +179,9 @@ export function Translator({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                         </div>
                          <div className="flex items-center justify-between mt-auto gap-2">
                              <div className="flex items-center gap-2">
-                                <Input value={sourceLang} onChange={e => setSourceLang(e.target.value)} className="w-20" placeholder="src"/>
+                                <Input value={sourceLang} onChange={e => setSourceLang(e.target.value)} placeholder="src"/>
                                 <ArrowRightLeft className="h-4 w-4"/>
-                                <Input value={targetLang} onChange={e => setTargetLang(e.target.value)} className="w-20" placeholder="tgt"/>
+                                <Input value={targetLang} onChange={e => setTargetLang(e.target.value)} placeholder="tgt"/>
                              </div>
                              <Button onClick={handleTranslate} disabled={isLoading || !translateText}>
                                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Languages className="mr-2 h-4 w-4" />}

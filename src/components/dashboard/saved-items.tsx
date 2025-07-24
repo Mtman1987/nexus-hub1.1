@@ -198,7 +198,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                 <div className="flex items-start gap-3">
                     <FileText className="h-5 w-5 mt-1 text-primary" />
                     <div className="flex-grow">
-                        <p className="font-semibold text-accent">Draft: <span className="font-normal text-foreground">{item.content.prompt}</span></p>
+                        <p className="font-semibold">Draft: <span className="font-normal text-foreground">{item.content.prompt}</span></p>
                         <p className="text-sm truncate">{item.content.response}</p>
                     </div>
                 </div>
@@ -271,7 +271,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                         <h4 className="font-semibold text-lg">Galactic Timeline</h4>
                         {timeline.length > 0 && (
                              <AlertDialog>
-                                <AlertDialogTrigger asChild><Button size="sm" className="bg-red-600 hover:bg-red-700 text-white">Clear Timeline</Button></AlertDialogTrigger>
+                                <AlertDialogTrigger asChild><Button variant="destructive" size="sm">Clear Timeline</Button></AlertDialogTrigger>
                                 <AlertDialogContent>
                                 <AlertDialogHeader><AlertDialogTitle>Clear Entire Timeline?</AlertDialogTitle><AlertDialogDescription>This will permanently delete all {timeline.length} timeline entries.</AlertDialogDescription></AlertDialogHeader>
                                 <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={clearTimeline}>Yes, Clear</AlertDialogAction></AlertDialogFooter>
@@ -304,7 +304,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                             <div key={item.id} className="flex items-center gap-2 rounded-lg border p-3">
                                 <div className="flex-grow">{renderItemContent(item)}</div>
                                 <Button variant="outline" size="sm" onClick={() => handleEdit(item)}><Edit className="mr-2 h-4 w-4"/>Finalize</Button>
-                                <Button size="icon" className="h-8 w-8 shrink-0 bg-red-600 hover:bg-red-700 text-white" onClick={() => removeItem(item.id)}><Trash2 className="h-4 w-4" /></Button>
+                                <Button variant="destructive" size="icon" className="h-8 w-8 shrink-0" onClick={() => removeItem(item.id)}><Trash2 className="h-4 w-4" /></Button>
                             </div>
                         ))
                      ) : (
@@ -320,7 +320,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                         <h4 className="font-semibold text-lg">Pinned Items</h4>
                          {otherItems.length > 0 && (
                             <AlertDialog>
-                                <AlertDialogTrigger asChild><Button size="sm" className="bg-red-600 hover:bg-red-700 text-white">Clear Items</Button></AlertDialogTrigger>
+                                <AlertDialogTrigger asChild><Button variant="destructive" size="sm">Clear Items</Button></AlertDialogTrigger>
                                 <AlertDialogContent>
                                 <AlertDialogHeader><AlertDialogTitle>Clear All Pinned Items?</AlertDialogTitle><AlertDialogDescription>This will delete all {otherItems.length} saved chats and logs.</AlertDialogDescription></AlertDialogHeader>
                                 <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={clearAllItems}>Yes, Clear</AlertDialogAction></AlertDialogFooter>
@@ -332,7 +332,7 @@ export function SavedItems({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                         otherItems.map(item => (
                             <div key={item.id} className="flex items-start gap-2 rounded-lg border p-3">
                                 <div className="flex-grow">{renderItemContent(item)}</div>
-                                <Button size="icon" className="h-8 w-8 shrink-0 bg-red-600 hover:bg-red-700 text-white" onClick={() => removeItem(item.id)}>
+                                <Button variant="destructive" size="icon" className="h-8 w-8 shrink-0" onClick={() => removeItem(item.id)}>
                                     <Trash2 className="h-4 w-4" />
                                 </Button>
                             </div>
