@@ -152,9 +152,11 @@ interface ApiSettingsProps {
     isPoppedOut?: boolean;
     dragHandleProps?: any;
     isPreview?: boolean;
+    onHide?: () => void;
+    onPopOut?: () => void;
 }
 
-export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview }: ApiSettingsProps) {
+export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview, onHide, onPopOut }: ApiSettingsProps) {
   const { toast } = useToast();
   const [settings, setSettings] = useState<Settings>(defaultSettings);
   const [providerStatus, setProviderStatus] = useState<ProviderStatus>(defaultProviderStatus);
