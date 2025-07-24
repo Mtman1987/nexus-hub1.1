@@ -28,7 +28,7 @@ export function SidebarNav({ isCollapsed = false, className }: SidebarNavProps) 
     });
   }
 
-  const navClass = "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:bg-muted";
+  const navClass = "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:bg-secondary/20";
 
   if (isCollapsed) {
     return (
@@ -40,13 +40,13 @@ export function SidebarNav({ isCollapsed = false, className }: SidebarNavProps) 
             <Tooltip key={module.id} delayDuration={0}>
               <TooltipTrigger asChild>
                  <div className={cn(navClass, "justify-center")}>
+                   {Icon && <Icon className="h-5 w-5 text-primary" />}
                    <Checkbox
                       id={`col-vis-${module.id}`}
-                      className="mr-2"
+                      className="ml-2"
                       checked={!hiddenModules.includes(module.id)}
                       onCheckedChange={(checked) => handleModuleToggle(module.id, !!checked)}
                    />
-                   {Icon && <Icon className="h-5 w-5 text-primary" />}
                 </div>
               </TooltipTrigger>
               <TooltipContent side="right">
