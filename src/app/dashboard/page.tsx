@@ -159,7 +159,7 @@ export default function DashboardPage() {
   const columnsSm = distributeToColumns(visibleModuleIds, 1);
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div>
         <div className="flex items-center justify-between flex-shrink-0 p-4 md:p-6">
             <h1 className="text-xl md:text-3xl font-bold tracking-tight text-title-foreground flex items-center gap-3">
               <CommunityLogo className="h-10 w-auto" />
@@ -172,7 +172,7 @@ export default function DashboardPage() {
                 </Button>
             </div>
         </div>
-        <div className="flex-grow overflow-y-auto p-4 md:p-6 pt-0 space-y-6">
+        <div className="p-4 md:p-6 pt-0 space-y-6">
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                 <SortableContext items={visibleModuleIds} strategy={rectSortingStrategy}>
                      <div className="hidden xl:grid xl:grid-cols-3 xl:gap-6 xl:items-start">
