@@ -23,9 +23,11 @@ export type CommandCenterSettings = {
     visibleModules: string[];
     theme: {
         background: string;
+        card: string;
         primary: string;
         accent: string;
         title: string;
+        foreground: string;
     };
     fontSize: number;
 };
@@ -39,9 +41,11 @@ const defaultSettings: CommandCenterSettings = {
     visibleModules: ALL_MODULES_CONFIG.map(m => m.id),
     theme: { 
         background: '240 5% 19%', 
+        card: '240 4% 12%',
         primary: '174 100% 29%', 
         accent: '262 52% 47%',
         title: '39 98% 50%',
+        foreground: '210 40% 98%',
     },
     fontSize: 16,
 };
@@ -72,9 +76,11 @@ export function CommandCenterControl({ isPoppedOut = false }: CommandCenterContr
     const applySettings = useCallback((settings: CommandCenterSettings) => {
         // Apply theme
         document.documentElement.style.setProperty('--background', settings.theme.background);
+        document.documentElement.style.setProperty('--card', settings.theme.card);
         document.documentElement.style.setProperty('--primary', settings.theme.primary);
         document.documentElement.style.setProperty('--accent', settings.theme.accent);
         document.documentElement.style.setProperty('--title-foreground', settings.theme.title);
+        document.documentElement.style.setProperty('--foreground', settings.theme.foreground);
 
         // Apply font size
         document.documentElement.style.fontSize = `${settings.fontSize}px`;
@@ -98,10 +104,12 @@ export function CommandCenterControl({ isPoppedOut = false }: CommandCenterContr
     const handleThemeChange = (colorType: keyof typeof theme, value: string) => {
         const newTheme = { ...theme, [colorType]: value };
         setTheme(newTheme);
-        document.documentElement.style.setProperty(`--${colorType}`, value);
+        
+        let propertyName = `--${colorType}`;
         if (colorType === 'title') {
-             document.documentElement.style.setProperty('--title-foreground', value);
+             propertyName = '--title-foreground';
         }
+        document.documentElement.style.setProperty(propertyName, value);
     };
 
     const handleFontSizeChange = (value: number[]) => {
@@ -136,7 +144,8 @@ export function CommandCenterControl({ isPoppedOut = false }: CommandCenterContr
                 toast({title: "Profile Loaded", description: `Loaded configuration from ${profileNames[profileId]}.`});
                 addLog({ service: 'System', level: 'info', message: `User loaded settings from profile: ${profileNames[profileId]}` });
             } else {
-                toast({title: "Profile Empty", description: `No saved settings found for ${profileNames[profileId]}.`, variant: "destructive"});
+                 applySettings(defaultSettings);
+                toast({title: "Profile Empty", description: `No saved settings found for ${profileNames[profileId]}. Loading defaults.`});
             }
         } catch(e) {
              toast({title: "Load Failed", description: "Could not load profile.", variant: "destructive"});
@@ -266,10 +275,14 @@ export function CommandCenterControl({ isPoppedOut = false }: CommandCenterContr
                     {/* Theming */}
                     <div className="p-3 border rounded-lg space-y-3">
                         <Label className="text-base font-semibold flex items-center gap-2"><Palette className="h-5 w-5"/>Theme</Label>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                            <div className="space-y-1">
-                                <Label htmlFor="bg-color">Background</Label>
+                                <Label htmlFor="bg-color">Main Background</Label>
                                 <Input id="bg-color" type="color" value={hslToHex(theme.background)} onChange={e => handleThemeChange('background', hexToHsl(e.target.value))} />
+                           </div>
+                           <div className="space-y-1">
+                                <Label htmlFor="card-color">Card Background</Label>
+                                <Input id="card-color" type="color" value={hslToHex(theme.card)} onChange={e => handleThemeChange('card', hexToHsl(e.target.value))} />
                            </div>
                            <div className="space-y-1">
                                 <Label htmlFor="pri-color">Primary</Label>
@@ -282,6 +295,10 @@ export function CommandCenterControl({ isPoppedOut = false }: CommandCenterContr
                             <div className="space-y-1">
                                 <Label htmlFor="title-color">Title</Label>
                                 <Input id="title-color" type="color" value={hslToHex(theme.title)} onChange={e => handleThemeChange('title', hexToHsl(e.target.value))} />
+                           </div>
+                           <div className="space-y-1">
+                                <Label htmlFor="fg-color">Text</Label>
+                                <Input id="fg-color" type="color" value={hslToHex(theme.foreground)} onChange={e => handleThemeChange('foreground', hexToHsl(e.target.value))} />
                            </div>
                         </div>
                     </div>
