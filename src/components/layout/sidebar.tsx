@@ -13,7 +13,7 @@ import { ScrollArea } from '../ui/scroll-area';
 import { useControlPanel } from '@/context/ControlPanelContext';
 
 export function Sidebar() {
-  const { isCollapsed, setCollapsed, hiddenModules, setHiddenModules } = useSidebar();
+  const { isCollapsed, setCollapsed, hiddenModules, setHiddenModules, isMobile } = useSidebar();
   const [isClient, setIsClient] = useState(false);
   const { setPanelOpen } = useControlPanel();
 
@@ -29,10 +29,9 @@ export function Sidebar() {
     setHiddenModules(ALL_MODULES_CONFIG.map(m => m.id));
   };
 
-  if (!isClient) {
-    // Render a placeholder on the server to avoid layout shift,
-    // but without any of the client-side dependent logic.
-    return <aside className={cn("sticky top-0 h-screen flex-col border-r bg-primary/20 hidden md:flex", "w-64")} />;
+  if (!isClient || isMobile) {
+    // On the server, or on mobile, render nothing. The MobileSidebar will handle the mobile view.
+    return null;
   }
 
   return (
@@ -54,16 +53,16 @@ export function Sidebar() {
             <SidebarNav isCollapsed={isCollapsed} />
         </ScrollArea>
         <div className="mt-auto p-4 border-t flex-shrink-0">
-            <div className="grid gap-2">
-                <Button variant="secondary" size="sm" onClick={() => setPanelOpen(true)} disabled={isCollapsed}>
+            <div className={cn("grid gap-2", isCollapsed && "hidden")}>
+                <Button variant="secondary" size="sm" onClick={() => setPanelOpen(true)}>
                     <SlidersHorizontal className="mr-2 h-4 w-4"/>
                     Settings
                 </Button>
-                <Button variant="default" size="sm" onClick={handleShowAll} disabled={isCollapsed}>
+                <Button variant="default" size="sm" onClick={handleShowAll}>
                     <Eye className="mr-2 h-4 w-4"/>
                     Show All
                 </Button>
-                <Button variant="destructive" size="sm" onClick={handleHideAll} disabled={isCollapsed}>
+                <Button variant="destructive" size="sm" onClick={handleHideAll}>
                     <EyeOff className="mr-2 h-4 w-4"/>
                     Hide All
                 </Button>
