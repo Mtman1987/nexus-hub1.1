@@ -14,7 +14,7 @@ export function PopOutButton({ onClick }: PopOutButtonProps) {
         <TooltipProvider>
             <Tooltip>
                 <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" onClick={onClick} className="h-8 w-8 text-accent hover:text-accent/80">
+                    <Button variant="ghost" size="icon" onClick={onClick} className="h-8 w-8 text-primary hover:text-primary/80">
                         <Expand className="h-4 w-4" />
                         <span className="sr-only">Pop-out Module</span>
                     </Button>

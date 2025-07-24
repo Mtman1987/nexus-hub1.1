@@ -268,7 +268,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
         <CardHeader>
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-2 flex-grow">
-               <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto text-secondary">
+               <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto text-accent">
                 <GripVertical />
               </Button>
               <div className='flex-grow'>
@@ -292,11 +292,11 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
         <CardContent className="flex-grow flex flex-col gap-4 overflow-hidden">
           <form id="bot-personality-form" className="flex flex-col flex-grow overflow-hidden" onSubmit={handleSaveChanges}>
             <div className="space-y-4">
-              <div className="space-y-2">
+              <div className="space-y-2 p-3 rounded-lg border bg-primary">
                   <Label>Active Personality</Label>
                   <div className="flex items-center gap-2">
                        <Select value={selectedPersonalityId || ''} onValueChange={handleSelectPersonality}>
-                          <SelectTrigger>
+                          <SelectTrigger className="bg-secondary">
                               <SelectValue placeholder="Select a personality..."/>
                           </SelectTrigger>
                           <SelectContent>
@@ -311,7 +311,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
               </div>
 
               {selectedPersonality && (
-                  <>
+                  <div className="space-y-4 p-3 rounded-lg border bg-primary">
                       <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-2">
                               <Label htmlFor="bot-name">Bot Name</Label>
@@ -322,6 +322,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                                   value={selectedPersonality?.name || ''} 
                                   onChange={(e) => handlePersonalityChange('name', e.target.value)} 
                                   disabled={isSelectedPersonalityDefault}
+                                  className="bg-secondary"
                               />
                           </div>
                            <div className="space-y-2">
@@ -331,7 +332,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                                   onValueChange={(value) => handlePersonalityChange('voice', value)}
                                   disabled={isSelectedPersonalityDefault}
                               >
-                                  <SelectTrigger id="bot-voice">
+                                  <SelectTrigger id="bot-voice" className="bg-secondary">
                                       <div className="flex items-center gap-2">
                                           <Mic className="h-4 w-4" />
                                           <SelectValue placeholder="Select a voice..."/>
@@ -354,6 +355,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                                 value={selectedPersonality?.imageUrl || ''} 
                                 onChange={(e) => handlePersonalityChange('imageUrl', e.target.value)} 
                                 disabled={isSelectedPersonalityDefault}
+                                className="bg-secondary"
                             />
                         </div>
                       <div className="space-y-2">
@@ -363,12 +365,12 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                               placeholder="You are a helpful assistant." 
                               value={selectedPersonality?.prompt || ''} 
                               onChange={(e) => handlePersonalityChange('prompt', e.target.value)} 
-                              className="h-24"
+                              className="h-24 bg-secondary"
                               disabled={isSelectedPersonalityDefault}
                           />
                           <p className="text-xs text-muted-foreground">This is the core instruction that defines your bot's behavior.</p>
                       </div>
-                  </>
+                  </div>
               )}
 
               <Separator />

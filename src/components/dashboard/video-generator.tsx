@@ -85,7 +85,7 @@ export function VideoGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
     }
 
   return (
-    <Card className="flex flex-col h-full">
+    <Card className="flex flex-col h-full bg-secondary/20">
       <CardHeader>
         <div className="flex justify-between items-start">
              <div className="flex items-center gap-2 flex-grow">
@@ -104,7 +104,7 @@ export function VideoGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
             </div>
             <div className="flex items-center">
               {!isPoppedOut && onHide && (
-                <Button variant="ghost" size="icon" onClick={onHide}>
+                <Button variant="ghost" size="icon" onClick={onHide} className="text-destructive">
                   <EyeOff className="h-4 w-4" />
                 </Button>
               )}
@@ -138,19 +138,19 @@ export function VideoGenerator({ onPopOut, isPoppedOut = false, onHide, dragHand
             )}
         </div>
         
-        <div className="space-y-4 mt-auto shrink-0">
+        <div className="space-y-4 mt-auto shrink-0 p-3 rounded-lg border bg-primary">
             <Textarea 
                 id="prompt" 
                 placeholder="Enter a prompt, e.g., 'Close up of a friendly robot, cinematic lighting'" 
                 value={prompt} 
                 onChange={(e) => setPrompt(e.target.value)}
-                className="h-20"
+                className="h-20 bg-secondary"
             />
 
             <div className="space-y-2">
                 <Label htmlFor="image-file">Starting Image (Optional)</Label>
                 <div className="flex items-center gap-2">
-                    <Input id="image-file" type="file" onChange={e => setImageFile(e.target.files?.[0] || null)} accept="image/png, image/jpeg" />
+                    <Input id="image-file" type="file" onChange={e => setImageFile(e.target.files?.[0] || null)} accept="image/png, image/jpeg" className="bg-secondary"/>
                     <Button variant="destructive" size="icon" onClick={() => setImageFile(null)} disabled={!imageFile}>
                         <Trash2 className="h-4 w-4" />
                     </Button>

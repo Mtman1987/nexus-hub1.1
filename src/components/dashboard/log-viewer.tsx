@@ -81,12 +81,12 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
 
   return (
     <>
-      <Card className="flex flex-col h-full">
+      <Card className="flex flex-col h-full bg-secondary/20">
         <CardHeader className="shrink-0">
           <div className="flex justify-between items-start">
              <div className="flex items-center gap-2 flex-grow">
-               <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto">
-                <GripVertical className="text-primary" />
+               <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto text-accent">
+                <GripVertical />
               </Button>
               <div className="flex-grow">
                 <CardTitle className="flex items-center gap-2">
@@ -98,7 +98,7 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
             </div>
             <div className="flex items-center">
               {!isPoppedOut && onHide && (
-                <Button variant="ghost" size="icon" onClick={onHide}>
+                <Button variant="ghost" size="icon" onClick={onHide} className="text-destructive">
                   <EyeOff className="h-4 w-4" />
                 </Button>
               )}
