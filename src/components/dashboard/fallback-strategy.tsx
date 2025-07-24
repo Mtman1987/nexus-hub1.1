@@ -22,11 +22,11 @@ export function FallbackStrategy({ onPopOut, isPoppedOut = false, onHide, dragHa
   const { providers, handlePriorityChange, saveStrategy, availableProviderCount } = useFallbackStrategy(isPreview);
   
   return (
-    <Card className="flex flex-col h-full">
+    <Card className="flex flex-col h-full bg-secondary/20">
       <CardHeader>
         <div className="flex justify-between items-start">
             <div className="flex items-center gap-2 flex-grow">
-               <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto text-accent">
+               <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto text-secondary">
                 <GripVertical />
               </Button>
               <div className="flex-grow">
@@ -41,7 +41,7 @@ export function FallbackStrategy({ onPopOut, isPoppedOut = false, onHide, dragHa
             </div>
             <div className="flex items-center">
               {!isPoppedOut && onHide && (
-                <Button variant="ghost" size="icon" onClick={onHide}>
+                <Button variant="ghost" size="icon" onClick={onHide} className="text-destructive">
                   <EyeOff className="h-4 w-4" />
                 </Button>
               )}
@@ -54,7 +54,7 @@ export function FallbackStrategy({ onPopOut, isPoppedOut = false, onHide, dragHa
             <div className="space-y-4">
             {providers.map((provider) => (
                 <div key={provider.id} className="flex items-center gap-4 p-3 rounded-lg border bg-card-foreground/5">
-                    <GripVertical className="h-5 w-5 cursor-grab text-accent" />
+                    <GripVertical className="h-5 w-5 cursor-grab text-secondary" />
                     <div className="flex-grow">
                         <p className="font-semibold">{provider.name}</p>
                         <p className="text-sm">{provider.description}</p>

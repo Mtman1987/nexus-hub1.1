@@ -9,6 +9,7 @@ import { PanelLeftClose, PanelRightClose, Eye, EyeOff } from 'lucide-react';
 import { CommunityLogo } from '../icons/community-logo';
 import { ALL_MODULES_CONFIG } from '@/lib/modules';
 import React, { useState, useEffect } from 'react';
+import { ScrollArea } from '../ui/scroll-area';
 
 export function Sidebar() {
   const { isCollapsed, setCollapsed, setHiddenModules } = useSidebar();
@@ -37,8 +38,7 @@ export function Sidebar() {
         "h-screen flex-col border-r bg-primary/20 hidden md:flex transition-all duration-300 ease-in-out",
         isCollapsed ? "w-16" : "w-64"
     )}>
-      <>
-        <div className="flex h-14 items-center border-b px-4 lg:h-[60px] justify-between">
+        <div className="flex h-14 flex-shrink-0 items-center border-b px-4 lg:h-[60px] justify-between">
             <div className="flex items-center gap-2 font-semibold text-foreground overflow-hidden">
                 <CommunityLogo className="h-6 w-auto flex-shrink-0" />
                 {!isCollapsed && <span className="text-lg whitespace-nowrap text-title-foreground">Apollo Station</span>}
@@ -48,8 +48,10 @@ export function Sidebar() {
                 <span className="sr-only">Toggle Sidebar</span>
             </Button>
         </div>
-        <SidebarNav isCollapsed={isCollapsed} />
-        <div className="mt-auto p-4 border-t">
+        <ScrollArea className="flex-grow">
+            <SidebarNav isCollapsed={isCollapsed} />
+        </ScrollArea>
+        <div className="mt-auto p-4 border-t flex-shrink-0">
             <div className="grid gap-2">
                 <Button variant="secondary" size="sm" onClick={handleShowAll} disabled={isCollapsed}>
                     <Eye className="mr-2 h-4 w-4"/>
@@ -61,7 +63,6 @@ export function Sidebar() {
                 </Button>
             </div>
         </div>
-      </>
     </aside>
   );
 }
