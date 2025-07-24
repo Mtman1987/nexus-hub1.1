@@ -46,7 +46,7 @@ export function SidebarNav({ isCollapsed = false, className }: SidebarNavProps) 
                       checked={!hiddenModules.includes(module.id)}
                       onCheckedChange={(checked) => handleModuleToggle(module.id, !!checked)}
                    />
-                   {Icon && <Icon className="h-5 w-5" />}
+                   {Icon && <Icon className="h-5 w-5 text-primary" />}
                 </div>
               </TooltipTrigger>
               <TooltipContent side="right">
@@ -72,7 +72,7 @@ export function SidebarNav({ isCollapsed = false, className }: SidebarNavProps) 
                       checked={!hiddenModules.includes(module.id)}
                       onCheckedChange={(checked) => handleModuleToggle(module.id, !!checked)}
                       />
-                    {Icon && <Icon className="h-4 w-4" />}
+                    {Icon && <Icon className="h-4 w-4 text-primary" />}
                     <Label htmlFor={`vis-${module.id}`} className="w-full cursor-pointer">{module.title}</Label>
                   </div>
                 )

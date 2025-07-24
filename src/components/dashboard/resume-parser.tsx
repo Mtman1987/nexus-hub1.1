@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -77,8 +78,8 @@ export function ResumeParser({ onPopOut, isPoppedOut = false, onHide, dragHandle
       <CardHeader>
         <div className="flex justify-between items-start">
              <div className="flex items-center gap-2 flex-grow">
-               <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto text-accent">
-                <GripVertical />
+               <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto">
+                <GripVertical className="text-primary" />
               </Button>
               <div className="flex-grow">
                 <CardTitle className="flex items-center gap-2 text-title-foreground">
@@ -92,7 +93,7 @@ export function ResumeParser({ onPopOut, isPoppedOut = false, onHide, dragHandle
             </div>
             <div className="flex items-center">
               {!isPoppedOut && onHide && (
-                <Button variant="ghost" size="icon" onClick={onHide} className="text-primary">
+                <Button variant="ghost" size="icon" onClick={onHide}>
                   <EyeOff className="h-4 w-4" />
                 </Button>
               )}
@@ -124,7 +125,7 @@ export function ResumeParser({ onPopOut, isPoppedOut = false, onHide, dragHandle
                 <div className="space-y-6 text-sm">
                     {/* Personal Info */}
                     <div className="space-y-4">
-                         <h3 className="font-semibold text-lg flex items-center gap-2"><User className="h-5 w-5 text-accent" />Personal Information</h3>
+                         <h3 className="font-semibold text-lg flex items-center gap-2"><User className="h-5 w-5 text-primary" />Personal Information</h3>
                          <div className="pl-6 space-y-2">
                             <p><strong>Name:</strong> {result.extracted_data.personal_infos.name?.raw_name || 'N/A'}</p>
                             <p className="flex items-center gap-2"><strong><Mail className="h-4 w-4" /></strong> {result.extracted_data.personal_infos.mails?.join(', ') || 'N/A'}</p>
@@ -136,7 +137,7 @@ export function ResumeParser({ onPopOut, isPoppedOut = false, onHide, dragHandle
                     <Separator />
                     {/* Skills */}
                      <div className="space-y-2">
-                         <h3 className="font-semibold text-lg flex items-center gap-2"><Sparkles className="h-5 w-5 text-accent" />Skills</h3>
+                         <h3 className="font-semibold text-lg flex items-center gap-2"><Sparkles className="h-5 w-5 text-primary" />Skills</h3>
                          <div className="pl-6 flex flex-wrap gap-2">
                              {result.extracted_data.personal_infos.skills?.map((skill, i) => (
                                 <Badge key={i} variant="secondary">{skill.name}</Badge>
@@ -146,7 +147,7 @@ export function ResumeParser({ onPopOut, isPoppedOut = false, onHide, dragHandle
                     <Separator />
                     {/* Work Experience */}
                     <div className="space-y-4">
-                        <h3 className="font-semibold text-lg flex items-center gap-2"><Briefcase className="h-5 w-5 text-accent" />Work Experience</h3>
+                        <h3 className="font-semibold text-lg flex items-center gap-2"><Briefcase className="h-5 w-5 text-primary" />Work Experience</h3>
                         <div className="pl-6 space-y-4">
                         {result.extracted_data.work_experience.entries?.map((job, i) => (
                             <div key={i} className="space-y-1">
@@ -161,7 +162,7 @@ export function ResumeParser({ onPopOut, isPoppedOut = false, onHide, dragHandle
                     <Separator />
                      {/* Education */}
                     <div className="space-y-4">
-                        <h3 className="font-semibold text-lg flex items-center gap-2"><GraduationCap className="h-5 w-5 text-accent" />Education</h3>
+                        <h3 className="font-semibold text-lg flex items-center gap-2"><GraduationCap className="h-5 w-5 text-primary" />Education</h3>
                          <div className="pl-6 space-y-4">
                         {result.extracted_data.education.entries?.map((edu, i) => (
                             <div key={i} className="space-y-1">
@@ -175,7 +176,7 @@ export function ResumeParser({ onPopOut, isPoppedOut = false, onHide, dragHandle
                 </div>
             ) : (
                 <div className="flex flex-col items-center justify-center h-full">
-                    <FileText className="h-12 w-12 mb-2" />
+                    <FileText className="h-12 w-12 mb-2 text-primary" />
                     <p>Parsed resume data will appear here.</p>
                 </div>
             )}

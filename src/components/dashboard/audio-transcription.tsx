@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef } from 'react';
@@ -59,8 +60,8 @@ export function AudioTranscription({ onPopOut, isPoppedOut = false, onHide, drag
             <CardHeader>
                 <div className="flex justify-between items-start">
                     <div className="flex items-center gap-2 flex-grow">
-                        <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto text-accent">
-                            <GripVertical />
+                        <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto">
+                            <GripVertical className="text-primary" />
                         </Button>
                         <div className="flex-grow">
                             <CardTitle className="flex items-center gap-2 text-title-foreground">
@@ -74,7 +75,7 @@ export function AudioTranscription({ onPopOut, isPoppedOut = false, onHide, drag
                     </div>
                     <div className="flex items-center">
                         {!isPoppedOut && onHide && (
-                            <Button variant="ghost" size="icon" onClick={onHide} className="text-primary">
+                            <Button variant="ghost" size="icon" onClick={onHide}>
                                 <EyeOff className="h-4 w-4" />
                             </Button>
                         )}
@@ -86,7 +87,7 @@ export function AudioTranscription({ onPopOut, isPoppedOut = false, onHide, drag
                 <div className="flex items-center justify-center w-full">
                     <Label htmlFor="audio-file" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-muted/50 hover:bg-muted">
                         <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <FileAudio className="w-8 h-8 mb-4"/>
+                            <FileAudio className="w-8 h-8 mb-4 text-primary"/>
                             <p className="mb-2 text-sm"><span className="font-semibold">Click to upload</span> or drag and drop</p>
                             <p className="text-xs">Audio File (MP3, WAV, etc.)</p>
                         </div>

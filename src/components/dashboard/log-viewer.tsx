@@ -85,12 +85,12 @@ export function LogViewer({ onPopOut, isPoppedOut = false, onHide, dragHandlePro
         <CardHeader className="shrink-0">
           <div className="flex justify-between items-start">
              <div className="flex items-center gap-2 flex-grow">
-               <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto text-accent">
-                <GripVertical />
+               <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto">
+                <GripVertical className="text-primary" />
               </Button>
               <div className="flex-grow">
                 <CardTitle className="flex items-center gap-2">
-                  <BookText className="h-6 w-6" />
+                  <BookText className="h-6 w-6 text-primary" />
                   Captain's Log
                 </CardTitle>
                 <CardDescription>Live feed of all service activities. Click a row for more details.</CardDescription>

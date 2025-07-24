@@ -104,10 +104,10 @@ const defaultSettings: Partial<Settings> = {
 }
 
 const PROVIDER_CONFIG = {
-    eden: { name: 'Eden AI', icon: <Star className="h-5 w-5" /> },
-    google: { name: 'Google AI', icon: <Bot className="h-5 w-5" /> },
-    openai: { name: 'OpenAI', icon: <Bot className="h-5 w-5" /> },
-    groq: { name: 'Groq', icon: <Bot className="h-5 w-5" /> },
+    eden: { name: 'Eden AI', icon: <Star className="h-5 w-5 text-primary" /> },
+    google: { name: 'Google AI', icon: <Bot className="h-5 w-5 text-primary" /> },
+    openai: { name: 'OpenAI', icon: <Bot className="h-5 w-5 text-primary" /> },
+    groq: { name: 'Groq', icon: <Bot className="h-5 w-5 text-primary" /> },
 };
 
 
@@ -126,7 +126,7 @@ const ServiceStatusToggle: React.FC<{
   return (
     <div className="space-y-2">
       <Label htmlFor={`${providerId}-status`} className="flex items-center gap-2 text-xs">
-        <Power className="h-4 w-4" />
+        <Power className="h-4 w-4 text-primary" />
         Service Status
       </Label>
       <div className="flex items-center gap-3">
@@ -443,11 +443,11 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview }:
       <CardHeader>
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-2 flex-grow">
-            <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto text-accent">
-              <GripVertical />
+            <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto">
+              <GripVertical className="text-primary" />
             </Button>
             <div className='flex-grow flex items-center gap-2'>
-              <ShieldCheck className="w-8 h-8" />
+              <ShieldCheck className="w-8 h-8 text-primary" />
               <div>
                 <CardTitle>
                   API Key Vault
@@ -477,7 +477,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview }:
           </div>
           {isPasswordFromFile ? (
              <Alert variant="default" className="mt-4">
-                <Lock className="h-4 w-4" />
+                <Lock className="h-4 w-4 text-primary" />
                 <AlertTitle>Password Locked by Config</AlertTitle>
                 <AlertDescription>
                    The vault password is set in `vault.config.json` and cannot be changed here.
@@ -494,7 +494,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview }:
           )}
           {!isLocked && (
                <Alert variant="default" className="mt-4">
-                  <Unlock className="h-4 w-4" />
+                  <Unlock className="h-4 w-4 text-primary" />
                   <AlertTitle>Vault Unlocked</AlertTitle>
                   <AlertDescription>
                      Vault will automatically lock in {timeFormatter.format(new Date(timeLeft * 1000))}.
@@ -508,7 +508,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview }:
                 <AccordionItem value="ai-providers">
                     <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                         <div className="flex items-center gap-2">
-                            <Cpu className="h-5 w-5"/>
+                            <Cpu className="h-5 w-5 text-primary"/>
                             AI Providers
                         </div>
                     </AccordionTrigger>
@@ -585,13 +585,13 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview }:
                 <AccordionItem value="service-integrations">
                     <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                         <div className="flex items-center gap-2">
-                            <Share2 className="h-5 w-5"/>
+                            <Share2 className="h-5 w-5 text-primary"/>
                             Service Integrations
                         </div>
                     </AccordionTrigger>
                     <AccordionContent className="space-y-4 pt-4 pl-2 border-l-2 border-primary/20">
                         <div className="space-y-4 p-3 border rounded-md">
-                           <h4 className="font-semibold flex items-center gap-2"><Bot className="h-5 w-5"/> Discord</h4>
+                           <h4 className="font-semibold flex items-center gap-2"><Bot className="h-5 w-5 text-primary"/> Discord</h4>
                            <ServiceStatusToggle providerId="discord" isConfigured={!!settings.discordWebhook || !!settings.discordToken} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
                            <div className="space-y-2">
                                 <Label htmlFor="discord-token">Discord Bot Token (For Python Bot)</Label>
@@ -603,7 +603,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview }:
                            </div>
                         </div>
                         <div className="space-y-4 p-3 border rounded-md">
-                           <h4 className="font-semibold flex items-center gap-2"><Bot className="h-5 w-5"/> Twitch</h4>
+                           <h4 className="font-semibold flex items-center gap-2"><Bot className="h-5 w-5 text-primary"/> Twitch</h4>
                            <ServiceStatusToggle providerId="twitch" isConfigured={!!settings.twitchToken} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
                             <div className="space-y-2">
                                 <Label htmlFor="twitch-token">Twitch Bot Token (Optional)</Label>
@@ -611,7 +611,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview }:
                             </div>
                         </div>
                         <div className="space-y-4 p-3 border rounded-md">
-                           <h4 className="font-semibold flex items-center gap-2"><Radio className="h-5 w-5"/> Streamer.bot</h4>
+                           <h4 className="font-semibold flex items-center gap-2"><Radio className="h-5 w-5 text-primary"/> Streamer.bot</h4>
                            <ServiceStatusToggle providerId="streamerbot" isConfigured={true} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
@@ -633,7 +633,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview }:
                 <AccordionItem value="audio-language">
                     <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                         <div className="flex items-center gap-2">
-                            <AudioLines className="h-5 w-5"/>
+                            <AudioLines className="h-5 w-5 text-primary"/>
                             Audio & Language
                         </div>
                     </AccordionTrigger>
@@ -673,13 +673,13 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview }:
                  <AccordionItem value="connectivity">
                     <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                         <div className="flex items-center gap-2">
-                           <Link className="h-5 w-5"/>
+                           <Link className="h-5 w-5 text-primary"/>
                             Connectivity
                         </div>
                     </AccordionTrigger>
                     <AccordionContent className="space-y-4 pt-4 pl-2 border-l-2 border-primary/20">
                         <div className="space-y-4 p-3 border rounded-md">
-                           <h4 className="font-semibold flex items-center gap-2"><Server className="h-5 w-5"/> Remote Access</h4>
+                           <h4 className="font-semibold flex items-center gap-2"><Server className="h-5 w-5 text-primary"/> Remote Access</h4>
                            <div className="space-y-2">
                                <Label htmlFor="remote-hub-address">Remote Hub Address</Label>
                                <Input 
@@ -713,7 +713,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview }:
                            </div>
                         </div>
                         <div className="space-y-4 p-3 border rounded-md">
-                            <h4 className="font-semibold flex items-center gap-2"><Link className="h-5 w-5"/> Nexus Connect</h4>
+                            <h4 className="font-semibold flex items-center gap-2"><Link className="h-5 w-5 text-primary"/> Nexus Connect</h4>
                              <ServiceStatusToggle providerId="nexusconnect" isConfigured={true} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
                             <div className="space-y-2">
                                 <Label htmlFor="nexus-webhook-url">Your Inbound Webhook URL (Share this)</Label>
