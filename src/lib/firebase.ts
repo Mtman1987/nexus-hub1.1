@@ -22,13 +22,18 @@ const firebaseConfig = {
   storageBucket: getLocalStorageItem('firebaseStorageBucket'),
   messagingSenderId: getLocalStorageItem('firebaseMessagingSenderId'),
   appId: getLocalStorageItem('firebaseAppId'),
+  measurementId: getLocalStorageItem('firebaseMeasurementId')
 };
 
 // Initialize Firebase only if the config is valid and it hasn't been initialized yet.
 // This check prevents errors when the app first loads without any keys in localStorage.
 if (firebaseConfig.apiKey && !getApps().length) {
-  app = initializeApp(firebaseConfig);
-  db = getFirestore(app);
+  try {
+    app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+  } catch (e) {
+    console.error("Firebase initialization failed. Please check your API keys in the vault.", e);
+  }
 } else if (getApps().length) {
   app = getApp();
   db = getFirestore(app);

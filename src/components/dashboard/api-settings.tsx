@@ -30,7 +30,7 @@ export const settingKeys = [
   'streamerbotServerAddress', 'streamerbotServerPort', 'streamerbotRequestType', 'streamerbotActionName', 'streamerbotVariableName', 'streamerbotWebhookUrl',
   'nexusConnectWebhookUrl', 'nexusConnectConnections', 'remoteHubAddress', 'remoteAccessSecret',
   'ttsProvider', 'sttProvider', 'translationProvider', 'vaultPassword',
-  'firebaseApiKey', 'firebaseAuthDomain', 'firebaseProjectId', 'firebaseStorageBucket', 'firebaseMessagingSenderId', 'firebaseAppId'
+  'firebaseApiKey', 'firebaseAuthDomain', 'firebaseProjectId', 'firebaseStorageBucket', 'firebaseMessagingSenderId', 'firebaseAppId', 'firebaseMeasurementId'
 ] as const;
 
 export type SettingKey = typeof settingKeys[number];
@@ -629,6 +629,10 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview, o
                                 <Label htmlFor="firebaseAppId">App ID</Label>
                                 <Input id="firebaseAppId" type="text" placeholder="1:12345:web:67890" value={settings.firebaseAppId || ''} onChange={(e) => handleInputChange('firebaseAppId', e.target.value)} disabled={isLocked} className="bg-secondary"/>
                             </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="firebaseMeasurementId">Measurement ID</Label>
+                                <Input id="firebaseMeasurementId" type="text" placeholder="G-XXXXXXXXXX" value={settings.firebaseMeasurementId || ''} onChange={(e) => handleInputChange('firebaseMeasurementId', e.target.value)} disabled={isLocked} className="bg-secondary"/>
+                            </div>
                         </div>
                     </AccordionContent>
                 </AccordionItem>
@@ -842,5 +846,3 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview, o
     </Card>
   );
 }
-
-    
