@@ -82,7 +82,7 @@ export function ResumeParser({ onPopOut, isPoppedOut = false, onHide, dragHandle
                 <GripVertical className="text-primary" />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2 text-title-foreground">
+                <CardTitle className="flex items-center gap-2">
                   <FileText className="h-6 w-6 text-primary" />
                   Resume Parser
                 </CardTitle>

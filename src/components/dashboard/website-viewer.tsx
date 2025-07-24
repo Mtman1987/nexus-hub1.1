@@ -98,7 +98,7 @@ export function WebsiteViewer({ isPoppedOut = false, onPopOut, onHide, dragHandl
             </div>
             <div className="flex items-center">
               {!isPoppedOut && onHide && (
-                <Button variant="ghost" size="icon" onClick={onHide} className="text-primary">
+                <Button variant="ghost" size="icon" onClick={onHide}>
                   <EyeOff className="h-4 w-4" />
                 </Button>
               )}

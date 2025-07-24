@@ -64,7 +64,7 @@ export function AudioTranscription({ onPopOut, isPoppedOut = false, onHide, drag
                             <GripVertical className="text-primary" />
                         </Button>
                         <div className="flex-grow">
-                            <CardTitle className="flex items-center gap-2 text-title-foreground">
+                            <CardTitle className="flex items-center gap-2">
                                 <FileAudio className="h-6 w-6 text-primary" />
                                 Audio Transcription
                             </CardTitle>
