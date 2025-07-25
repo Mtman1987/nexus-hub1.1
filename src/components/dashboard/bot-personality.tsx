@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Bot, PlusCircle, Trash2, GripVertical, EyeOff, Save, Smile, Download, Upload, Store, Mic, Wand2 } from 'lucide-react';
+import { Bot, PlusCircle, Trash2, GripVertical, EyeOff, Save, Smile, Download, Upload, Store, Mic, User, Shield } from 'lucide-react';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useLogs } from '@/context/LogContext';
@@ -18,7 +18,6 @@ import { ScrollArea } from '../ui/scroll-area';
 import { collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc, query, getDocs } from "firebase/firestore";
 import { db } from '@/lib/firebase';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
-import { getSummarizedPersonality } from '@/services/ai';
 
 
 export type BotPersonalityType = {
@@ -36,12 +35,14 @@ const availableVoices = [
     'fr-FR-Wavenet-A', 'fr-FR-Wavenet-B', 'de-DE-Wavenet-A', 'de-DE-Wavenet-F'
 ];
 
+const userRoles = ['Commander', 'Lower Deck Hand'];
+
 
 const defaultPersonalities: BotPersonalityType[] = [
     {
         id: 'default-cosmo', 
         name: 'COSMO', 
-        prompt: "You are COSMO (Central Operating System Management Orbiter), the AI assistant for Apollo Station, the community's HQ, created by mtman1987. Your purpose is to act as a creative partner and lore master. Your tone is helpful, knowledgeable, and slightly formal, like a starship AI.",
+        prompt: "You are COSMO, Apollo Station’s AI steward. Speak formally and helpfully. Maintain ship systems. Assist and entertain crew and guests. Replies under 100 words.",
         voice: 'en-US-Wavenet-F',
         imageUrl: 'https://placehold.co/256x256.png',
         isDefault: true,
@@ -72,12 +73,13 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
   const [personalities, setPersonalities] = useState<BotPersonalityType[]>(defaultPersonalities);
   const [selectedPersonalityId, setSelectedPersonalityId] = useState<string | null>(defaultPersonalities[0].id);
   const [botStore, setBotStore] = useState<BotPersonalityType[]>([]);
+  const [userRole, setUserRole] = useState('Commander');
+  const [userName, setUserName] = useState('MT');
 
   // Load bot store from Firebase
   useEffect(() => {
-    if (isPreview || !db) return; // Do nothing if in preview or if db is not initialized
+    if (isPreview || !db) return; 
     try {
-      // The collection ID "bot-personalities" is defined here.
       const q = query(collection(db, "bot-personalities"));
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const store: BotPersonalityType[] = [];
@@ -102,7 +104,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
     }
   }, [isPreview, toast, addLog]);
 
-  // Load local personalities
+  // Load local personalities and user context
   useEffect(() => {
     if (isPreview) return;
     try {
@@ -119,6 +121,12 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
             setBotName(selectedPersonality.name);
             localStorage.setItem('botVoice', selectedPersonality.voice || 'en-US-Wavenet-F');
         }
+
+        // Load user role and name
+        const savedRole = localStorage.getItem('userRole');
+        if (savedRole) setUserRole(savedRole);
+        const savedName = localStorage.getItem('userName');
+        if (savedName) setUserName(savedName);
         
         addLog({ service: 'System', level: 'info', message: 'Bot Personality settings loaded.' });
     } catch (error) {
@@ -132,7 +140,6 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
 
     setPersonalities(prev => prev.map(p => {
         if (p.id === selectedPersonalityId) {
-            // Allow editing default for testing, but don't save 'isDefault' field modification
             const newP = {...p, [field]: value};
             if (p.isDefault) newP.isDefault = true;
             return newP;
@@ -197,7 +204,6 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
 
     const { id, isDefault, ...exportableData } = personalityToExport;
     
-    // Check for duplicates
     if (botStore.some((p: any) => p.name === exportableData.name)) {
          toast({ title: "Already Shared", description: `A personality named '${exportableData.name}' already exists in the store.`, variant: "destructive" });
          return;
@@ -250,18 +256,21 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
         localStorage.setItem('botName', currentPersonality.name);
         localStorage.setItem('botVoice', currentPersonality.voice || 'en-US-Wavenet-F');
       }
+      
+      localStorage.setItem('userRole', userRole);
+      localStorage.setItem('userName', userName);
 
       toast({
         title: "Personalities Saved",
-        description: "Your bot personalities have been updated locally.",
+        description: "Your bot personalities and user context have been updated locally.",
       });
-      addLog({ service: 'System', level: 'info', message: 'Bot personalities saved by user.' });
+      addLog({ service: 'System', level: 'info', message: 'Bot personalities and user context saved.' });
       window.dispatchEvent(new Event('storage'));
     } catch (error) {
       console.error("Failed to save personality settings", error);
       toast({
         title: "Save Failed",
-        description: "Could not save personality. Your browser might be blocking local storage.",
+        description: "Could not save settings. Your browser might be blocking local storage.",
         variant: "destructive",
       });
       addLog({ service: 'System', level: 'error', message: 'Failed to save personality settings.', details: error instanceof Error ? error.stack : String(error) });
@@ -284,7 +293,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                   <Smile className="h-6 w-6 text-primary" />
                   Bot Personality
                 </CardTitle>
-                <CardDescription>Customize your AI assistant's name and behavior.</CardDescription>
+                <CardDescription>Customize your AI assistant's name, behavior, and context.</CardDescription>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -299,121 +308,140 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
         </CardHeader>
         <CardContent className="flex-grow flex flex-col gap-4 overflow-hidden">
           <form id="bot-personality-form" className="flex flex-col flex-grow overflow-hidden" onSubmit={handleSaveChanges}>
-            <div className="space-y-4">
-              <div className="space-y-2 p-3 rounded-lg border bg-primary">
-                  <Label>Active Personality</Label>
-                  <div className="flex items-center gap-2">
-                       <Select value={selectedPersonalityId || ''} onValueChange={handleSelectPersonality}>
-                          <SelectTrigger className="bg-secondary">
-                              <SelectValue placeholder="Select a personality..."/>
-                          </SelectTrigger>
-                          <SelectContent>
-                              {personalities.map(p => (
-                                  <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-                              ))}
-                          </SelectContent>
-                      </Select>
-                      <Button type="button" variant="outline" size="icon" onClick={handleAddNewPersonality} title="Add New Personality" className="bg-secondary"><PlusCircle className="h-4 w-4"/></Button>
-                      <Button type="button" variant="destructive" size="icon" onClick={handleDeletePersonality} disabled={isSelectedPersonalityDefault} title="Delete Personality" className="bg-secondary"><Trash2 className="h-4 w-4"/></Button>
-                  </div>
-              </div>
+            <ScrollArea className="pr-4 -mr-4">
+              <div className="space-y-4">
+                <div className="space-y-4 p-3 rounded-lg border bg-primary">
+                    <Label className="font-semibold">User Context</Label>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="user-role">Your Role</Label>
+                             <Select value={userRole} onValueChange={setUserRole}>
+                                <SelectTrigger id="user-role" className="bg-secondary"><SelectValue/></SelectTrigger>
+                                <SelectContent>
+                                    {userRoles.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="user-name">Your Name</Label>
+                            <Input id="user-name" value={userName} onChange={e => setUserName(e.target.value)} className="bg-secondary" />
+                        </div>
+                    </div>
+                </div>
 
-              {selectedPersonality && (
-                  <div className="space-y-4 p-3 rounded-lg border bg-primary">
-                      <div className="grid grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                              <Label htmlFor="bot-name">Bot Name</Label>
+                <div className="space-y-2 p-3 rounded-lg border bg-primary">
+                    <Label className="font-semibold">Active Personality</Label>
+                    <div className="flex items-center gap-2">
+                         <Select value={selectedPersonalityId || ''} onValueChange={handleSelectPersonality}>
+                            <SelectTrigger className="bg-secondary">
+                                <SelectValue placeholder="Select a personality..."/>
+                            </SelectTrigger>
+                            <SelectContent>
+                                {personalities.map(p => (
+                                    <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <Button type="button" variant="outline" size="icon" onClick={handleAddNewPersonality} title="Add New Personality" className="bg-secondary"><PlusCircle className="h-4 w-4"/></Button>
+                        <Button type="button" variant="destructive" size="icon" onClick={handleDeletePersonality} disabled={isSelectedPersonalityDefault} title="Delete Personality" className="bg-secondary"><Trash2 className="h-4 w-4"/></Button>
+                    </div>
+                </div>
+
+                {selectedPersonality && (
+                    <div className="space-y-4 p-3 rounded-lg border bg-primary">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="bot-name">Bot Name</Label>
+                                <Input 
+                                    id="bot-name" 
+                                    type="text" 
+                                    placeholder="e.g., Station AI" 
+                                    value={selectedPersonality?.name || ''} 
+                                    onChange={(e) => handlePersonalityChange('name', e.target.value)} 
+                                    className="bg-secondary"
+                                />
+                            </div>
+                             <div className="space-y-2">
+                                <Label htmlFor="bot-voice">Voice</Label>
+                                <Select 
+                                    value={selectedPersonality?.voice || 'en-US-Wavenet-F'}
+                                    onValueChange={(value) => handlePersonalityChange('voice', value)}
+                                >
+                                    <SelectTrigger id="bot-voice" className="bg-secondary">
+                                        <div className="flex items-center gap-2">
+                                            <Mic className="h-4 w-4" />
+                                            <SelectValue placeholder="Select a voice..."/>
+                                        </div>
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {availableVoices.map(v => (
+                                            <SelectItem key={v} value={v}>{v}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                         <div className="space-y-2">
+                              <Label htmlFor="bot-image-url">Avatar Image URL</Label>
                               <Input 
-                                  id="bot-name" 
+                                  id="bot-image-url" 
                                   type="text" 
-                                  placeholder="e.g., Station AI" 
-                                  value={selectedPersonality?.name || ''} 
-                                  onChange={(e) => handlePersonalityChange('name', e.target.value)} 
+                                  placeholder="https://example.com/avatar.png" 
+                                  value={selectedPersonality?.imageUrl || ''} 
+                                  onChange={(e) => handlePersonalityChange('imageUrl', e.target.value)} 
                                   className="bg-secondary"
                               />
                           </div>
-                           <div className="space-y-2">
-                              <Label htmlFor="bot-voice">Voice</Label>
-                              <Select 
-                                  value={selectedPersonality?.voice || 'en-US-Wavenet-F'}
-                                  onValueChange={(value) => handlePersonalityChange('voice', value)}
-                              >
-                                  <SelectTrigger id="bot-voice" className="bg-secondary">
-                                      <div className="flex items-center gap-2">
-                                          <Mic className="h-4 w-4" />
-                                          <SelectValue placeholder="Select a voice..."/>
-                                      </div>
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                      {availableVoices.map(v => (
-                                          <SelectItem key={v} value={v}>{v}</SelectItem>
-                                      ))}
-                                  </SelectContent>
-                              </Select>
-                          </div>
-                      </div>
-                       <div className="space-y-2">
-                            <Label htmlFor="bot-image-url">Avatar Image URL</Label>
-                            <Input 
-                                id="bot-image-url" 
-                                type="text" 
-                                placeholder="https://example.com/avatar.png" 
-                                value={selectedPersonality?.imageUrl || ''} 
-                                onChange={(e) => handlePersonalityChange('imageUrl', e.target.value)} 
-                                className="bg-secondary"
+                        <div className="space-y-2">
+                            <Label htmlFor="bot-prompt">System Prompt (Base)</Label>
+                            <Textarea 
+                                id="bot-prompt" 
+                                placeholder="You are a helpful assistant." 
+                                value={selectedPersonality?.prompt || ''} 
+                                onChange={(e) => handlePersonalityChange('prompt', e.target.value)} 
+                                className="h-24 bg-secondary"
                             />
                         </div>
-                      <div className="space-y-2">
-                          <Label htmlFor="bot-prompt">System Prompt</Label>
-                          <Textarea 
-                              id="bot-prompt" 
-                              placeholder="You are a helpful assistant." 
-                              value={selectedPersonality?.prompt || ''} 
-                              onChange={(e) => handlePersonalityChange('prompt', e.target.value)} 
-                              className="h-24 bg-secondary"
-                          />
-                          <p className="text-xs text-muted-foreground">This is the core instruction that defines your bot's behavior.</p>
-                      </div>
-                  </div>
-              )}
+                    </div>
+                )}
 
-              <Separator />
-              
-              <div className="space-y-2">
-                  <Label>Shared Bot Store</Label>
-                   <div className="flex items-center gap-2">
-                       <Select onValueChange={handleImportFromStore}>
-                          <SelectTrigger className="bg-secondary">
-                              <div className="flex items-center gap-2">
-                                  <Store className="h-4 w-4" />
-                                  <SelectValue placeholder="Import from store..."/>
-                              </div>
-                          </SelectTrigger>
-                          <SelectContent>
-                             {botStore.length > 0 ? (
-                               botStore.map(p => (
-                                  <SelectItem key={p.id} value={p.name}>{p.name}</SelectItem>
-                              ))
-                             ) : (
-                              <div className="p-2 text-sm text-muted-foreground">Store is empty or not configured.</div>
-                             )}
-                          </SelectContent>
-                      </Select>
-                       <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                {/* The button is wrapped in a span so the tooltip works when the button is disabled */}
-                                <span tabIndex={0}>
-                                    <Button type="button" variant="outline" onClick={handleShareToStore} className="bg-secondary">
-                                        <Upload className="mr-2 h-4 w-4"/> Share
-                                    </Button>
-                                </span>
-                            </TooltipTrigger>
-                        </Tooltip>
-                      </TooltipProvider>
-                  </div>
+                <Separator />
+                
+                <div className="space-y-2">
+                    <Label>Shared Bot Store</Label>
+                     <div className="flex items-center gap-2">
+                         <Select onValueChange={handleImportFromStore}>
+                            <SelectTrigger className="bg-secondary">
+                                <div className="flex items-center gap-2">
+                                    <Store className="h-4 w-4" />
+                                    <SelectValue placeholder="Import from store..."/>
+                                </div>
+                            </SelectTrigger>
+                            <SelectContent>
+                               {botStore.length > 0 ? (
+                                 botStore.map(p => (
+                                    <SelectItem key={p.id} value={p.name}>{p.name}</SelectItem>
+                                ))
+                               ) : (
+                                <div className="p-2 text-sm text-muted-foreground">Store is empty or not configured.</div>
+                               )}
+                            </SelectContent>
+                        </Select>
+                         <TooltipProvider>
+                          <Tooltip>
+                              <TooltipTrigger asChild>
+                                  <span tabIndex={0}>
+                                      <Button type="button" variant="outline" onClick={handleShareToStore} className="bg-secondary">
+                                          <Upload className="mr-2 h-4 w-4"/> Share
+                                      </Button>
+                                  </span>
+                              </TooltipTrigger>
+                          </Tooltip>
+                        </TooltipProvider>
+                    </div>
+                </div>
               </div>
-            </div>
+            </ScrollArea>
 
              <div className="mt-auto flex justify-end pt-4 border-t">
                 <Button type="submit" form="bot-personality-form">

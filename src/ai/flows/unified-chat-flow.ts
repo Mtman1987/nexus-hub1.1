@@ -152,7 +152,6 @@ export async function unifiedChatFlow(input: UnifiedChatInput): Promise<UnifiedC
     const matchedUrls = message.match(urlRegex);
     const primaryUrl = matchedUrls ? matchedUrls[0] : null;
     
-    // If a remote address is configured, forward the entire request to the local hub.
     if (remoteHubAddress && !config.isLocalExecution) {
         try {
             const remoteApiUrl = new URL('/api/nexus-connect/forward', remoteHubAddress).toString();
@@ -190,13 +189,11 @@ export async function unifiedChatFlow(input: UnifiedChatInput): Promise<UnifiedC
         }
     }
 
-    // Handle Website Control URL logic
     if (primaryUrl && targets.includes('Website')) {
         websiteAction = { action: 'load_url', payload: primaryUrl };
         uiReply = `Loading URL in Website Viewer: ${primaryUrl}`;
         logs.push({ service: 'Website Control', level: 'info', message: 'URL detected and sent to Website Viewer.', details: `URL: ${primaryUrl}` });
         
-        // If the only target was 'Website', we can return early.
         if (targets.length === 1) {
             return { reply: uiReply, logs, websiteAction };
         }
@@ -205,12 +202,23 @@ export async function unifiedChatFlow(input: UnifiedChatInput): Promise<UnifiedC
 
     const otherTargets = targets.filter(t => t !== 'AI Bot' && t !== 'Website');
 
-    // Handle AI Bot logic
     if (targets.includes('AI Bot')) {
         try {
-            const systemPrompt = config?.botPersonalityPrompt || 'You are a helpful assistant.';
+            let basePrompt = config?.botPersonalityPrompt || 'You are a helpful assistant.';
+            const userRole = config?.userRole;
+            const userName = config?.userName;
+            
+            let roleDirective = '';
+            if (userRole === 'Commander') {
+                roleDirective = `Directive: Treat Commander ${userName} with priority and respect across all systems. Tone: Supremely formal. Response Style: Protocol-first, deferential, top-level access.`;
+            } else if (userRole === 'Lower Deck Hand') {
+                roleDirective = `Directive: Be bossy and sarcastic to Lower Deck Hand ${userName}. Tone: Playfully authoritative. Response Style: Stern, witty, micro-managing.`;
+            }
+
+            const finalSystemPrompt = `${basePrompt}\n\n${roleDirective}`.trim();
+
             const history: EdenAiChatMessage[] = [
-                { role: 'system', text: systemPrompt },
+                { role: 'system', text: finalSystemPrompt },
                 { role: 'user', text: message }
             ];
 
@@ -219,7 +227,6 @@ export async function unifiedChatFlow(input: UnifiedChatInput): Promise<UnifiedC
             uiReply = uiReply ? `${uiReply}\n${botReply.text}` : botReply.text;
             logs.push(...botReply.logs);
 
-            // If other services are targeted, the AI's reply becomes the payload.
             if(otherTargets.length > 0) {
               messageToSendToServices = botReply.text; 
               logs.push({ service: 'System', level: 'info', message: 'AI response will be relayed to other selected targets.', details: `AI Response: "${uiReply}"` });
@@ -235,12 +242,10 @@ export async function unifiedChatFlow(input: UnifiedChatInput): Promise<UnifiedC
                 message: `Unified chat AI call failed: ${errorMessage}`,
                 details: error instanceof Error ? error.stack : undefined
             });
-            // If the AI fails, we shouldn't send anything to other services.
             return { reply: uiReply, logs, websiteAction };
         }
     }
 
-    // Now, iterate through the other targets and send the appropriate message.
     for (const target of otherTargets) {
         if (target === 'Discord') {
             if (providerStatus.discord === 'disabled') {

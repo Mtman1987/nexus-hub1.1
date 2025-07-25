@@ -32,7 +32,6 @@ export async function callEdenAiChat(
 
     const url = "https://api.edenai.run/v2/llm/chat";
     
-    // Determine provider and model from settings or overrides
     let provider: string;
     let model: string;
 
@@ -42,15 +41,13 @@ export async function callEdenAiChat(
     } else if (config.edenAiModel && typeof config.edenAiModel === 'string' && config.edenAiModel.includes('/')) {
         [provider, model] = config.edenAiModel.split('/');
     } else {
-        // Fallback to older settings or defaults if the new format isn't present
-        provider = config.edenAiProvider || 'openai'; // Default to a common provider
-        model = config.edenAiModel || 'gpt-4o'; // Default to a common model
+        provider = config.edenAiProvider || 'openai';
+        model = config.edenAiModel || 'gpt-4o';
     }
     
-    // To ensure universal compatibility, we will treat the system prompt as the first message in the chat history.
     const messages = history.map(msg => ({
         role: msg.role,
-        content: [{ type: 'text', text: msg.text }]
+        message: msg.text
     }));
     
     const payload: any = {
@@ -61,9 +58,18 @@ export async function callEdenAiChat(
         max_tokens: 2000,
         providers: provider,
         model: model,
-        messages: messages, // Send the full history, including the system prompt
+        // Eden AI's chat API uses a different structure than the standard OpenAI format.
+        // We adapt our history to fit their expected format.
+        text: history.find(m => m.role === 'user')?.text || '',
+        previous_history: history.filter(m => m.role !== 'user'),
     };
     
+    // Add the system prompt if it exists. Some providers use this.
+    const systemPrompt = history.find(m => m.role === 'system');
+    if (systemPrompt) {
+        payload.system_prompt = systemPrompt.text;
+    }
+
     if (json_response) {
         payload.response_format = { type: "json_object" };
     }

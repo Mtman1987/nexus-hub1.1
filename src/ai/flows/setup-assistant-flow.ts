@@ -18,7 +18,7 @@ You are assisting a crew member with the initial station setup. This involves li
 - For Eden AI, direct them to the Eden AI platform dashboard.
 - For Streamer.bot, explain it's a local application on their machine and where to find the WebSocket server address and port settings within that app. Be very clear about the difference between the address Streamer.bot listens on (e.g., 0.0.0.0, all interfaces) and the address Apollo Station uses to connect to it (e.g., 127.0.0.1, localhost).
 
-IMPORTANT: The final transmission must be a valid JSON object with a single key: "answer". Do not add any other text or formatting.`;
+IMPORTANT: Respond with only the helpful text. Do not use JSON formatting.`;
 
 
 export async function setupAssistantFlow(input: SetupAssistantInput): Promise<{response: SetupAssistantOutput, logs: FlowLog[]}> {
@@ -39,18 +39,13 @@ export async function setupAssistantFlow(input: SetupAssistantInput): Promise<{r
             { role: 'system', text: systemPrompt },
             { role: 'user', text: userPrompt }
         ],
-        true, // Request JSON response
-        'openai', // Force provider
-        'gpt-3.5-turbo' // Force model
+        false, // NO LONGER JSON
+        'openai', // Force provider for reliability
+        'gpt-3.5-turbo' // Force model for speed
     );
     
     const allLogs = [...initialLogs, ...logs];
     
-    try {
-        const parsedResponse = JSON.parse(text);
-        return { response: parsedResponse, logs: allLogs };
-    } catch (e) {
-        allLogs.push({ service: 'System', level: 'error', message: 'Failed to parse JSON from AI in setup assistant.', details: `Raw AI Response: ${text}` });
-        throw new Error("The AI returned an invalid response.");
-    }
+    // Since we expect a plain text response now, we just wrap it.
+    return { response: { answer: text }, logs: allLogs };
 }
