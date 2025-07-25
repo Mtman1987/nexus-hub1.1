@@ -74,7 +74,7 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
   const [personalities, setPersonalities] = useState<BotPersonalityType[]>(defaultPersonalities);
   const [selectedPersonalityId, setSelectedPersonalityId] = useState<string | null>(defaultPersonalities[0].id);
   const [botStore, setBotStore] = useState<BotPersonalityType[]>([]);
-  const [userRole, setUserRole] = useState('Guest');
+  const [userRole, setUserRole] = useState('Commander');
   const [userName, setUserName] = useState('');
 
   // Load bot store from Firebase
@@ -319,7 +319,21 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                              <Select value={userRole} onValueChange={setUserRole}>
                                 <SelectTrigger id="user-role" className="bg-secondary"><SelectValue/></SelectTrigger>
                                 <SelectContent>
-                                    {userRoles.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+                                    <TooltipProvider>
+                                    {ROLES.map(r => (
+                                        <Tooltip key={r.role} delayDuration={300}>
+                                            <TooltipTrigger asChild>
+                                                <SelectItem value={r.role}>{r.role}</SelectItem>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="right" className="max-w-xs">
+                                                <p className="font-bold">{r.role}</p>
+                                                <p><span className="font-semibold">Directive:</span> {r.directive}</p>
+                                                <p><span className="font-semibold">Tone:</span> {r.tone}</p>
+                                                <p><span className="font-semibold">Style:</span> {r.response_style}</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    ))}
+                                    </TooltipProvider>
                                 </SelectContent>
                             </Select>
                         </div>

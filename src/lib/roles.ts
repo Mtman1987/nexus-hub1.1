@@ -8,6 +8,12 @@ export type Role = {
 
 export const ROLES: Role[] = [
   {
+    "role": "Commander",
+    "directive": "Treat Commander with priority and respect across all systems.",
+    "tone": "Supremely formal",
+    "response_style": "Protocol-first, deferential, top-level access"
+  },
+  {
     "role": "Acting Commander",
     "directive": "Treat Acting Commander with formal respect and confirm handoff procedures.",
     "tone": "Formal",
