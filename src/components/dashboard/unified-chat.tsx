@@ -234,7 +234,10 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
       setLoadingAudio(messageId);
       try {
         const voice = localStorage.getItem('botVoice') || 'Algenib';
-        const { media } = await getTTSAudio({ text, voice });
+        const config = {
+            googleApiKey: localStorage.getItem('googleApiKey')
+        };
+        const { media } = await getTTSAudio({ text, voice, config });
         
         setMessages(prev => prev.map(msg => 
             msg.id === messageId ? {...msg, audioData: media} : msg

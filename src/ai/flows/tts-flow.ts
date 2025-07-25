@@ -1,112 +1,94 @@
 
 'use server';
 /**
- * @fileOverview A flow for converting text to speech via Eden AI.
+ * @fileOverview A flow for converting text to speech via Genkit.
  *
  * - ttsFlow - The main function to convert text to a playable audio data URI.
  */
-import type { TtsInput, TtsOutput, FlowLog } from '../types';
-import type { AppConfig } from '@/ai/types';
+import { ai } from '@/ai/genkit';
+import { z } from 'zod';
+import wav from 'wav';
 
-async function callEdenAiTts(
-    config: AppConfig,
-    text: string,
-    provider: string,
-    voiceId: string
-): Promise<{ audio: string, logs: FlowLog[] }> {
-    const logs: FlowLog[] = [];
-    if (!config.edenApiKey) {
-        throw new Error("Eden AI API key is not configured.");
-    }
-
-    const headers = {
-        "Authorization": `Bearer ${config.edenApiKey}`,
-        "Content-Type": "application/json"
-    };
-
-    const url = "https://api.edenai.run/v2/audio/text_to_speech";
-    
-    // Simplified logic for option based on common voice naming conventions.
-    // Eden AI's `option` parameter is often 'MALE' or 'FEMALE'.
-    let option = 'MALE'; // Default
-    if (voiceId.includes('-F') || voiceId.includes('FEMALE') || voiceId.toLowerCase().includes('female')) {
-        option = 'FEMALE';
-    }
+import { TtsInputSchema, TtsOutputSchema, type TtsInput, type TtsOutput } from '../types';
+import { googleAI } from '@genkit-ai/googleai';
 
 
-    const payload = {
-        response_as_dict: true,
-        attributes_as_list: false,
-        show_original_response: false,
-        rate: 0,
-        pitch: 0,
-        volume: 0,
-        sampling_rate: 0,
-        providers: provider, 
-        language: "en-US", // Language can be parameterized in the future
-        option: option,
-        text: text,
-        // Some providers use `voice_id` and others use `voice_model`
-        ...(provider === 'google' || provider === 'elevenlabs' ? { voice_id: voiceId } : { voice_model: voiceId })
-    };
+async function toWav(
+  pcmData: Buffer,
+  channels = 1,
+  rate = 24000,
+  sampleWidth = 2
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const writer = new wav.Writer({
+      channels,
+      sampleRate: rate,
+      bitDepth: sampleWidth * 8,
+    });
 
+    const bufs: any[] = [];
+    writer.on('error', reject);
+    writer.on('data', function (d) {
+      bufs.push(d);
+    });
+    writer.on('end', function () {
+      resolve(Buffer.concat(bufs).toString('base64'));
+    });
+
+    writer.write(pcmData);
+    writer.end();
+  });
+}
+
+export async function textToSpeech(input: TtsInput): Promise<TtsOutput> {
+    return ttsFlow(input);
+}
+
+
+const ttsFlow = ai.defineFlow(
+  {
+    name: 'ttsFlow',
+    inputSchema: TtsInputSchema,
+    outputSchema: TtsOutputSchema,
+  },
+  async (input) => {
     try {
-        logs.push({ service: 'Eden', level: 'info', message: `Calling Eden AI TTS with provider: ${provider}` });
-
-        const response = await fetch(url, {
-            method: 'POST',
-            headers,
-            body: JSON.stringify(payload),
+        const { media } = await ai.generate({
+            model: googleAI.model('gemini-2.5-flash-preview-tts'),
+            config: {
+                responseModalities: ['AUDIO'],
+                speechConfig: {
+                  voiceConfig: {
+                    prebuiltVoiceConfig: { voiceName: input.voice || 'Algenib' },
+                  },
+                },
+            },
+            prompt: input.text,
         });
 
-        if (!response.ok) {
-            const errorBody = await response.text();
-            throw new Error(`Eden AI TTS API call failed with status ${response.status}: ${errorBody}`);
+        if (!media) {
+          throw new Error('No media was returned from the TTS service.');
         }
 
-        const result = await response.json();
-        const providerResult = result[provider];
+        const audioBuffer = Buffer.from(
+            media.url.substring(media.url.indexOf(',') + 1),
+            'base64'
+        );
         
-        if (!providerResult) {
-            throw new Error(`Provider '${provider}' not found in Eden AI response. Full response: ${JSON.stringify(result)}`);
-        }
-        
-        if (providerResult.status !== 'success') {
-            throw new Error(providerResult?.error?.message || `TTS failed for provider ${provider}.`);
-        }
+        const wavData = await toWav(audioBuffer);
 
-        const audioBase64 = providerResult.audio;
-        if (!audioBase64) {
-            throw new Error(`No audio data returned from provider ${provider}.`);
-        }
-        
-        logs.push({ service: 'Eden', level: 'info', message: 'Successfully generated audio via Eden AI.' });
-        return { audio: `data:audio/mp3;base64,${audioBase64}`, logs };
-
-    } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "An unknown error occurred during Eden AI TTS call.";
-        logs.push({ service: 'Eden', level: 'error', message: errorMessage, details: error instanceof Error ? error.stack : undefined });
-        throw error;
-    }
-}
-
-
-export async function ttsFlow(input: TtsInput): Promise<TtsOutput> {
-    const { text, voice, config } = input;
-    
-    // Use the voice passed in the call, fallback to the globally set bot voice, then to a default.
-    const voiceToUse = voice || config?.botVoice || 'en-US-Wavenet-F';
-    const providerToUse = config?.ttsProvider || 'google'; // Default to google if not set
-
-    try {
-        const { audio, logs } = await callEdenAiTts(config, text, providerToUse, voiceToUse);
         return {
-            media: audio,
-            logs
+            media: 'data:audio/wav;base64,' + wavData,
+            logs: [{ service: 'TTS', level: 'info', message: 'Successfully generated audio via Genkit.' }]
         };
+
     } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "An unknown error occurred during TTS generation.";
         console.error("TTS Flow Error:", error);
-        // Let the error propagate so the UI can catch it.
-        throw error;
+        return {
+            media: '',
+            logs: [{ service: 'TTS', level: 'error', message: errorMessage, details: error instanceof Error ? error.stack : undefined }]
+        };
     }
-}
+  }
+);
