@@ -30,7 +30,7 @@ export async function callEdenAiChat(
         "Content-Type": "application/json"
     };
 
-    const url = "https://api.edenai.run/v2/llm/chat";
+    const url = "https://api.edenai.run/v2/text/chat";
     
     let provider: string;
     let model: string;
@@ -58,10 +58,7 @@ export async function callEdenAiChat(
         max_tokens: 2000,
         providers: provider,
         model: model,
-        // Eden AI's chat API uses a different structure than the standard OpenAI format.
-        // We adapt our history to fit their expected format.
-        text: history.find(m => m.role === 'user')?.text || '',
-        previous_history: history.filter(m => m.role !== 'user'),
+        messages: messages, // Use the 'messages' field for the entire history
     };
     
     // Add the system prompt if it exists. Some providers use this.
