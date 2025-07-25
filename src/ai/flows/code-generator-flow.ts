@@ -21,7 +21,13 @@ export async function codeGeneratorFlow(
     
     const systemPrompt = getSystemPrompt(input.language);
     // Add the JSON instruction directly to the user prompt to ensure provider compatibility.
-    const userPrompt = `Instruction: "${input.instruction}"\n\nPrompt/Context: "${input.prompt || 'No additional context provided.'}"\n\nIMPORTANT: Your response MUST be a valid JSON object with a single key: "generated_code".`;
+    const userPrompt = `A critical instruction from the Commander: "Explain reasoning first, no code yet. I’ll affirm or deny before you proceed." First, explain your plan to fulfill my request. Then, STOP and wait for my approval. Only generate the code after I approve.
+
+Instruction: "${input.instruction}"
+
+Prompt/Context: "${input.prompt || 'No additional context provided.'}"
+
+IMPORTANT: Your response MUST be a valid JSON object with a single key: "generated_code". When providing the final code, do not include the explanation in the JSON value, only the code itself.`;
 
     const { text, logs } = await callEdenAiChat(
         input.config, 
