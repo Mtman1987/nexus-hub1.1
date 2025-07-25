@@ -74,8 +74,8 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
   const [personalities, setPersonalities] = useState<BotPersonalityType[]>(defaultPersonalities);
   const [selectedPersonalityId, setSelectedPersonalityId] = useState<string | null>(defaultPersonalities[0].id);
   const [botStore, setBotStore] = useState<BotPersonalityType[]>([]);
-  const [userRole, setUserRole] = useState('Commander');
-  const [userName, setUserName] = useState('MT');
+  const [userRole, setUserRole] = useState('Guest');
+  const [userName, setUserName] = useState('');
 
   // Load bot store from Firebase
   useEffect(() => {
