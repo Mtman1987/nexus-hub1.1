@@ -22,7 +22,9 @@ export async function callEdenAiChat(
 
     const logs: FlowLog[] = [];
     if (!config.edenApiKey) {
-        throw new Error("Eden AI API key is not configured.");
+        const errorMsg = "Eden AI API key is not configured.";
+        logs.push({ service: 'System', level: 'error', message: errorMsg });
+        return { text: JSON.stringify({ explanation: errorMsg, code: null }), logs };
     }
     
     const headers = {
@@ -58,10 +60,9 @@ export async function callEdenAiChat(
         max_tokens: 2000,
         providers: provider,
         model: model,
-        messages: messages, // Use the 'messages' field for the entire history
+        messages: messages,
     };
     
-    // Add the system prompt if it exists. Some providers use this.
     const systemPrompt = history.find(m => m.role === 'system');
     if (systemPrompt) {
         payload.system_prompt = systemPrompt.text;
@@ -114,6 +115,12 @@ export async function callEdenAiChat(
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : "An unknown error occurred during Eden AI call.";
         logs.push({ service: 'Eden', level: 'error', message: errorMessage, details: error instanceof Error ? error.stack : undefined });
-        throw error;
+        
+        // Return a structured error instead of throwing, so logs are preserved.
+        const errorResponse = {
+            explanation: `An error occurred with the AI provider: ${errorMessage}`,
+            code: null
+        };
+        return { text: JSON.stringify(errorResponse), logs };
     }
 }
