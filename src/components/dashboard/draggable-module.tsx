@@ -25,19 +25,17 @@ export function DraggableModule({ id, children, className }: DraggableModuleProp
   const style: React.CSSProperties = {
     transform: CSS.Translate.toString(transform),
     transition,
+    gridColumn: isDragging ? 'span 1 / span 1' : undefined, // Prevent reflow issues during drag
   };
 
   // Clone the children and pass down the listeners for the drag handle
   const childrenWithProps = React.cloneElement(children as React.ReactElement, {
-    dragHandleProps: listeners,
+    dragHandleProps: { ...attributes, ...listeners },
   });
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} className={cn(className, isDragging && 'opacity-0')}>
+    <div ref={setNodeRef} style={style} className={cn(className, isDragging ? 'opacity-50' : 'opacity-100')}>
       {childrenWithProps}
     </div>
   );
 }
-
-    
-    

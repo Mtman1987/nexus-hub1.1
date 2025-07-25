@@ -18,16 +18,6 @@ import { useSidebar } from '@/context/SidebarContext';
 
 const defaultModuleOrder = ALL_MODULES_CONFIG.map(m => m.id);
 
-// Function to distribute items into columns
-const distributeToColumns = (items: string[], numColumns: number) => {
-  const columns: string[][] = Array.from({ length: numColumns }, () => []);
-  items.forEach((item, index) => {
-    columns[index % numColumns].push(item);
-  });
-  return columns;
-};
-
-
 export default function DashboardPage() {
   const { toast } = useToast();
   const { addLog } = useLogs();
@@ -135,10 +125,6 @@ export default function DashboardPage() {
   const trulyHiddenModules = ALL_MODULES_CONFIG.filter(m => hiddenModules.includes(m.id));
   const activeModule = activeId ? ALL_MODULES_CONFIG.find(({ id }) => id === activeId) : null;
   
-  const columnsLg = distributeToColumns(visibleModuleIds, 3);
-  const columnsMd = distributeToColumns(visibleModuleIds, 2);
-  const columnsSm = distributeToColumns(visibleModuleIds, 1);
-
   return (
     <div>
         <div className="flex items-center justify-between flex-shrink-0 p-4 md:p-6">
@@ -150,59 +136,19 @@ export default function DashboardPage() {
         <div className="p-4 md:p-6 pt-0 space-y-6">
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                 <SortableContext items={visibleModuleIds} strategy={rectSortingStrategy}>
-                     <div className="hidden xl:grid xl:grid-cols-3 xl:gap-6 xl:items-start">
-                        {columnsLg.map((column, colIndex) => (
-                            <div key={colIndex} className="flex flex-col gap-6">
-                                {column.map(id => {
-                                    const moduleConfig = ALL_MODULES_CONFIG.find(m => m.id === id);
-                                    if (!moduleConfig) return null;
-                                    return (
-                                        <DraggableModule key={id} id={id}>
-                                            <moduleConfig.component
-                                                onPopOut={() => handlePopOut(id, moduleConfig.title)}
-                                                onHide={() => setHiddenModules(prev => [...prev, id])}
-                                            />
-                                        </DraggableModule>
-                                    );
-                                })}
-                            </div>
-                        ))}
-                     </div>
-                     <div className="hidden md:grid md:grid-cols-2 md:gap-6 md:items-start xl:hidden">
-                        {columnsMd.map((column, colIndex) => (
-                            <div key={colIndex} className="flex flex-col gap-6">
-                                {column.map(id => {
-                                    const moduleConfig = ALL_MODULES_CONFIG.find(m => m.id === id);
-                                    if (!moduleConfig) return null;
-                                    return (
-                                        <DraggableModule key={id} id={id}>
-                                            <moduleConfig.component
-                                                onPopOut={() => handlePopOut(id, moduleConfig.title)}
-                                                onHide={() => setHiddenModules(prev => [...prev, id])}
-                                            />
-                                        </DraggableModule>
-                                    );
-                                })}
-                            </div>
-                        ))}
-                     </div>
-                      <div className="grid grid-cols-1 gap-6 md:hidden">
-                        {columnsSm.map((column, colIndex) => (
-                            <div key={colIndex} className="flex flex-col gap-6">
-                                {column.map(id => {
-                                    const moduleConfig = ALL_MODULES_CONFIG.find(m => m.id === id);
-                                    if (!moduleConfig) return null;
-                                    return (
-                                        <DraggableModule key={id} id={id}>
-                                            <moduleConfig.component
-                                                onPopOut={() => handlePopOut(id, moduleConfig.title)}
-                                                onHide={() => setHiddenModules(prev => [...prev, id])}
-                                            />
-                                        </DraggableModule>
-                                    );
-                                })}
-                            </div>
-                        ))}
+                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-start">
+                        {visibleModuleIds.map(id => {
+                            const moduleConfig = ALL_MODULES_CONFIG.find(m => m.id === id);
+                            if (!moduleConfig) return null;
+                            return (
+                                <DraggableModule key={id} id={id} className={moduleConfig.defaultSize}>
+                                    <moduleConfig.component
+                                        onPopOut={() => handlePopOut(id, moduleConfig.title)}
+                                        onHide={() => setHiddenModules(prev => [...prev, id])}
+                                    />
+                                </DraggableModule>
+                            );
+                        })}
                      </div>
                 </SortableContext>
                  <DragOverlay>
@@ -210,7 +156,7 @@ export default function DashboardPage() {
                         (() => {
                             const ModuleComponent = activeModule.component;
                             return (
-                               <div>
+                               <div className={activeModule.defaultSize}>
                                  <ModuleComponent isPreview={true} />
                                </div>
                             );
@@ -241,5 +187,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    
