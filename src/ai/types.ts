@@ -209,13 +209,14 @@ export interface SpeechToTextOutput {
 // --- Code Generator ---
 export interface CodeGeneratorInput {
     instruction: string;
-    prompt?: string; // Optional context
     language: string;
     config: AppConfig;
+    history?: { role: 'user' | 'assistant', text: string }[];
 }
 
 export interface CodeGeneratorOutput {
-    generated_code: string;
+    explanation: string;
+    code: string | null;
 }
 
 
