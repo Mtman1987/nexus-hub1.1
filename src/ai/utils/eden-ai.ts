@@ -47,7 +47,9 @@ export async function callEdenAiChat(
         model = config.edenAiModel || 'gpt-4o';
     }
     
-    const messages = history.map(msg => ({
+    // Correctly format the payload for Eden AI
+    const lastMessage = history.pop();
+    const previous_history = history.map(msg => ({
         role: msg.role,
         message: msg.text
     }));
@@ -60,7 +62,8 @@ export async function callEdenAiChat(
         max_tokens: 2000,
         providers: provider,
         model: model,
-        messages: messages,
+        text: lastMessage?.text || "",
+        previous_history: previous_history,
     };
     
     const systemPrompt = history.find(m => m.role === 'system');
