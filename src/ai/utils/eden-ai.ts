@@ -58,8 +58,9 @@ export async function callEdenAiChat(
     let system_prompt = '';
     const chat_messages = messages.filter(msg => {
         if (msg.role === 'system') {
-            system_prompt = msg.content[0].text;
-            return false; // Don't include system messages in the main array
+            // If there's already a system prompt, append. Otherwise, set it.
+            system_prompt = system_prompt ? `${system_prompt}\n${msg.content[0].text}` : msg.content[0].text;
+            return false; // Don't include system messages in the main array for some providers
         }
         return true;
     });
@@ -99,19 +100,18 @@ export async function callEdenAiChat(
         }
 
         const result = await response.json();
-        let text = '';
-
-        // Robustly parse the response, trying different expected structures.
-        if (result[provider] && result[provider].generated_text) {
-            // Standard Eden AI format
-            text = result[provider].generated_text;
-        } else if (result.choices && result.choices[0]?.message?.content) {
-            // Direct proxy format (like OpenAI's raw response)
-            text = result.choices[0].message.content;
-        } else {
-            // If neither of the above work, the format is unexpected.
-            throw new Error(`Unexpected response format from Eden AI provider '${provider}'. Full response: ${JSON.stringify(result)}`);
+        const providerResponse = result[provider];
+        
+        if (!providerResponse) {
+             throw new Error(`Provider '${provider}' not found in Eden AI response. Full response: ${JSON.stringify(result)}`);
         }
+        
+        if (providerResponse.status === 'fail') {
+            const errorMessage = providerResponse?.error?.message || `An unknown error occurred with the ${provider} provider.`;
+            throw new Error(errorMessage);
+        }
+
+        const text = providerResponse.generated_text;
         
         if (typeof text !== 'string') {
              throw new Error(`Unexpected response format from Eden AI. 'generated_text' was not a string. Got: ${JSON.stringify(result)}`);
