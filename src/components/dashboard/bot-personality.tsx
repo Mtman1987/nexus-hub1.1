@@ -132,17 +132,16 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
 
     setPersonalities(prev => prev.map(p => {
         if (p.id === selectedPersonalityId) {
-            if (p.isDefault) return p;
-            return {...p, [field]: value};
+            // Allow editing default for testing, but don't save 'isDefault' field modification
+            const newP = {...p, [field]: value};
+            if (p.isDefault) newP.isDefault = true;
+            return newP;
         }
         return p;
     }));
 
     if (field === 'name') {
-        const selectedPersonality = personalities.find(p => p.id === selectedPersonalityId);
-        if (selectedPersonality && !selectedPersonality.isDefault) {
-            setBotName(value);
-        }
+        setBotName(value);
     }
   };
 
@@ -191,8 +190,8 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
       return;
     }
     const personalityToExport = personalities.find(p => p.id === selectedPersonalityId);
-    if (!personalityToExport || personalityToExport.isDefault) {
-        toast({ title: "Share Failed", description: "You can only share custom personalities.", variant: "destructive" });
+    if (!personalityToExport) {
+        toast({ title: "Share Failed", description: "No personality selected.", variant: "destructive" });
         return;
     }
 
@@ -330,7 +329,6 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                                   placeholder="e.g., Station AI" 
                                   value={selectedPersonality?.name || ''} 
                                   onChange={(e) => handlePersonalityChange('name', e.target.value)} 
-                                  disabled={isSelectedPersonalityDefault}
                                   className="bg-secondary"
                               />
                           </div>
@@ -339,7 +337,6 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                               <Select 
                                   value={selectedPersonality?.voice || 'en-US-Wavenet-F'}
                                   onValueChange={(value) => handlePersonalityChange('voice', value)}
-                                  disabled={isSelectedPersonalityDefault}
                               >
                                   <SelectTrigger id="bot-voice" className="bg-secondary">
                                       <div className="flex items-center gap-2">
@@ -363,7 +360,6 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                                 placeholder="https://example.com/avatar.png" 
                                 value={selectedPersonality?.imageUrl || ''} 
                                 onChange={(e) => handlePersonalityChange('imageUrl', e.target.value)} 
-                                disabled={isSelectedPersonalityDefault}
                                 className="bg-secondary"
                             />
                         </div>
@@ -375,7 +371,6 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                               value={selectedPersonality?.prompt || ''} 
                               onChange={(e) => handlePersonalityChange('prompt', e.target.value)} 
                               className="h-24 bg-secondary"
-                              disabled={isSelectedPersonalityDefault}
                           />
                           <p className="text-xs text-muted-foreground">This is the core instruction that defines your bot's behavior.</p>
                       </div>
@@ -408,17 +403,12 @@ export function BotPersonality({ onPopOut, isPoppedOut = false, onHide, dragHand
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 {/* The button is wrapped in a span so the tooltip works when the button is disabled */}
-                                <span tabIndex={isSelectedPersonalityDefault ? 0 : undefined}>
-                                    <Button type="button" variant="outline" onClick={handleShareToStore} disabled={isSelectedPersonalityDefault} className="bg-secondary">
+                                <span tabIndex={0}>
+                                    <Button type="button" variant="outline" onClick={handleShareToStore} className="bg-secondary">
                                         <Upload className="mr-2 h-4 w-4"/> Share
                                     </Button>
                                 </span>
                             </TooltipTrigger>
-                            {isSelectedPersonalityDefault && (
-                                <TooltipContent>
-                                    <p>Default personalities cannot be shared. Create a new one to share it.</p>
-                                </TooltipContent>
-                            )}
                         </Tooltip>
                       </TooltipProvider>
                   </div>
