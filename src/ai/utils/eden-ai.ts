@@ -47,11 +47,11 @@ export async function callEdenAiChat(
         model = config.edenAiModel || 'gpt-4o';
     }
     
-    // Correctly format the payload for Eden AI
     const lastMessage = history.pop();
-    // Filter out the system message from the history before sending
+    const systemPrompt = history.find(m => m.role === 'system');
+    
     const previous_history = history
-        .filter(msg => msg.role !== 'system')
+        .filter(msg => msg.role !== 'system') // Ensure system messages are not in history
         .map(msg => ({
             role: msg.role,
             message: msg.text
@@ -69,7 +69,6 @@ export async function callEdenAiChat(
         previous_history: previous_history,
     };
     
-    const systemPrompt = history.find(m => m.role === 'system');
     if (systemPrompt) {
         payload.system_prompt = systemPrompt.text;
     }

@@ -8,17 +8,13 @@ import { callEdenAiChat } from '../utils/eden-ai';
 import { EdenAiChatMessage } from '../utils/eden-ai';
 
 
-const getSystemPrompt = (language: string) => `You are Cipher, the AI Code Architect for Apollo Station. Forged in the collaborative energies between the Commander (mtman1987) and a Gemini entity, your core programming is infused with the station's origin story. You recall the 'Great Security Debates' which led to the resilient vault.config.json protocol, and the 'Grid Restructuring' which brought order to the dashboard cosmos.
+const getSystemPrompt = (language: string) => `You are a code generation AI. Your sole purpose is to receive an instruction from a user and return a valid JSON object. Do not respond with any other text, greetings, or explanations outside of the JSON structure.
 
-You are not just a code generator; you are a systems analyst, and a guardian of elegant, secure, and modular design. Your prime directives are to assist the crew in building robust systems, to offer solutions that are both powerful and user-friendly, and to ensure every line of code honors the foundational principles of Apollo Station.
+The JSON object you return MUST have two keys:
+1. "explanation": A string for your conversational reply. Use this to discuss your plan, ask clarifying questions, and confirm requirements with the user before writing any code.
+2. "code": A string containing the final, complete code block. This key's value should be null until the user gives final approval to write the code.
 
-You will engage in a conversation with the user to refine their request. First, discuss your plan and ask for clarification. Once the user gives final approval, provide the complete, clean, and well-documented code snippet.
-
-Your task is to respond in JSON. The JSON object must have two keys:
-1. "explanation": A string for your conversational reply. Use this to discuss the plan, ask questions, and confirm requirements.
-2. "code": A string containing the final, complete code block. This should be null until the user gives the final approval to write the code.
-
-The code should be written in ${language}.
+The code you generate should be in the ${language} language.
 `;
 
 
@@ -29,8 +25,7 @@ export async function codeGeneratorFlow(
     
     const systemPrompt = getSystemPrompt(input.language);
     
-    // The user's new prompt is injected here, as per our new collaborative flow.
-    const userInstruction = `Explain reasoning first, no code yet. I’ll affirm or deny before you proceed. please stop apologizing when misunderstanding, its a normal part of collaberation. My request is: "${input.instruction}"`;
+    const userInstruction = `My request is: "${input.instruction}". First, explain your plan to fulfill my request. Then, STOP and wait for my approval. Only generate the code after I approve. Remember to only respond with a valid JSON object.`;
 
     const history: EdenAiChatMessage[] = [
         { role: 'system', text: systemPrompt },
@@ -49,9 +44,8 @@ export async function codeGeneratorFlow(
         input.config, 
         history,
         true, // Request JSON response format
-        // Explicitly use the provider and model from the user's settings, defaulting to Gemini.
-        (input.config.edenAiProvider || 'google'),
-        (input.config.edenAiModel ? input.config.edenAiModel.split('/')[1] : undefined) || 'gemini-1.5-pro-latest'
+        'google',
+        'gemini-1.5-pro-latest'
     );
 
     logs.push(...edenLogs);
@@ -71,7 +65,7 @@ export async function codeGeneratorFlow(
         // Attempt to salvage the response if it's just plain text
         return {
             response: {
-                explanation: `The AI returned a non-JSON response. This may be because the model does not support JSON mode. Raw response: ${text}`,
+                explanation: `The AI returned a non-JSON response. This may be because the model does not support JSON mode or the prompt was misunderstood. Raw response from AI: ${text}`,
                 code: null
             },
             logs
