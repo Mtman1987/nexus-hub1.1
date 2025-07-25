@@ -154,7 +154,8 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
         'edenApiKey', 'googleApiKey', 'openaiApiKey', 'groqApiKey',
         'edenAiModel', 'googleModelName', 'openaiModelName', 'groqModelName',
         'providerStatus', 'fallbackStrategy', 'botPersonalityPrompt', 'botName', 'botVoice',
-        'remoteHubAddress', 'remoteAccessSecret', 'ttsProvider'
+        'remoteHubAddress', 'remoteAccessSecret', 'ttsProvider',
+        'userRole', 'userName',
       ];
       configKeys.forEach(key => {
         const item = localStorage.getItem(key);
@@ -327,7 +328,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
   const isNexusConnectChecked = form.watch('targets').includes('Nexus Connect');
 
   return (
-    <Card className="flex flex-col h-full">
+    <Card className="flex flex-col h-full min-h-[500px]">
       <CardHeader>
         <div className="flex justify-between items-start">
              <div className="flex items-center gap-2 flex-grow">
@@ -358,7 +359,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
         <ScrollArea className="flex-grow bg-muted/20 rounded-lg p-4" ref={scrollAreaRef}>
           <div className="space-y-4">
             {messages.length === 0 ? (
-              <p className="text-sm">Chat history will be displayed here.</p>
+              <p className="text-sm text-center text-muted-foreground py-8">Chat history will be displayed here.</p>
             ) : (
               messages.map((msg) => (
                 <div key={msg.id} className={`group flex items-start gap-3 ${msg.sender === 'user' ? 'justify-end' : ''}`}>
@@ -374,11 +375,11 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
                         )}
                     </div>
                   )}
-                  <div className={`relative rounded-lg p-3 text-sm ${msg.sender === 'user' ? 'bg-primary text-primary-foreground' : 'bg-secondary'}`}>
+                  <div className={`relative rounded-lg p-3 text-sm max-w-md ${msg.sender === 'user' ? 'bg-primary text-primary-foreground' : 'bg-secondary'}`}>
                     <Button variant="ghost" size="icon" className="absolute -top-2 -left-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity bg-background/50 hover:bg-background" onClick={() => handleSaveMessage(msg)}>
                        <Save className="h-3 w-3" />
                     </Button>
-                    <p>{msg.text}</p>
+                    <p className="whitespace-pre-wrap">{msg.text}</p>
                     {msg.sender === 'user' && msg.targets && (
                       <div className="flex items-center flex-wrap gap-x-2 mt-2 text-xs text-primary-foreground/80">
                         <span>Sent to:</span>
@@ -395,108 +396,112 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
             )}
           </div>
         </ScrollArea>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(performSubmit)} className="space-y-4 mt-auto">
-            <FormField
-              control={form.control}
-              name="message"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <div className="flex items-center gap-2">
-                      <Input ref={ref} placeholder="Type your message..." className="flex-grow" {...field} />
-                      <Button
-                        type="submit"
-                        disabled={loading}
-                      >
-                        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                      </Button>
-                    </div>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="targets"
-              render={({ field }) => (
-                <FormItem className="flex flex-wrap items-center gap-x-4 gap-y-2">
-                  {targetOptions.map((item) => (
-                      <FormItem key={item.id} className="flex items-center space-x-2">
-                        <FormControl>
-                          <Checkbox
-                            id={item.id.toLowerCase().replace(/[^a-z0-9]/g, '')}
-                            checked={field.value?.includes(item.id)}
-                            onCheckedChange={(checked) => {
-                              return checked
-                                ? field.onChange([...(field.value || []), item.id])
-                                : field.onChange(
-                                  (field.value || []).filter(
-                                    (value) => value !== item.id
-                                  )
-                                )
-                            }}
-                          />
-                        </FormControl>
-                        <Label htmlFor={item.id.toLowerCase().replace(/[^a-z0-9]/g, '')} className="flex items-center gap-1.5 cursor-pointer">
-                          {item.icon}
-                          {item.id}
-                        </Label>
-                      </FormItem>
-                  ))}
-                  
-                  {/* Nexus Connect Dropdown Checkbox */}
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                         <div className="flex items-center space-x-2">
+        <div className="pt-4 border-t">
+            <Form {...form}>
+            <form onSubmit={form.handleSubmit(performSubmit)} className="space-y-4">
+                <FormField
+                control={form.control}
+                name="message"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormControl>
+                        <div className="flex items-center gap-2">
+                        <Input ref={ref} placeholder="Type your message..." className="flex-grow" {...field} />
+                        <Button
+                            type="submit"
+                            disabled={loading}
+                        >
+                            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                        </Button>
+                        </div>
+                    </FormControl>
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={form.control}
+                name="targets"
+                render={({ field }) => (
+                    <FormItem className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                    {targetOptions.map((item) => (
+                        <FormItem key={item.id} className="flex items-center space-x-2">
+                            <FormControl>
                             <Checkbox
-                                id="nexus-connect-trigger"
-                                checked={isNexusConnectChecked}
+                                id={item.id.toLowerCase().replace(/[^a-z0-9]/g, '')}
+                                checked={field.value?.includes(item.id)}
                                 onCheckedChange={(checked) => {
-                                    const currentTargets = field.value || [];
-                                    const newTargets = checked 
-                                        ? [...currentTargets, 'Nexus Connect'] 
-                                        : currentTargets.filter(t => t !== 'Nexus Connect');
-                                    field.onChange(newTargets);
-                                    if(!checked) {
-                                        setSelectedNexusTargets([]); // Clear selections if unchecked
-                                    }
+                                return checked
+                                    ? field.onChange([...(field.value || []), item.id])
+                                    : field.onChange(
+                                    (field.value || []).filter(
+                                        (value) => value !== item.id
+                                    )
+                                    )
                                 }}
                             />
-                            <Label htmlFor="nexus-connect-trigger" className="flex items-center gap-1.5 cursor-pointer">
-                                <Link className="h-4 w-4" />
-                                Nexus Connect {selectedNexusTargets.length > 0 && `(${selectedNexusTargets.length})`}
+                            </FormControl>
+                            <Label htmlFor={item.id.toLowerCase().replace(/[^a-z0-9]/g, '')} className="flex items-center gap-1.5 cursor-pointer">
+                            {item.icon}
+                            {item.id}
                             </Label>
-                         </div>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className={cn(!isNexusConnectChecked && "hidden")}>
-                        <DropdownMenuLabel>Select Nexus Contacts</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        {nexusConnections.length > 0 ? (
-                           nexusConnections.map((conn, index) => (
-                            <DropdownMenuCheckboxItem
-                                key={index}
-                                checked={selectedNexusTargets.includes(conn)}
-                                onCheckedChange={() => handleNexusTargetSelect(conn)}
-                                onSelect={(e) => e.preventDefault()} // Prevent menu from closing on item click
-                            >
-                                {`Contact ${index + 1}`}
-                            </DropdownMenuCheckboxItem>
-                           ))
-                        ) : (
-                            <DropdownMenuLabel className="font-normal">No contacts saved in API Vault.</DropdownMenuLabel>
-                        )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                        </FormItem>
+                    ))}
+                    
+                    {/* Nexus Connect Dropdown Checkbox */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <div className="flex items-center space-x-2">
+                                <Checkbox
+                                    id="nexus-connect-trigger"
+                                    checked={isNexusConnectChecked}
+                                    onCheckedChange={(checked) => {
+                                        const currentTargets = field.value || [];
+                                        const newTargets = checked 
+                                            ? [...currentTargets, 'Nexus Connect'] 
+                                            : currentTargets.filter(t => t !== 'Nexus Connect');
+                                        field.onChange(newTargets);
+                                        if(!checked) {
+                                            setSelectedNexusTargets([]); // Clear selections if unchecked
+                                        }
+                                    }}
+                                />
+                                <Label htmlFor="nexus-connect-trigger" className="flex items-center gap-1.5 cursor-pointer">
+                                    <Link className="h-4 w-4" />
+                                    Nexus Connect {selectedNexusTargets.length > 0 && `(${selectedNexusTargets.length})`}
+                                </Label>
+                            </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className={cn(!isNexusConnectChecked && "hidden")}>
+                            <DropdownMenuLabel>Select Nexus Contacts</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            {nexusConnections.length > 0 ? (
+                            nexusConnections.map((conn, index) => (
+                                <DropdownMenuCheckboxItem
+                                    key={index}
+                                    checked={selectedNexusTargets.includes(conn)}
+                                    onCheckedChange={() => handleNexusTargetSelect(conn)}
+                                    onSelect={(e) => e.preventDefault()} // Prevent menu from closing on item click
+                                >
+                                    {`Contact ${index + 1}`}
+                                </DropdownMenuCheckboxItem>
+                            ))
+                            ) : (
+                                <DropdownMenuLabel className="font-normal">No contacts saved in API Vault.</DropdownMenuLabel>
+                            )}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
 
-                </FormItem>
-              )}
-            />
-          </form>
-        </Form>
+                    </FormItem>
+                )}
+                />
+            </form>
+            </Form>
+        </div>
       </CardContent>
     </Card>
   );
 });
 
 UnifiedChat.displayName = 'UnifiedChat';
+
+    
