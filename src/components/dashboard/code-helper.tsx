@@ -127,7 +127,7 @@ export function CodeHelper({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
       <CardHeader>
         <div className="flex justify-between items-start">
              <div className="flex items-center gap-2 flex-grow">
-               <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto text-secondary">
+               <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto text-accent">
                 <GripVertical />
               </Button>
               <div className="flex-grow">
@@ -168,11 +168,11 @@ export function CodeHelper({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
         <ScrollArea className="flex-grow bg-muted/20 rounded-lg p-4" ref={scrollAreaRef}>
             <div className="space-y-4">
                 {messages.length === 0 ? (
-                    <p className="text-sm text-center">Chat history will appear here.</p>
+                    <p className="text-sm text-center text-muted-foreground">Chat history will appear here.</p>
                 ) : (
                     messages.map((msg, index) => (
                         <div key={index} className={cn("flex items-start gap-3", msg.sender === 'user' ? 'justify-end' : '')}>
-                            {msg.sender === 'ai' && <Bot className="h-6 w-6 shrink-0" />}
+                            {msg.sender === 'ai' && <Bot className="h-6 w-6 shrink-0 text-primary" />}
                             <div className={cn("rounded-lg p-3 text-sm max-w-sm", msg.sender === 'user' ? 'bg-primary text-primary-foreground' : 'bg-secondary')}>
                                 <p className="whitespace-pre-wrap">{msg.text}</p>
                             </div>
@@ -182,7 +182,7 @@ export function CodeHelper({ onPopOut, isPoppedOut = false, onHide, dragHandlePr
                 )}
                  {isLoading && (
                     <div className="flex items-start gap-3">
-                        <Bot className="h-6 w-6 shrink-0" />
+                        <Bot className="h-6 w-6 shrink-0 text-primary" />
                         <div className="rounded-lg p-3 text-sm bg-secondary flex items-center gap-2">
                            <Loader2 className="h-4 w-4 animate-spin" />
                            <span>Cipher is thinking...</span>
