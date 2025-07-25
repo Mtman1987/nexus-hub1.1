@@ -41,9 +41,9 @@ export async function codeGeneratorFlow(
         input.config, 
         history,
         true, // Request JSON response format
-        // Explicitly use the provider and model from the user's settings.
-        (input.config.edenAiProvider || 'openai'),
-        (input.config.edenAiModel ? input.config.edenAiModel.split('/')[1] : undefined) || 'gpt-4-turbo'
+        // Explicitly use the provider and model from the user's settings, defaulting to Gemini.
+        (input.config.edenAiProvider || 'google'),
+        (input.config.edenAiModel ? input.config.edenAiModel.split('/')[1] : undefined) || 'gemini-1.5-pro-latest'
     );
     
     try {
