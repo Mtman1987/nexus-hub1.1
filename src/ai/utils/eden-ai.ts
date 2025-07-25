@@ -72,7 +72,12 @@ export async function callEdenAiChat(
     }
 
     try {
-        logs.push({ service: 'Eden', level: 'info', message: `Calling Eden AI chat with provider: ${provider}, model: ${model}`, details: `History length: ${history.length}` });
+        logs.push({ 
+            service: 'Eden', 
+            level: 'info', 
+            message: `Calling Eden AI chat with provider: ${provider}, model: ${model}`, 
+            details: `Payload: ${JSON.stringify(payload, null, 2)}` 
+        });
         
         const response = await fetch(url, {
             method: 'POST',

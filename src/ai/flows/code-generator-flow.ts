@@ -25,6 +25,7 @@ The code should be written in ${language}.
 export async function codeGeneratorFlow(
   input: CodeGeneratorInput
 ): Promise<{response: CodeGeneratorOutput, logs: FlowLog[]}> {
+    const logs: FlowLog[] = [];
     
     const systemPrompt = getSystemPrompt(input.language);
     
@@ -36,8 +37,15 @@ export async function codeGeneratorFlow(
         ...(input.history || []),
         { role: 'user', text: input.history ? input.instruction : userInstruction }
     ];
+    
+    logs.push({ 
+        service: 'Cipher', 
+        level: 'info', 
+        message: 'Constructed conversation history for AI.', 
+        details: JSON.stringify(history, null, 2) 
+    });
 
-    const { text, logs } = await callEdenAiChat(
+    const { text, logs: edenLogs } = await callEdenAiChat(
         input.config, 
         history,
         true, // Request JSON response format
@@ -45,9 +53,17 @@ export async function codeGeneratorFlow(
         (input.config.edenAiProvider || 'google'),
         (input.config.edenAiModel ? input.config.edenAiModel.split('/')[1] : undefined) || 'gemini-1.5-pro-latest'
     );
+
+    logs.push(...edenLogs);
     
     try {
         const parsedResponse = JSON.parse(text);
+        logs.push({ 
+            service: 'Cipher', 
+            level: 'info', 
+            message: 'Successfully parsed JSON response from AI.',
+            details: JSON.stringify(parsedResponse, null, 2)
+        });
         return { response: parsedResponse, logs };
     } catch (error) {
         const errorMessage = `Failed to parse JSON response from AI for code generation. The AI may have returned a malformed object or plain text. Raw AI response: ${text}`;
