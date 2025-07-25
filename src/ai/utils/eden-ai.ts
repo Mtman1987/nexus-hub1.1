@@ -126,6 +126,5 @@ export async function callEdenAiChat(
             explanation: `An error occurred with the AI provider: ${errorMessage}`,
             code: null
         };
-        return { text: JSON.stringify(errorResponse), logs };
+        return { text: `An error occurred with the AI provider: ${errorMessage}`, logs };
     }
-}
