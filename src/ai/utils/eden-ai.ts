@@ -47,25 +47,12 @@ export async function callEdenAiChat(
         model = config.edenAiModel || 'gpt-4o'; // Default to a common model
     }
     
-
-    // Transform our simple history into the structure Eden AI expects
+    // To ensure universal compatibility, we will treat the system prompt as the first message in the chat history.
     const messages = history.map(msg => ({
         role: msg.role,
         content: [{ type: 'text', text: msg.text }]
     }));
     
-    // Eden AI's API is a bit particular. The 'system' role is often passed at the top level.
-    let system_prompt = '';
-    const chat_messages = messages.filter(msg => {
-        if (msg.role === 'system') {
-            // If there's already a system prompt, append. Otherwise, set it.
-            system_prompt = system_prompt ? `${system_prompt}\n${msg.content[0].text}` : msg.content[0].text;
-            return false; // Don't include system messages in the main array for some providers
-        }
-        return true;
-    });
-
-
     const payload: any = {
         response_as_dict: true,
         attributes_as_list: false,
@@ -74,13 +61,9 @@ export async function callEdenAiChat(
         max_tokens: 2000,
         providers: provider,
         model: model,
-        messages: chat_messages,
+        messages: messages, // Send the full history, including the system prompt
     };
     
-    if (system_prompt) {
-        payload.system_prompt = system_prompt;
-    }
-
     if (json_response) {
         payload.response_format = { type: "json_object" };
     }
