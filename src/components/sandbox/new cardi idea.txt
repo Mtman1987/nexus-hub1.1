@@ -1,0 +1,1489 @@
+
+This file contains a consolidated version of the source code for the Prompt Injekt application.
+It can be used as a reference for understanding the project's structure and logic, or provided to another AI for analysis or recreation.
+
+================================================================================
+// FILE: package.json
+================================================================================
+
+{
+  "name": "nextn",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack -p 9002",
+    "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
+    "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@genkit-ai/googleai": "^1.14.1",
+    "@genkit-ai/next": "^1.14.1",
+    "@hookform/resolvers": "^4.1.3",
+    "@radix-ui/react-accordion": "^1.2.3",
+    "@radix-ui/react-alert-dialog": "^1.1.6",
+    "@radix-ui/react-avatar": "^1.1.3",
+    "@radix-ui/react-checkbox": "^1.1.4",
+    "@radix-ui/react-collapsible": "^1.1.11",
+    "@radix-ui/react-dialog": "^1.1.6",
+    "@radix-ui/react-dropdown-menu": "^2.1.6",
+    "@radix-ui/react-label": "^2.1.2",
+    "@radix-ui/react-menubar": "^1.1.6",
+    "@radix-ui/react-popover": "^1.1.6",
+    "@radix-ui/react-progress": "^1.1.2",
+    "@radix-ui/react-radio-group": "^1.2.3",
+    "@radix-ui/react-scroll-area": "^1.2.3",
+    "@radix-ui/react-select": "^2.1.6",
+    "@radix-ui/react-separator": "^1.1.2",
+    "@radix-ui/react-slider": "^1.2.3",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-switch": "^1.1.3",
+    "@radix-ui/react-tabs": "^1.1.3",
+    "@radix-ui/react-toast": "^1.2.6",
+    "@radix-ui/react-tooltip": "^1.1.8",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^3.6.0",
+    "dotenv": "^16.5.0",
+    "embla-carousel-react": "^8.6.0",
+    "firebase": "^11.9.1",
+    "genkit": "^1.14.1",
+    "lucide-react": "^0.475.0",
+    "next": "15.3.3",
+    "patch-package": "^8.0.0",
+    "react": "^18.3.1",
+    "react-day-picker": "^8.10.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.54.2",
+    "recharts": "^2.15.1",
+    "tailwind-merge": "^3.0.1",
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "genkit-cli": "^1.14.1",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
+}
+
+
+================================================================================
+// FILE: src/app/globals.css
+================================================================================
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+@layer base {
+  :root {
+    --background: 231 48% 94.1%;
+    --foreground: 231 20% 20%;
+    --card: 231 48% 98%;
+    --card-foreground: 231 20% 20%;
+    --popover: 231 48% 98%;
+    --popover-foreground: 231 20% 20%;
+    --primary: 231 48% 48%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 231 30% 88%;
+    --secondary-foreground: 231 20% 20%;
+    --muted: 231 30% 90%;
+    --muted-foreground: 231 20% 45%;
+    --accent: 261 45% 63.1%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 231 20% 85%;
+    --input: 231 20% 90%;
+    --ring: 231 48% 48%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+  .dark {
+    --background: 231 20% 12%;
+    --foreground: 231 20% 95%;
+    --card: 231 20% 15%;
+    --card-foreground: 231 20% 95%;
+    --popover: 231 20% 15%;
+    --popover-foreground: 231 20% 95%;
+    --primary: 231 48% 60%;
+    --primary-foreground: 231 20% 12%;
+    --secondary: 231 20% 25%;
+    --secondary-foreground: 231 20% 95%;
+    --muted: 231 20% 25%;
+    --muted-foreground: 231 20% 65%;
+    --accent: 261 45% 70%;
+    --accent-foreground: 231 20% 12%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 231 20% 25%;
+    --input: 231 20% 25%;
+    --ring: 231 48% 60%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+
+================================================================================
+// FILE: src/app/page.tsx
+================================================================================
+
+'use client';
+
+import { useState, useEffect, useCallback, useRef } from 'react';
+import PromptManager, { type PromptManagerHandle } from '@/components/prompt-manager';
+import { useToast } from '@/hooks/use-toast';
+import { getOptimizedPrompt, getSummarizedPrompt } from './actions';
+import type { OptimizePromptOutput, SummarizePromptOutput } from './schemas';
+import LogViewer from '@/components/log-viewer';
+import { Button } from '@/components/ui/button';
+import { BookText, Sparkles, Wand2, RefreshCw, Settings, BrainCircuit, Mic } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
+import { Skeleton } from '@/components/ui/skeleton';
+import FinalPrompt from '@/components/final-prompt';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { ScrollArea } from '@/components/ui/scroll-area';
+
+export type Prompt = {
+  id: string;
+  name: string;
+  text: string;
+};
+
+const initialPrompts: Prompt[] = [
+  { id: '1', name: 'Summarize Text', text: 'Please summarize the following text in three key points: ' },
+  { id: '2', name: 'Explain Like I\'m 5', text: 'Explain the following concept like I am 5 years old: ' },
+  { id: '3', name: 'Translate to French', text: 'Translate the following to French, ensuring a natural and fluent tone: ' },
+  { id: '4', name: 'Generate Tweet Ideas', text: 'Generate 5 tweet ideas based on this topic: ' },
+];
+
+export type Stats = {
+    originalWordCount: number;
+    finalWordCount: number;
+    originalCharCount: number;
+    finalCharCount: number;
+    promptTokens: number | undefined;
+    completionTokens: number | undefined;
+} | null;
+
+
+export default function Home() {
+  const [prompts, setPrompts] = useState<Prompt[]>([]);
+  const [injectionEnabled, setInjectionEnabled] = useState<boolean>(true);
+  const [workspaceContent, setWorkspaceContent] = useState<string>('');
+  
+  const [finalContent, setFinalContent] = useState<string>('');
+  const [stats, setStats] = useState<Stats>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [isMounted, setIsMounted] = useState(false);
+  const { toast } = useToast();
+  
+  const [provider, setProvider] = useState('openai');
+  const [model, setModel] = useState('gpt-4o-mini');
+  const [apiKey, setApiKey] = useState('');
+  const [logs, setLogs] = useState<string[]>([]);
+  const [isLogViewerOpen, setIsLogViewerOpen] = useState(false);
+
+  const [isOptimizerEnabled, setIsOptimizerEnabled] = useState(true);
+  const [isSummarizerEnabled, setIsSummarizerEnabled] = useState(true);
+
+  const promptManagerRef = useRef<PromptManagerHandle>(null);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isMounted) {
+      try {
+        const storedPrompts = localStorage.getItem('prompt-injekt-prompts');
+        if (storedPrompts) {
+          const parsedPrompts = JSON.parse(storedPrompts);
+          if (Array.isArray(parsedPrompts) && parsedPrompts.length > 0) {
+            setPrompts(parsedPrompts);
+          } else {
+            setPrompts(initialPrompts);
+          }
+        } else {
+          setPrompts(initialPrompts);
+        }
+
+        const storedProvider = localStorage.getItem('prompt-injekt-provider');
+        if(storedProvider) setProvider(JSON.parse(storedProvider));
+
+        const storedModel = localStorage.getItem('prompt-injekt-model');
+        if(storedModel) setModel(JSON.parse(storedModel));
+
+        const storedApiKey = localStorage.getItem('prompt-injekt-api-key');
+        if(storedApiKey) setApiKey(JSON.parse(storedApiKey));
+
+      } catch (error) {
+        console.error("Failed to load settings from localStorage", error);
+        setPrompts(initialPrompts);
+      }
+    }
+  }, [isMounted]);
+
+  useEffect(() => {
+    if (isMounted) {
+      if (prompts.length > 0) {
+        try {
+          localStorage.setItem('prompt-injekt-prompts', JSON.stringify(prompts));
+        } catch (error) {
+          console.error("Failed to save prompts to localStorage", error);
+        }
+      }
+      try {
+        localStorage.setItem('prompt-injekt-provider', JSON.stringify(provider));
+        localStorage.setItem('prompt-injekt-model', JSON.stringify(model));
+        localStorage.setItem('prompt-injekt-api-key', JSON.stringify(apiKey));
+      } catch (error) {
+        console.error("Failed to save settings to localStorage", error);
+      }
+    }
+  }, [prompts, isMounted, provider, model, apiKey]);
+
+  const handleInjectPrompt = useCallback((promptText: string) => {
+    if (injectionEnabled) {
+      setWorkspaceContent(prev => prev ? `${prev.trim()}\n\n${promptText}` : promptText);
+      toast({
+        title: "Prompt Injected",
+        description: "The selected prompt has been added to the workspace.",
+      });
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Injection Disabled",
+        description: "Enable the toggle to inject prompts.",
+      });
+    }
+  }, [injectionEnabled, toast]);
+
+  const handleCopyToClipboard = useCallback((promptText: string, promptName: string) => {
+    navigator.clipboard.writeText(promptText).then(() => {
+      toast({
+        title: "Prompt Copied!",
+        description: `"${promptName}" copied to clipboard.`,
+      });
+    }).catch(err => {
+      console.error("Failed to copy text: ", err);
+      toast({
+        variant: "destructive",
+        title: "Copy Failed",
+        description: "Could not copy prompt to clipboard.",
+      });
+    });
+  }, [toast]);
+
+  const handleAddPrompt = (prompt: Omit<Prompt, 'id'>) => {
+    const newPrompt = { ...prompt, id: new Date().toISOString() };
+    setPrompts(prev => [newPrompt, ...prev]);
+    toast({ title: "Prompt Added", description: `"${prompt.name}" has been saved.` });
+  };
+
+  const handleUpdatePrompt = (updatedPrompt: Prompt) => {
+    setPrompts(prev => prev.map(p => p.id === updatedPrompt.id ? updatedPrompt : p));
+    toast({ title: "Prompt Updated", description: `"${updatedPrompt.name}" has been updated.` });
+  };
+
+  const handleDeletePrompt = (promptId: string) => {
+    const promptToDelete = prompts.find(p => p.id === promptId);
+    setPrompts(prev => prev.filter(p => p.id !== promptId));
+    if (promptToDelete) {
+      toast({
+        variant: "destructive",
+        title: "Prompt Deleted",
+        description: `"${promptToDelete.name}" has been removed.`,
+      });
+    }
+  };
+
+  const handleSaveSettings = (settings: { provider: string; model: string; apiKey: string }) => {
+    setProvider(settings.provider);
+    setModel(settings.model);
+    setApiKey(settings.apiKey);
+    toast({ title: "Settings Saved", description: "Your new settings have been saved." });
+  };
+
+  const handleGenerate = async (initialContent: string) => {
+    if (initialContent.trim().length < 10) {
+      toast({
+          variant: 'destructive',
+          title: 'Prompt too short',
+          description: 'Please enter at least 10 characters to generate.'
+      });
+      return;
+    }
+    if (!isOptimizerEnabled && !isSummarizerEnabled) {
+      toast({
+          variant: 'destructive',
+          title: 'No workflow enabled',
+          description: 'Please enable at least one workflow step (Optimizer or Summarizer).'
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    setFinalContent('');
+    setStats(null);
+    setLogs([]);
+    
+    const settings = { provider, model, apiKey };
+    let currentContent = initialContent;
+    let intermediateContent = initialContent;
+    let totalPromptTokens: number | undefined = 0;
+    let totalCompletionTokens: number | undefined = 0;
+
+    try {
+      // 1. Optimizer Step
+      if (isOptimizerEnabled) {
+        const optimizeResult = await getOptimizedPrompt({ prompt: currentContent }, settings);
+        if(optimizeResult.logs) setLogs(prev => [...prev, ...optimizeResult.logs!]);
+        
+        if (!optimizeResult.optimized_prompt) {
+            throw new Error('Optimization failed. No suggestion was returned.');
+        }
+        currentContent = optimizeResult.optimized_prompt;
+      }
+
+      intermediateContent = currentContent;
+
+      // 2. Summarizer Step
+      if (isSummarizerEnabled) {
+        const summarizeResult = await getSummarizedPrompt({ prompt: currentContent }, settings);
+        if(summarizeResult.logs) setLogs(prev => [...prev, ...summarizeResult.logs!]);
+        
+        if (!summarizeResult.summarized_prompt) {
+          throw new Error('Summarization failed. No summary was returned.');
+        }
+
+        if (summarizeResult.summarized_prompt.trim() === currentContent.trim()) {
+            toast({
+                title: "Already Concise",
+                description: "The text could not be summarized further."
+            });
+        } else {
+            currentContent = summarizeResult.summarized_prompt;
+        }
+
+        if (summarizeResult.usage?.prompt_tokens) totalPromptTokens = (totalPromptTokens || 0) + summarizeResult.usage.prompt_tokens;
+        if (summarizeResult.usage?.completion_tokens) totalCompletionTokens = (totalCompletionTokens || 0) + summarizeResult.usage.completion_tokens;
+      }
+
+      // 3. Set Final State
+      setFinalContent(currentContent);
+      setStats({
+          originalWordCount: initialContent.split(/\s+/).filter(Boolean).length,
+          finalWordCount: currentContent.split(/\s+/).filter(Boolean).length,
+          originalCharCount: initialContent.length,
+          finalCharCount: currentContent.length,
+          promptTokens: totalPromptTokens || undefined,
+          completionTokens: totalCompletionTokens || undefined,
+      });
+
+      // Clear workspace only if the initial trigger was the main generate button
+      if (initialContent === workspaceContent) {
+          setWorkspaceContent('');
+      }
+
+    } catch (error: any) {
+        toast({
+            variant: 'destructive',
+            title: 'Generation Failed',
+            description: `${error.message} Please check logs for details.`
+        });
+    } finally {
+        setIsLoading(false);
+    }
+  }
+
+
+  const handleSaveFinalPrompt = (content: string) => {
+    promptManagerRef.current?.openDialog(null, content);
+  };
+
+  const handleRegenerate = () => {
+    if (finalContent) {
+      handleGenerate(finalContent);
+    }
+  };
+
+  const isGenerateDisabled = isLoading || !workspaceContent || (!isOptimizerEnabled && !isSummarizerEnabled);
+
+  return (
+    <div className="h-full flex flex-col">
+      <header className="py-4 px-4 sm:px-8 border-b shrink-0">
+        <div className="container mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="bg-primary p-2 rounded-lg">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="hsl(var(--primary-foreground))"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-6 w-6"
+              >
+                <path d="m18 16 4-4-4-4" />
+                <path d="m6 8-4 4 4 4" />
+                <path d="m14.5 4-5 16" />
+              </svg>
+            </div>
+            <h1 className="text-2xl font-bold font-headline text-primary-foreground select-none">
+              Prompt Injekt
+            </h1>
+          </div>
+          <LogViewer logs={logs} open={isLogViewerOpen} onOpenChange={setIsLogViewerOpen}>
+            <Button variant="outline">
+              <BookText className="mr-2 h-4 w-4" />
+              View Logs
+            </Button>
+          </LogViewer>
+        </div>
+      </header>
+      <main className="container mx-auto p-4 sm:p-8 flex-grow grid grid-cols-1 lg:grid-cols-3 gap-8 items-start min-h-0">
+        <div className="lg:col-span-1 space-y-8 h-full flex flex-col">
+          <PromptManager
+            ref={promptManagerRef}
+            prompts={prompts}
+            injectionEnabled={injectionEnabled}
+            onInjectionToggle={setInjectionEnabled}
+            onInject={handleInjectPrompt}
+            onAdd={handleAddPrompt}
+            onUpdate={handleUpdatePrompt}
+            onDelete={handleDeletePrompt}
+            onCopy={(prompt) => handleCopyToClipboard(prompt.text, prompt.name)}
+            settings={{ provider, model, apiKey }}
+            onSaveSettings={handleSaveSettings}
+          />
+        </div>
+        <div className="lg:col-span-2 h-full flex flex-col">
+          <ScrollArea className="h-full">
+            <div className="space-y-8 pr-6">
+              <Card className="shadow-lg">
+                  <CardHeader>
+                      <CardTitle className='flex items-center gap-2'>
+                          <Settings className="h-6 w-6 text-primary" />
+                          Workflow Control
+                      </CardTitle>
+                      <CardDescription>
+                      Enable or disable steps in the generation pipeline.
+                      </CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex items-center space-x-8">
+                      <div className="flex items-center space-x-2">
+                          <Switch id="optimizer-toggle" checked={isOptimizerEnabled} onCheckedChange={setIsOptimizerEnabled} />
+                          <Label htmlFor="optimizer-toggle" className="flex items-center gap-2 text-base">
+                              <BrainCircuit className="h-5 w-5" /> Optimizer
+                          </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                          <Switch id="summarizer-toggle" checked={isSummarizerEnabled} onCheckedChange={setIsSummarizerEnabled} />
+                          <Label htmlFor="summarizer-toggle" className="flex items-center gap-2 text-base">
+                              <Mic className="h-5 w-5" /> Summarizer
+                          </Label>
+                      </div>
+                  </CardContent>
+              </Card>
+
+              <Card className="shadow-lg">
+                  <CardHeader>
+                      <CardTitle className='flex items-center gap-2'>
+                          <Wand2 className="h-6 w-6 text-primary" />
+                          Prompt Generation Workspace
+                      </CardTitle>
+                      <CardDescription>
+                      Type, paste, or inject a prompt idea below. Click "Generate" to run it through the selected workflow.
+                      </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                      <Textarea
+                      placeholder="e.g., 'Create a summary of a text...'"
+                      value={workspaceContent}
+                      onChange={(e) => setWorkspaceContent(e.target.value)}
+                      className="min-h-96 text-base"
+                      aria-label="Prompt idea text area"
+                      />
+                      <Button onClick={() => handleGenerate(workspaceContent)} disabled={isGenerateDisabled} className="mt-4 w-full">
+                          <Sparkles className="mr-2 h-4 w-4" />
+                          {isLoading ? 'Generating...' : 'Generate'}
+                      </Button>
+                  </CardContent>
+              </Card>
+
+              {isLoading ? (
+                  <Card>
+                      <CardHeader>
+                        <CardTitle className='flex items-center gap-2'>
+                          <Sparkles className="h-6 w-6 text-primary animate-pulse" />
+                          Generating...
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                          <Skeleton className="h-24 w-full" />
+                          <Skeleton className="h-16 w-full" />
+                      </CardContent>
+                  </Card>
+              ) : (
+                  (finalContent || stats) && (
+                      <FinalPrompt
+                          content={finalContent}
+                          stats={stats}
+                          onSave={handleSaveFinalPrompt}
+                          onRegenerate={handleRegenerate}
+                          isRegenerateDisabled={isLoading}
+                      />
+                  )
+              )}
+            </div>
+          </ScrollArea>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+
+
+================================================================================
+// FILE: src/app/actions.ts
+================================================================================
+
+'use server';
+
+import { optimizePrompt } from '@/ai/flows/optimize-prompt-flow';
+import { summarizePrompt } from '@/ai/flows/summarize-prompt-flow';
+import type { 
+    OptimizePromptInputForClient, 
+    OptimizePromptOutput,
+    SummarizePromptInputForClient,
+    SummarizePromptOutput
+} from './schemas';
+
+
+export async function getOptimizedPrompt(input: OptimizePromptInputForClient, settings: { apiKey: string; provider: string; model: string; }): Promise<OptimizePromptOutput> {
+    const logs: string[] = [];
+    try {
+        if (!input.prompt || input.prompt.trim().length < 10) {
+            logs.push("Prompt is too short for optimization. Returning empty.");
+            return { optimized_prompt: "", logs };
+        }
+
+        if (!settings.apiKey) {
+            logs.push("API Key is not set. Cannot optimize prompt.");
+            return { optimized_prompt: "", logs };
+        }
+
+        const flowInput = {
+            prompt: input.prompt,
+            apiKey: settings.apiKey,
+            provider: settings.provider,
+            target_provider: "google" // As per original implementation
+        }
+        
+        const result = await optimizePrompt(flowInput);
+        return result;
+
+    } catch (error: any) {
+        logs.push(`Error fetching suggestions from Genkit flow (Optimize): ${error.message}`);
+        return { optimized_prompt: "", logs };
+    }
+}
+
+
+export async function getSummarizedPrompt(input: SummarizePromptInputForClient, settings: { apiKey: string; provider: string; model: string; }): Promise<SummarizePromptOutput> {
+    const logs: string[] = [];
+    try {
+        if (!input.prompt || input.prompt.trim().length < 10) {
+            logs.push("Prompt is too short for summarization. Returning empty.");
+            return { summarized_prompt: "" };
+        }
+
+        if (!settings.apiKey) {
+            logs.push("API Key is not set. Cannot summarize prompt.");
+            return { summarized_prompt: "" };
+        }
+        
+        const flowInput = {
+            prompt: input.prompt,
+            apiKey: settings.apiKey,
+            provider: `${settings.provider}/${settings.model}`,
+            output_sentences: 1
+        }
+        
+        const result = await summarizePrompt(flowInput);
+        return result;
+
+    } catch (error: any) {
+        logs.push(`Error fetching suggestions from Genkit flow (Summarize): ${error.message}`);
+        return { summarized_prompt: "", logs };
+    }
+}
+
+
+================================================================================
+// FILE: src/app/schemas.ts
+================================================================================
+
+import { z } from 'zod';
+
+// For Prompt Optimizer
+export const OptimizePromptInputSchema = z.object({
+  prompt: z.string().describe('The prompt text to be optimized.'),
+});
+export type OptimizePromptInputForClient = z.infer<typeof OptimizePromptInputSchema>;
+
+export const OptimizePromptOutputSchema = z.object({
+  optimized_prompt: z.string().describe('The optimized prompt returned by the API.'),
+  logs: z.array(z.string()).optional().describe('An array of log messages from the flow execution.'),
+});
+export type OptimizePromptOutput = z.infer<typeof OptimizePromptOutputSchema>;
+
+// For Prompt Summarizer
+export const SummarizePromptInputSchema = z.object({
+    prompt: z.string().describe('The prompt text to be summarized.'),
+    apiKey: z.string().describe('The Eden AI API key.'),
+    provider: z.string().describe('The source provider for summarization (e.g., "openai").'),
+    output_sentences: z.number().describe('The number of sentences in the summary.'),
+});
+export type SummarizePromptInput = z.infer<typeof SummarizePromptInputSchema>;
+export type SummarizePromptInputForClient = Omit<SummarizePromptInput, 'apiKey' | 'provider' | 'output_sentences'>;
+
+
+const SummarizeUsageSchema = z.object({
+    prompt_tokens: z.number().optional(),
+    completion_tokens: z.number().optional(),
+}).optional();
+
+
+export const SummarizePromptOutputSchema = z.object({
+    summarized_prompt: z.string().describe('The summarized prompt returned by the API.'),
+    logs: z.array(z.string()).optional().describe('An array of log messages from the flow execution.'),
+    usage: SummarizeUsageSchema,
+});
+export type SummarizePromptOutput = z.infer<typeof SummarizePromptOutputSchema>;
+
+
+================================================================================
+// FILE: src/ai/flows/optimize-prompt-flow.ts
+================================================================================
+
+'use server';
+/**
+ * @fileOverview Optimizes a user-provided prompt using the Eden AI API.
+ *
+ * - optimizePrompt - A function that takes a prompt and returns an optimized version.
+ */
+
+import { ai } from '@/ai/genkit';
+import { z } from 'genkit';
+
+const OptimizePromptInputSchema = z.object({
+  prompt: z.string().describe('The prompt text to be optimized.'),
+  apiKey: z.string().describe('The Eden AI API key.'),
+  provider: z.string().describe('The source provider for optimization (e.g., "openai").'),
+  target_provider: z.string().describe('The target provider for the optimized prompt (e.g., "google").'),
+});
+type OptimizePromptInput = z.infer<typeof OptimizePromptInputSchema>;
+
+const OptimizePromptOutputSchema = z.object({
+  optimized_prompt: z.string().describe('The optimized prompt returned by the API.'),
+  logs: z.array(z.string()).optional().describe('An array of log messages from the flow execution.'),
+});
+type OptimizePromptOutput = z.infer<typeof OptimizePromptOutputSchema>;
+
+
+export async function optimizePrompt(
+  input: OptimizePromptInput
+): Promise<OptimizePromptOutput> {
+  return optimizePromptFlow(input);
+}
+
+
+const optimizePromptFlow = ai.defineFlow(
+  {
+    name: 'optimizePromptFlow',
+    inputSchema: OptimizePromptInputSchema,
+    outputSchema: OptimizePromptOutputSchema,
+  },
+  async (input) => {
+    const logs: string[] = [];
+    const url = "https://api.edenai.run/v2/text/prompt_optimization";
+    
+    const payload = {
+      providers: input.provider,
+      text: input.prompt,
+      target_provider: input.target_provider,
+      response_as_dict: true,
+      attributes_as_list: false,
+      show_original_response: false
+    };
+
+    logs.push(`Sending payload to Eden AI: ${JSON.stringify(payload, null, 2)}`);
+
+    const headers = {
+      "Authorization": `Bearer ${input.apiKey}`,
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    };
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.text();
+        logs.push(`Eden AI API Error Response: ${response.status} ${errorBody}`);
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+      
+      const result = await response.json();
+      logs.push(`Received response from Eden AI: ${JSON.stringify(result, null, 2)}`);
+      
+      const providerResult = result[input.provider];
+
+      if (providerResult && providerResult.items && providerResult.items.length > 0 && providerResult.items[0].text) {
+        return { optimized_prompt: providerResult.items[0].text, logs };
+      } else {
+        logs.push(`Unexpected API response structure: ${JSON.stringify(result)}`);
+        throw new Error("Could not extract optimized prompt from API response.");
+      }
+
+    } catch (error: any) {
+      logs.push(`Error calling Eden AI API: ${error.message}`);
+      return { optimized_prompt: "", logs };
+    }
+  }
+);
+
+
+================================================================================
+// FILE: src/ai/flows/summarize-prompt-flow.ts
+================================================================================
+
+'use server';
+/**
+ * @fileOverview Summarizes a user-provided prompt using the Eden AI API.
+ *
+ * - summarizePrompt - A function that takes a prompt and returns a summarized version.
+ */
+
+import { ai } from '@/ai/genkit';
+import { z } from 'genkit';
+
+const SummarizePromptInputSchema = z.object({
+    prompt: z.string(),
+    apiKey: z.string(),
+    provider: z.string(),
+    output_sentences: z.number(),
+});
+
+const SummarizeUsageSchema = z.object({
+    prompt_tokens: z.number().optional(),
+    completion_tokens: z.number().optional(),
+}).optional();
+
+
+const SummarizePromptOutputSchema = z.object({
+    summarized_prompt: z.string(),
+    logs: z.array(z.string()).optional(),
+    usage: SummarizeUsageSchema,
+});
+
+export type SummarizePromptInput = z.infer<typeof SummarizePromptInputSchema>;
+export type SummarizePromptOutput = z.infer<typeof SummarizePromptOutputSchema>;
+
+export async function summarizePrompt(
+  input: SummarizePromptInput
+): Promise<SummarizePromptOutput> {
+  return summarizePromptFlow(input);
+}
+
+const summarizePromptFlow = ai.defineFlow(
+  {
+    name: 'summarizePromptFlow',
+    inputSchema: SummarizePromptInputSchema,
+    outputSchema: SummarizePromptOutputSchema,
+  },
+  async (input) => {
+    const logs: string[] = [];
+    const url = "https://api.edenai.run/v2/text/summarize";
+    
+    const payload = {
+      providers: input.provider,
+      text: input.prompt,
+      output_sentences: input.output_sentences,
+      response_as_dict: true,
+      attributes_as_list: false,
+      show_original_response: false
+    };
+
+    logs.push(`Sending payload to Eden AI (Summarize): ${JSON.stringify(payload, null, 2)}`);
+
+    const headers = {
+      "Authorization": `Bearer ${input.apiKey}`,
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    };
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.text();
+        logs.push(`Eden AI API Error Response: ${response.status} ${errorBody}`);
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+      
+      const result = await response.json();
+      logs.push(`Received response from Eden AI (Summarize): ${JSON.stringify(result, null, 2)}`);
+      
+      const providerResult = result[input.provider];
+
+      if (providerResult && providerResult.result) {
+        const usage = {
+            prompt_tokens: providerResult.usage?.prompt_tokens,
+            completion_tokens: providerResult.usage?.completion_tokens,
+        }
+        return { summarized_prompt: providerResult.result, logs, usage };
+      } else {
+        logs.push(`Unexpected API response structure: ${JSON.stringify(result)}`);
+        throw new Error("Could not extract summarized prompt from API response.");
+      }
+
+    } catch (error: any) {
+      logs.push(`Error calling Eden AI API (Summarize): ${error.message}`);
+      return { summarized_prompt: "", logs };
+    }
+  }
+);
+
+
+================================================================================
+// FILE: src/components/final-prompt.tsx
+================================================================================
+
+'use client';
+
+import type { FC } from 'react';
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Clipboard, Check, Bot, Save, RefreshCw } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { SummaryStats } from './summary-stats';
+import type { Stats } from '@/app/page';
+
+interface FinalPromptProps {
+  content: string;
+  stats: Stats;
+  onSave: (content: string) => void;
+  onRegenerate: () => void;
+  isRegenerateDisabled?: boolean;
+}
+
+const FinalPrompt: FC<FinalPromptProps> = ({ content, stats, onSave, onRegenerate, isRegenerateDisabled }) => {
+  const { toast } = useToast();
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyToClipboard = () => {
+    if (content) {
+      navigator.clipboard.writeText(content).then(() => {
+        setCopied(true);
+        toast({
+          title: "Final Prompt Copied!",
+          description: "The generated prompt has been copied to your clipboard.",
+        });
+        setTimeout(() => setCopied(false), 2000);
+      });
+    }
+  };
+
+  return (
+    <Card className="shadow-lg bg-gradient-to-br from-card to-muted/30">
+        <CardHeader>
+            <CardTitle className='flex items-center gap-2'>
+                <Bot className="h-6 w-6 text-accent" />
+                Final Prompt
+            </CardTitle>
+        </CardHeader>
+        <CardContent>
+            <div className="relative rounded-md border p-4 text-sm bg-background min-h-24 group">
+                <p className="text-base">{content}</p>
+            </div>
+            {stats && <SummaryStats {...stats} />}
+      </CardContent>
+      <CardFooter className="justify-end gap-2">
+         <Button variant="outline" onClick={onRegenerate} disabled={isRegenerateDisabled}>
+            <RefreshCw className="mr-2 h-4 w-4" />
+            {isRegenerateDisabled ? 'Regenerating...' : 'Regenerate'}
+         </Button>
+         <Button variant="outline" onClick={() => onSave(content)}>
+            <Save className="mr-2 h-4 w-4" />
+            Save to Manager
+         </Button>
+         <Button onClick={handleCopyToClipboard}>
+            {copied ? <Check className="mr-2 h-4 w-4" /> : <Clipboard className="mr-2 h-4 w-4" />}
+            {copied ? 'Copied' : 'Copy'}
+         </Button>
+      </CardFooter>
+    </Card>
+  );
+};
+
+export default FinalPrompt;
+
+
+================================================================================
+// FILE: src/components/summary-stats.tsx
+================================================================================
+
+'use client';
+
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { TrendingDown } from 'lucide-react';
+
+interface SummaryStatsProps {
+  originalWordCount: number;
+  finalWordCount: number;
+  originalCharCount: number;
+  finalCharCount: number;
+  promptTokens: number | undefined;
+  completionTokens: number | undefined;
+}
+
+const StatCard = ({ title, value, footer }: { title: string; value: string; footer: string }) => (
+    <div className="bg-background p-4 rounded-lg shadow">
+      <p className="text-sm text-muted-foreground">{title}</p>
+      <p className="text-2xl font-bold">{value}</p>
+      <p className="text-xs text-muted-foreground">{footer}</p>
+    </div>
+);
+
+export const SummaryStats: React.FC<SummaryStatsProps> = ({
+  originalWordCount,
+  finalWordCount,
+  originalCharCount,
+  finalCharCount,
+  promptTokens,
+  completionTokens
+}) => {
+  const calculateReduction = (original: number, final: number) => {
+    if (original === 0 || original <= final) return 0;
+    return Math.round(((original - final) / original) * 100);
+  };
+
+  const wordReduction = calculateReduction(originalWordCount, finalWordCount);
+  const charReduction = calculateReduction(originalCharCount, finalCharCount);
+  const tokenReduction = (promptTokens && completionTokens) ? calculateReduction(promptTokens, completionTokens) : null;
+
+  return (
+    <Card className="mt-6">
+      <CardHeader>
+        <CardTitle className="text-lg flex items-center gap-2">
+            <TrendingDown className="h-5 w-5 text-accent" />
+            Reduction Analysis
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <StatCard 
+            title="Words"
+            value={`${wordReduction}%`}
+            footer={`${originalWordCount} → ${finalWordCount}`}
+        />
+        <StatCard 
+            title="Characters"
+            value={`${charReduction}%`}
+            footer={`${originalCharCount} → ${finalCharCount}`}
+        />
+        {tokenReduction !== null && promptTokens !== undefined && completionTokens !== undefined ? (
+            <StatCard 
+                title="Tokens"
+                value={`${tokenReduction}%`}
+                footer={`${promptTokens} → ${completionTokens}`}
+            />
+        ) : (
+            <div className="bg-background p-4 rounded-lg shadow flex flex-col justify-center items-center">
+                <p className="text-sm text-muted-foreground">Token data not available.</p>
+            </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
+
+================================================================================
+// FILE: src/components/prompt-manager.tsx
+================================================================================
+
+'use client';
+
+import type { FC } from 'react';
+import React, { useState, useImperativeHandle, forwardRef } from 'react';
+import type { Prompt } from '@/app/page';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useForm, type SubmitHandler, type UseFormReturn } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Plus, Edit, Trash2, FileText, Copy, Settings } from 'lucide-react';
+import { SettingsDialog } from './settings-dialog';
+
+const promptSchema = z.object({
+  name: z.string().min(1, 'Name is required.').max(50, 'Name must be 50 characters or less.'),
+  text: z.string().min(1, 'Prompt text is required.'),
+});
+
+type PromptFormData = z.infer<typeof promptSchema>;
+
+interface PromptManagerProps {
+  prompts: Prompt[];
+  injectionEnabled: boolean;
+  onInjectionToggle: (enabled: boolean) => void;
+  onInject: (promptText: string) => void;
+  onAdd: (prompt: Omit<Prompt, 'id'>) => void;
+  onUpdate: (prompt: Prompt) => void;
+  onDelete: (promptId: string) => void;
+  onCopy: (prompt: Prompt) => void;
+  settings: {
+    provider: string;
+    model: string;
+    apiKey: string;
+  };
+  onSaveSettings: (settings: {
+    provider: string;
+    model: string;
+    apiKey: string;
+  }) => void;
+}
+
+export type PromptManagerHandle = {
+  openDialog: (prompt?: Prompt | null, defaultText?: string) => void;
+};
+
+
+interface PromptFormProps {
+  form: UseFormReturn<PromptFormData>;
+  onSubmit: SubmitHandler<PromptFormData>;
+  onClose: () => void;
+}
+
+const PromptForm: FC<PromptFormProps> = ({ form, onSubmit, onClose }) => {
+  const handleSubmit = (data: PromptFormData) => {
+    onSubmit(data);
+    form.reset({ name: '', text: ''});
+    onClose();
+  };
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Prompt Name</FormLabel>
+              <FormControl>
+                <Input placeholder="e.g., 'Summarize Text'" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="text"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Prompt Text</FormLabel>
+              <FormControl>
+                <Textarea placeholder="Enter the prompt content..." className="min-h-[120px]" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button type="button" variant="secondary">Cancel</Button>
+          </DialogClose>
+          <Button type="submit">Save Prompt</Button>
+        </DialogFooter>
+      </form>
+    </Form>
+  );
+};
+
+
+const PromptManager = forwardRef<PromptManagerHandle, PromptManagerProps>(({
+  prompts,
+  injectionEnabled,
+  onInjectionToggle,
+  onInject,
+  onAdd,
+  onUpdate,
+  onDelete,
+  onCopy,
+  settings,
+  onSaveSettings
+}, ref) => {
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingPrompt, setEditingPrompt] = useState<Prompt | null>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  
+  const form = useForm<PromptFormData>({
+    resolver: zodResolver(promptSchema),
+    defaultValues: { name: '', text: '' },
+  });
+
+  useImperativeHandle(ref, () => ({
+    openDialog(prompt = null, defaultText = '') {
+      setEditingPrompt(prompt);
+      const defaultValues = prompt 
+        ? { name: prompt.name, text: prompt.text }
+        : { name: '', text: defaultText };
+      form.reset(defaultValues);
+      setDialogOpen(true);
+    }
+  }));
+
+  const handleOpenDialog = (prompt: Prompt | null = null) => {
+    setEditingPrompt(prompt);
+    form.reset(prompt || { name: '', text: '' });
+    setDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setEditingPrompt(null);
+    form.reset({ name: '', text: '' });
+    setDialogOpen(false);
+  };
+
+  const handleFormSubmit: SubmitHandler<PromptFormData> = (data) => {
+    if (editingPrompt) {
+      onUpdate({ ...editingPrompt, ...data });
+    } else {
+      onAdd(data);
+    }
+  };
+
+  return (
+    <Card className="shadow-lg h-full flex flex-col">
+      <CardHeader>
+        <div className="flex justify-between items-center">
+          <CardTitle>Prompt Manager</CardTitle>
+          <div className="flex items-center space-x-2">
+            <Label htmlFor="injection-toggle" className="text-sm font-medium">
+              Enable Injection
+            </Label>
+            <Switch
+              id="injection-toggle"
+              checked={injectionEnabled}
+              onCheckedChange={onInjectionToggle}
+              aria-label="Toggle prompt injection"
+            />
+          </div>
+        </div>
+        <CardDescription>Manage your saved prompts. Click to inject, or use the buttons to copy, edit, or delete.</CardDescription>
+      </CardHeader>
+      <CardContent className="flex-grow flex flex-col min-h-0">
+        <div className="flex gap-2 mb-4 shrink-0">
+          <Button className="w-full" onClick={() => handleOpenDialog()}>
+            <Plus className="mr-2 h-4 w-4" /> Add New Prompt
+          </Button>
+          <SettingsDialog
+            open={settingsOpen}
+            onOpenChange={setSettingsOpen}
+            settings={settings}
+            onSaveSettings={onSaveSettings}
+          >
+            <Button variant="outline" size="icon" onClick={() => setSettingsOpen(true)}>
+              <Settings className="h-4 w-4" />
+              <span className="sr-only">Settings</span>
+            </Button>
+          </SettingsDialog>
+        </div>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogContent className="sm:max-w-[425px]" onCloseAutoFocus={() => form.reset({ name: '', text: '' })}>
+            <DialogHeader>
+              <DialogTitle>{editingPrompt ? 'Edit Prompt' : 'Add New Prompt'}</DialogTitle>
+            </DialogHeader>
+            <PromptForm
+              form={form}
+              onSubmit={handleFormSubmit}
+              onClose={handleCloseDialog}
+            />
+          </DialogContent>
+        </Dialog>
+        <ScrollArea className="flex-grow pr-4 -mr-4">
+          <div className="space-y-2">
+            {prompts.length > 0 ? prompts.map((prompt) => (
+              <div
+                key={prompt.id}
+                className="group p-3 rounded-lg border bg-card hover:bg-muted/50 transition-colors flex items-center gap-4"
+              >
+                <FileText className="h-5 w-5 text-accent" />
+                <button
+                  className="flex-grow text-left"
+                  onClick={() => onInject(prompt.text)}
+                  aria-label={`Inject prompt: ${prompt.name}`}
+                >
+                  <p className="font-medium truncate">{prompt.name}</p>
+                </button>
+                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onCopy(prompt)}>
+                    <Copy className="h-4 w-4" />
+                    <span className="sr-only">Copy</span>
+                  </Button>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleOpenDialog(prompt)}>
+                    <Edit className="h-4 w-4" />
+                    <span className="sr-only">Edit</span>
+                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
+                        <Trash2 className="h-4 w-4" />
+                        <span className="sr-only">Delete</span>
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will permanently delete the prompt "{prompt.name}". This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => onDelete(prompt.id)} className="bg-destructive hover:bg-destructive/90">
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
+              </div>
+            )) : (
+              <div className="text-center text-muted-foreground py-10">
+                <p>No prompts saved yet.</p>
+                <p className="text-sm">Click "Add New Prompt" to get started.</p>
+              </div>
+            )}
+          </div>
+        </ScrollArea>
+      </CardContent>
+    </Card>
+  );
+});
+
+PromptManager.displayName = 'PromptManager';
+export default PromptManager;
+
+
+================================================================================
+// FILE: tailwind.config.ts
+================================================================================
+
+import type {Config} from 'tailwindcss';
+
+export default {
+  darkMode: ['class'],
+  content: [
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {
+      fontFamily: {
+        body: ['Inter', 'sans-serif'],
+        headline: ['Inter', 'sans-serif'],
+        code: ['monospace'],
+      },
+      colors: {
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))',
+        },
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))',
+        },
+        primary: {
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
+        },
+        secondary: {
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))',
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
+        },
+        accent: {
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))',
+        },
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))',
+        },
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        chart: {
+          '1': 'hsl(var(--chart-1))',
+          '2': 'hsl(var(--chart-2))',
+          '3': 'hsl(var(--chart-3))',
+          '4': 'hsl(var(--chart-4))',
+          '5': 'hsl(var(--chart-5))',
+        },
+        sidebar: {
+          DEFAULT: 'hsl(var(--sidebar-background))',
+          foreground: 'hsl(var(--sidebar-foreground))',
+          primary: 'hsl(var(--sidebar-primary))',
+          'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+          accent: 'hsl(var(--sidebar-accent))',
+          'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
+          border: 'hsl(var(--sidebar-border))',
+          ring: 'hsl(var(--sidebar-ring))',
+        },
+      },
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)',
+      },
+      keyframes: {
+        'accordion-down': {
+          from: {
+            height: '0',
+          },
+          to: {
+            height: 'var(--radix-accordion-content-height)',
+          },
+        },
+        'accordion-up': {
+          from: {
+            height: 'var(--radix-accordion-content-height)',
+          },
+          to: {
+            height: '0',
+          },
+        },
+      },
+      animation: {
+        'accordion-down': 'accordion-down 0.2s ease-out',
+        'accordion-up': 'accordion-up 0.2s ease-out',
+      },
+    },
+  },
+  plugins: [require('tailwindcss-animate')],
+} satisfies Config;
+
+================================================================================
+// FILE: tsconfig.json
+================================================================================
+
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}
+
+    

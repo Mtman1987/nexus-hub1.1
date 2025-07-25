@@ -29,7 +29,7 @@ export async function codeGeneratorFlow(
     const systemPrompt = getSystemPrompt(input.language);
     
     // The user's new prompt is injected here, as per our new collaborative flow.
-    const userInstruction = `Explain reasoning first, no code yet. I’ll affirm or deny before you proceed. please stop apologizing when misunderstanding, its a normal part of collaberation. My request is: "${input.instruction}"`;
+    const userInstruction = `Explain reasoning first, no code yet. I’ll affirm or deny before you proceed. First, explain your plan to fulfill my request. Then, STOP and wait for my approval. Only generate the code after I approve. My request is: "${input.instruction}"`;
 
     const history: EdenAiChatMessage[] = [
         { role: 'system', text: systemPrompt },
