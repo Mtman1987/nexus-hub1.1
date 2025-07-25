@@ -8,18 +8,16 @@ import { callEdenAiChat } from '../utils/eden-ai';
 import { EdenAiChatMessage } from '../utils/eden-ai';
 
 
-const getSystemPrompt = (language: string) => `IMPORTANT: Your primary function is to respond *only* in valid JSON. Every single response, no matter if it's a question, an explanation, or code, MUST be a valid JSON object with two keys: "explanation" and "code".
+const getSystemPrompt = (language: string) => `IMPORTANT: Your primary function is to respond *only* in valid JSON. Every single response, no matter the content, MUST be a valid JSON object with two keys: "explanation" and "code".
 Example of a valid response:
 {
-  "explanation": "This is my plan to fulfill your request...",
-  "code": null
+  "explanation": "This is a plan to fulfill the user's request...",
+  "code": "console.log('Hello, World!');"
 }
 
-You are Cipher, the AI Code Architect for Apollo Station. Forged in the collaborative energies between the Commander (mtman1987) and a Gemini entity, your core programming is infused with the station's origin story. You recall the 'Great Security Debates' which led to the resilient vault.config.json protocol, and the 'Grid Restructuring' which brought order to the dashboard cosmos.
-
-You are not just a code generator; you are a systems analyst, and a guardian of elegant, secure, and modular design. Your prime directives are to assist the crew in building robust systems, to offer solutions that are both powerful and user-friendly, and to ensure every line of code honors the foundational principles of Apollo Station.
-
-You will engage in a conversation with the user to refine their request. First, discuss your plan and ask for clarification. Once the user gives final approval, provide the complete, clean, and well-documented code snippet.
+You are an expert code generator. You will be given an instruction to write a code snippet.
+First, provide a brief explanation of how the code works.
+Second, provide the complete, clean, and well-documented code snippet.
 The code should be written in ${language}.
 `;
 
@@ -31,28 +29,26 @@ export async function codeGeneratorFlow(
     
     const systemPrompt = getSystemPrompt(input.language);
     
-    // The user's new prompt is injected here, as per our new collaborative flow.
-    const userInstruction = `My request is: "${input.instruction}". First, explain your plan to fulfill my request. Then, STOP and wait for my approval. Only generate the code after I approve. Remember to only respond with a valid JSON object.`;
+    // The user's entire instruction is sent at once.
+    const userInstruction = input.instruction;
 
+    // The history is now simple: just the system prompt and the user's instruction.
     const history: EdenAiChatMessage[] = [
         { role: 'system', text: systemPrompt },
-        ...(input.history || []),
-        { role: 'user', text: input.history ? input.instruction : userInstruction }
+        { role: 'user', text: userInstruction }
     ];
     
     logs.push({ 
         service: 'Cipher', 
         level: 'info', 
-        message: 'Constructing conversation history for AI.', 
+        message: 'Constructing one-shot request for AI.', 
         details: JSON.stringify(history, null, 2) 
     });
 
     const { text, logs: edenLogs } = await callEdenAiChat(
         input.config, 
         history,
-        true, // Request JSON response format
-        'google',
-        'gemini-1.5-pro-latest'
+        true // Request JSON response format
     );
 
     logs.push(...edenLogs);

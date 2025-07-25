@@ -61,7 +61,7 @@ export async function callEdenAiChat(
         response_as_dict: true,
         attributes_as_list: false,
         show_original_response: false,
-        temperature: 0.7,
+        temperature: 0.1, // Lower temperature for more predictable, structured output
         max_tokens: 2000,
         providers: provider,
         model: model,
