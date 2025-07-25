@@ -49,10 +49,13 @@ export async function callEdenAiChat(
     
     // Correctly format the payload for Eden AI
     const lastMessage = history.pop();
-    const previous_history = history.map(msg => ({
-        role: msg.role,
-        message: msg.text
-    }));
+    // Filter out the system message from the history before sending
+    const previous_history = history
+        .filter(msg => msg.role !== 'system')
+        .map(msg => ({
+            role: msg.role,
+            message: msg.text
+        }));
     
     const payload: any = {
         response_as_dict: true,
