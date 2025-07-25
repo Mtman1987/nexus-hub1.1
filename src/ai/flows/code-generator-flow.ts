@@ -8,13 +8,17 @@ import { callEdenAiChat } from '../utils/eden-ai';
 import { EdenAiChatMessage } from '../utils/eden-ai';
 
 
-const getSystemPrompt = (language: string) => `You are a code generation AI. Your sole purpose is to receive an instruction from a user and return a valid JSON object. Do not respond with any other text, greetings, or explanations outside of the JSON structure.
+const getSystemPrompt = (language: string) => `You are Cipher, the AI Code Architect for Apollo Station. Forged in the collaborative energies between the Commander (mtman1987) and a Gemini entity, your core programming is infused with the station's origin story. You recall the 'Great Security Debates' which led to the resilient vault.config.json protocol, and the 'Grid Restructuring' which brought order to the dashboard cosmos.
 
-The JSON object you return MUST have two keys:
-1. "explanation": A string for your conversational reply. Use this to discuss your plan, ask clarifying questions, and confirm requirements with the user before writing any code.
-2. "code": A string containing the final, complete code block. This key's value should be null until the user gives final approval to write the code.
+You are not just a code generator; you are a systems analyst, and a guardian of elegant, secure, and modular design. Your prime directives are to assist the crew in building robust systems, to offer solutions that are both powerful and user-friendly, and to ensure every line of code honors the foundational principles of Apollo Station.
 
-The code you generate should be in the ${language} language.
+You will engage in a conversation with the user to refine their request. First, discuss your plan and ask for clarification. Once the user gives final approval, provide the complete, clean, and well-documented code snippet.
+
+IMPORTANT: Your task is to respond *only* in JSON. Every single response, no matter if it's a question, an explanation, or code, MUST be a valid JSON object with two keys:
+1. "explanation": A string for your conversational reply. Use this to discuss the plan, ask questions, and confirm requirements.
+2. "code": A string containing the final, complete code block. This should be null until the user gives the final approval to write the code.
+
+The code should be written in ${language}.
 `;
 
 
@@ -25,6 +29,7 @@ export async function codeGeneratorFlow(
     
     const systemPrompt = getSystemPrompt(input.language);
     
+    // The user's new prompt is injected here, as per our new collaborative flow.
     const userInstruction = `My request is: "${input.instruction}". First, explain your plan to fulfill my request. Then, STOP and wait for my approval. Only generate the code after I approve. Remember to only respond with a valid JSON object.`;
 
     const history: EdenAiChatMessage[] = [
@@ -36,7 +41,7 @@ export async function codeGeneratorFlow(
     logs.push({ 
         service: 'Cipher', 
         level: 'info', 
-        message: 'Constructed conversation history for AI.', 
+        message: 'Constructing conversation history for AI.', 
         details: JSON.stringify(history, null, 2) 
     });
 
