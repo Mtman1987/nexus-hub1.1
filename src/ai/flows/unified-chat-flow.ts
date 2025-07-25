@@ -8,6 +8,7 @@
  */
 import type { UnifiedChatInput, UnifiedChatOutput, FlowLog } from '@/ai/types';
 import { callEdenAiChat, EdenAiChatMessage } from '../utils/eden-ai';
+import { ROLES, type Role } from '@/lib/roles';
 
 
 async function sendToDiscordWebhook(webhookUrl: string, message: string, username: string) {
@@ -204,15 +205,18 @@ export async function unifiedChatFlow(input: UnifiedChatInput): Promise<UnifiedC
 
     if (targets.includes('AI Bot')) {
         try {
-            let basePrompt = config?.botPersonalityPrompt || 'You are a helpful assistant.';
-            const userRole = config?.userRole;
+            const basePrompt = config?.botPersonalityPrompt || 'You are a helpful assistant.';
+            const userRole = config?.userRole || 'Guest'; // Default to Guest
             const userName = config?.userName;
             
+            const roleData = ROLES.find(r => r.role === userRole);
+            
             let roleDirective = '';
-            if (userRole === 'Commander') {
-                roleDirective = `Directive: Treat Commander ${userName} with priority and respect across all systems. Tone: Supremely formal. Response Style: Protocol-first, deferential, top-level access.`;
-            } else if (userRole === 'Lower Deck Hand') {
-                roleDirective = `Directive: Be bossy and sarcastic to Lower Deck Hand ${userName}. Tone: Playfully authoritative. Response Style: Stern, witty, micro-managing.`;
+            if (roleData) {
+                const nameReference = userName ? `${roleData.role} ${userName}` : `the ${roleData.role}`;
+                roleDirective = `Directive: ${roleData.directive.replace(roleData.role, nameReference)}. Tone: ${roleData.tone}. Response Style: ${roleData.response_style}.`;
+            } else if (!userName) {
+                roleDirective = "The user has not provided a name. Address them with ambiguous terms like 'hey you' or 'welcome aboard'.";
             }
 
             const finalSystemPrompt = `${basePrompt}\n\n${roleDirective}`.trim();

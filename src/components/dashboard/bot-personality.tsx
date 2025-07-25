@@ -18,6 +18,7 @@ import { ScrollArea } from '../ui/scroll-area';
 import { collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc, query, getDocs } from "firebase/firestore";
 import { db } from '@/lib/firebase';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
+import { ROLES } from '@/lib/roles';
 
 
 export type BotPersonalityType = {
@@ -35,7 +36,7 @@ const availableVoices = [
     'fr-FR-Wavenet-A', 'fr-FR-Wavenet-B', 'de-DE-Wavenet-A', 'de-DE-Wavenet-F'
 ];
 
-const userRoles = ['Commander', 'Lower Deck Hand'];
+const userRoles = ROLES.map(r => r.role);
 
 
 const defaultPersonalities: BotPersonalityType[] = [
