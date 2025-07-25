@@ -154,7 +154,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
         'edenApiKey', 'googleApiKey', 'openaiApiKey', 'groqApiKey',
         'edenAiModel', 'googleModelName', 'openaiModelName', 'groqModelName',
         'providerStatus', 'fallbackStrategy', 'botPersonalityPrompt', 'botName', 'botVoice',
-        'remoteHubAddress', 'remoteAccessSecret'
+        'remoteHubAddress', 'remoteAccessSecret', 'ttsProvider'
       ];
       configKeys.forEach(key => {
         const item = localStorage.getItem(key);
@@ -233,17 +233,24 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
   const handlePlayAudio = async (messageId: string, text: string) => {
       setLoadingAudio(messageId);
       try {
-        const voice = localStorage.getItem('botVoice') || 'Algenib';
         const config = {
-            googleApiKey: localStorage.getItem('googleApiKey')
+            edenApiKey: localStorage.getItem('edenApiKey'),
+            ttsProvider: localStorage.getItem('ttsProvider'),
+            botVoice: localStorage.getItem('botVoice'),
         };
-        const { media } = await getTTSAudio({ text, voice, config });
+
+        if (!config.edenApiKey) {
+            throw new Error("Eden AI API Key is not configured in the API Vault.");
+        }
+
+        const { response, logs } = await getTTSAudio({ text, voice: config.botVoice || 'FEMALE', config });
+        logs.forEach(addLog);
         
         setMessages(prev => prev.map(msg => 
-            msg.id === messageId ? {...msg, audioData: media} : msg
+            msg.id === messageId ? {...msg, audioData: response.media} : msg
         ));
         
-        const audio = new Audio(media);
+        const audio = new Audio(response.media);
         audio.play();
 
       } catch (e) {

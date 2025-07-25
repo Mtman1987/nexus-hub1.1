@@ -16,7 +16,7 @@ import { loreSummarizerFlow } from '@/ai/flows/lore-summarizer-flow';
 import { resumeParserFlow } from '@/ai/flows/resume-parser-flow';
 import { translationFlow } from '@/ai/flows/translation-flow';
 import { speechToTextFlow } from '@/ai/flows/speech-to-text-flow';
-import { textToSpeech } from '@/ai/flows/tts-flow';
+import { ttsFlow } from '@/ai/flows/tts-flow';
 import { codeGeneratorFlow } from '@/ai/flows/code-generator-flow';
 import { videoGeneratorFlow } from '@/ai/flows/video-generator-flow';
 
@@ -94,8 +94,8 @@ export async function getSummarizedPersonality(input: LoreSummarizerInput): Prom
 /**
  * Service function to convert text to speech.
  */
-export async function getTTSAudio(input: TtsInput): Promise<TtsOutput> {
-    return textToSpeech(input);
+export async function getTTSAudio(input: TtsInput): Promise<{response: TtsOutput, logs: FlowLog[]}> {
+    return ttsFlow(input);
 }
 
 /**
