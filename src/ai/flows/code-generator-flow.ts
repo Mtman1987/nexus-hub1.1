@@ -12,8 +12,6 @@ const getSystemPrompt = (language: string) => `You are an expert code generator.
 First, provide a brief explanation of how the code works.
 Second, provide the complete, clean, and well-documented code snippet.
 The code should be written in ${language}.
-
-IMPORTANT: When you provide the final code block in your response, you MUST start that part of the message with the exact marker \`<code>\`. The explanation should come before this marker.
 `;
 
 
@@ -24,8 +22,8 @@ export async function codeGeneratorFlow(
     
     const systemPrompt = getSystemPrompt(input.language);
     
-    // The user's entire instruction is sent at once.
-    const userInstruction = input.instruction;
+    // The user's entire instruction is sent at once, with the marker instruction appended.
+    const userInstruction = `${input.instruction}\n\nIMPORTANT: When you provide the final code block in your response, you MUST start that part of the message with the exact marker \`<code>\`. The explanation should come before this marker.`;
 
     // The history is now simple: just the system prompt and the user's instruction.
     const history: EdenAiChatMessage[] = [
