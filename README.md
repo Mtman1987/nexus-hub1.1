@@ -59,7 +59,7 @@ The application requires API keys to function. On first launch, a Setup Wizard w
 2.  **Setup Wizard**: When you open the app for the first time, a setup dialog will appear.
     *   **Step 1: Vault Password**: Create a master password to secure your API Key Vault. This is stored locally in your browser.
     *   **Step 2: Eden AI Key**: This is the **primary required key**. Get a key from [Eden AI](https://www.edenai.co/). It acts as a gateway to multiple AI providers (OpenAI, Google, Anthropic, etc.).
-    *   **Optional Keys**: Add keys for other services like Discord or a direct Google AI key for fallback purposes.
+    *   **Optional Keys**: Add keys for other services like Discord, Firebase, or a direct Google AI key for fallback purposes. All keys are managed in the app's **API Key Vault**.
 
 ### 4. Enhanced Local Security (Optional)
 For an added layer of security, you can lock your vault password in a configuration file. This prevents the password from being changed through the UI and ensures it persists even if browser data is cleared.
@@ -92,13 +92,12 @@ pip install discord.py python-dotenv requests
 Create a file named `bot.py` in the root of your project and paste the code from `DEV_NOTES.md` into it.
 
 ### Step 4: Add Token to `.env`
-Create a `.env` file in the project root and add your keys. The Python bot and the Next.js app share this file.
+Create a `.env` file in the project root and add your bot token. The Python bot reads this file for the token.
 ```
 # .env file
-EDEN_AI_API_KEY=YOUR_EDEN_AI_KEY
+# Note: Other keys like Eden AI, Google, etc. are managed in the app's API Key Vault.
 DISCORD_TOKEN=YOUR_DISCORD_BOT_TOKEN
 ```
-*Note: Other keys are managed in the app's API Key Vault.*
 
 ### Step 5: Run the Bot
 Open a **new, separate terminal** (keep the `npm run dev` terminal running) and run the bot:

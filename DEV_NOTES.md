@@ -1,4 +1,3 @@
-
 # Apollo Station: Developer Notes & Testing Checklist
 
 This document provides a quick overview of the project structure, key configuration files, and a testing checklist.
@@ -47,8 +46,8 @@ You might wonder why the Discord message relay isn't built directly into the Nex
 
 ## Configuration Cheat Sheet
 
--   **Theming & Colors**: `src/app/globals.css`
--   **Dashboard Modules**: `src/app/dashboard/page.tsx` - Add, remove, or reorder modules in `ALL_MODULES_CONFIG`.
+-   **Theming & Colors**: `src/app/globals.css` and the **Settings** panel in the UI.
+-   **Dashboard Modules**: `src/lib/modules.ts` - Configure all available dashboard modules.
 -   **API Keys & Endpoints**: `src/components/dashboard/api-settings.tsx` - The main configuration hub. Use the vault to manage all secret keys and service connections.
 -   **Vault Password (Hard Lock)**: `vault.config.json` - Set a password here to lock it from being changed in the UI.
 -   **Bot Personalities**: `src/components/dashboard/bot-personality.tsx` - Create, edit, and share AI personas.
@@ -64,12 +63,12 @@ You might wonder why the Discord message relay isn't built directly into the Nex
 - [ ] **Vault Password Setup**: Complete the first step of the wizard to set a vault password.
 -   **Dashboard**: After setup, verify the dashboard loads correctly.
 -   **Module Drag & Drop**: Rearrange modules on the dashboard and verify the new layout is saved after clicking "Save Layout".
--   **Module Visibility**: Use the "Hide" button on a module. Verify it moves to the "Hidden Modules" section at the bottom.
+-   **Module Visibility**: Use the sidebar to hide/show modules. Verify changes are reflected on the dashboard.
 -   **Mobile View**: Resize the browser. Does the sidebar collapse? Does the dashboard grid reflow correctly?
 
 ### Core Features
 -   **API Key Vault**: Test the lock/unlock functionality. Use the password you set during setup. Does it automatically lock after 5 minutes?
--   **Bot Personality**: Create a new personality. Save it. Switch back to COSMO. Does the correct prompt load each time?
+-   **Bot Personality**: Create a new personality. Save it. Switch back to COSMO. Does the correct prompt load each time? Test the "Shared Bot Store".
 -   **Unified Chat**: Send a message to "AI Bot". Does the chat history update correctly?
 -   **Cipher (Code Helper)**: Enter an instruction (e.g., "create a JavaScript function to get a random number") and verify code is generated.
 -   **Image Generator**: Enter a prompt and verify an image is generated.
