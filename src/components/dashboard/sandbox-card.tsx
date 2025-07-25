@@ -14,6 +14,7 @@ import { ScrollArea } from '../ui/scroll-area';
 import { getCodeGeneration } from '@/services/ai';
 import type { CodeGeneratorInput } from '@/ai/types';
 import { cn } from '@/lib/utils';
+import { useLogs } from '@/context/LogContext';
 
 type Message = {
     sender: 'user' | 'ai';
@@ -34,6 +35,7 @@ export function SandboxCard({ onPopOut, isPoppedOut = false, onHide, dragHandleP
     const [generatedCode, setGeneratedCode] = useState<string | null>(null);
     const [messages, setMessages] = useState<Message[]>([]);
     const { toast } = useToast();
+    const { addLog } = useLogs();
     const scrollAreaRef = useRef<HTMLDivElement>(null);
 
     const handleSendMessage = async () => {
@@ -75,7 +77,7 @@ export function SandboxCard({ onPopOut, isPoppedOut = false, onHide, dragHandleP
             };
 
             const { response, logs } = await getCodeGeneration(input);
-            // logs.forEach(addLog); // `addLog` is not available here, but can be passed in if needed
+            logs.forEach(addLog);
 
             const aiMessage: Message = { sender: 'ai', text: response.explanation };
             setMessages(prev => [...prev, aiMessage]);
@@ -160,10 +162,10 @@ export function SandboxCard({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                         <div className="flex-grow">
                             <CardTitle className="flex items-center gap-2">
                                 <Beaker className="h-6 w-6 text-primary" />
-                                AI Sandbox
+                                Cipher Sandbox
                             </CardTitle>
                             <CardDescription>
-                                A place to test AI-generated components.
+                                Chat with Cipher to generate components and save them.
                             </CardDescription>
                         </div>
                     </div>
@@ -230,7 +232,7 @@ export function SandboxCard({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                 {generatedCode && (
                     <div className="relative mt-2 flex-grow flex flex-col">
                         <Label>Generated Code</Label>
-                        <div className="absolute top-0 right-2 z-10">
+                        <div className="absolute top-0 right-2 z-10 flex gap-1">
                             <Button variant="ghost" size="icon" className="h-7 w-7" onClick={copyToClipboard}>
                                 <Copy className="h-4 w-4" />
                             </Button>

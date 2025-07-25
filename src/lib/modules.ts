@@ -50,7 +50,7 @@ export const ALL_MODULES_CONFIG = [
     { id: 'musicPlayer', title: 'Subspace Comms & Music', component: MusicPlayer, defaultSize: 'col-span-1', icon: Music },
     { id: 'imageGenerator', title: 'Stargate Imagery', component: ImageGenerator, defaultSize: 'col-span-1', icon: ImageIcon },
     { id: 'videoGenerator', title: 'Avatar Forge', component: VideoGenerator, defaultSize: 'col-span-1', icon: Video },
-    { id: 'codeHelper', title: 'Cipher (Code Helper)', component: CodeHelper, defaultSize: 'col-span-1', icon: Code },
+    { id: 'sandboxCard', title: 'Cipher Sandbox', component: SandboxCard, defaultSize: 'col-span-1', icon: Beaker },
     { id: 'resumeParser', title: 'Resume Parser', component: ResumeParser, defaultSize: 'col-span-1', icon: FileText },
     { id: 'audioTranscription', title: 'Audio Transcription', component: AudioTranscription, defaultSize: 'col-span-1', icon: FileAudio },
     { id: 'translator', title: 'Translator', component: Translator, defaultSize: 'col-span-1', icon: Languages },
@@ -60,6 +60,5 @@ export const ALL_MODULES_CONFIG = [
     { id: 'websiteViewer', title: 'Website Viewer', component: WebsiteViewer, defaultSize: 'col-span-1 md:col-span-2', icon: Monitor },
     { id: 'savedItems', title: 'Saved Items', component: SavedItems, defaultSize: 'col-span-1 md:col-span-2 xl:col-span-3', icon: Save },
     { id: 'loreWeaver', title: 'Lore Weaver', component: LoreWeaver, defaultSize: 'col-span-1', icon: ScrollText },
-    { id: 'sandboxCard', title: 'AI Sandbox', component: SandboxCard, defaultSize: 'col-span-1', icon: Beaker },
     { id: 'customModule', title: 'Custom Module', component: CustomModule, defaultSize: 'col-span-1', icon: Puzzle },
 ];
