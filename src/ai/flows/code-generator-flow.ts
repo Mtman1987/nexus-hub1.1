@@ -23,7 +23,7 @@ export async function codeGeneratorFlow(
     const systemPrompt = getSystemPrompt(input.language);
     
     // The user's entire instruction is sent at once, with the marker instruction appended.
-    const userInstruction = `${input.instruction}\n\nIMPORTANT: When you provide the final code block in your response, you MUST start that part of the message with the exact marker \`<code>\`. The explanation should come before this marker.`;
+    const userInstruction = `${input.instruction}\n\nIMPORTANT: When you provide the final code block in your response, you MUST wrap it with start and end markers. Start the code block with the exact marker \`<code>\` and end it with the exact marker \`</code>\`. The explanation should come before this.`;
 
     // The history is now simple: just the system prompt and the user's instruction.
     const history: EdenAiChatMessage[] = [
@@ -46,17 +46,34 @@ export async function codeGeneratorFlow(
 
     logs.push(...edenLogs);
     
-    const codeMarker = '<code>';
-    const markerIndex = text.indexOf(codeMarker);
+    const startMarker = '<code>';
+    const endMarker = '</code>';
+    
+    const startIndex = text.indexOf(startMarker);
+    const endIndex = text.indexOf(endMarker, startIndex);
 
-    if (markerIndex !== -1) {
-        const explanation = text.substring(0, markerIndex).trim();
-        const code = text.substring(markerIndex + codeMarker.length).trim();
-        logs.push({ 
-            service: 'Cipher', 
-            level: 'info', 
-            message: 'Successfully parsed response using <code> marker.',
-        });
+    if (startIndex !== -1) {
+        const explanation = text.substring(0, startIndex).trim();
+        let code: string;
+        
+        if (endIndex !== -1) {
+            // Both start and end markers found, extract content between them
+            code = text.substring(startIndex + startMarker.length, endIndex).trim();
+            logs.push({ 
+                service: 'Cipher', 
+                level: 'info', 
+                message: 'Successfully parsed response using <code> and </code> markers.',
+            });
+        } else {
+            // Only start marker found, take everything after it (fallback)
+            code = text.substring(startIndex + startMarker.length).trim();
+            logs.push({ 
+                service: 'Cipher', 
+                level: 'warn', 
+                message: 'Found start <code> marker but no end </code> marker. Using fallback parsing.',
+            });
+        }
+        
         return { 
             response: { explanation, code }, 
             logs 
