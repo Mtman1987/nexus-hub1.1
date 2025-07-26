@@ -450,7 +450,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview, o
               <GripVertical />
             </Button>
             <div className='flex-grow flex items-center gap-2'>
-              <ShieldCheck className="w-6 h-6 text-primary" />
+              <ShieldCheck className="w-6 h-6 text-accent" />
               <div>
                 <CardTitle>
                   API Key Vault
@@ -481,7 +481,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview, o
                   onChange={(e) => setPassword(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleUnlock()}
                   disabled={!isLocked || !vaultPassword}
-                  className="bg-primary text-primary-foreground placeholder:text-primary-foreground/70"
+                  className="bg-accent text-accent-foreground placeholder:text-accent-foreground/70"
               />
               <Button onClick={handleUnlock} disabled={!isLocked || !vaultPassword}>
                   <Unlock className="h-4 w-4" />
@@ -525,17 +525,17 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview, o
                         </div>
                     </AccordionTrigger>
                     <AccordionContent className="space-y-4 pt-4 pl-2 border-l-2 border-primary/20">
-                        <div className="space-y-4 p-3 border rounded-md bg-background">
+                        <div className="space-y-4 p-3 border rounded-md bg-primary">
                             <h4 className="font-semibold flex items-center gap-2">{PROVIDER_CONFIG.eden.icon} {PROVIDER_CONFIG.eden.name} (Primary)</h4>
                             <div className="space-y-2">
                                 <Label htmlFor="eden-key">Eden AI API Key</Label>
-                                <Input id="eden-key" type="password" placeholder="Your primary key from Eden AI" value={settings.edenApiKey || ''} onChange={(e) => handleInputChange('edenApiKey', e.target.value)} disabled={isLocked} className="bg-primary text-primary-foreground placeholder:text-primary-foreground/70"/>
+                                <Input id="eden-key" type="password" placeholder="Your primary key from Eden AI" value={settings.edenApiKey || ''} onChange={(e) => handleInputChange('edenApiKey', e.target.value)} disabled={isLocked} className="bg-accent text-accent-foreground placeholder:text-accent-foreground/70"/>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="eden-provider">Provider via Eden</Label>
                                     <Select value={edenProvider} onValueChange={(value) => handleInputChange('edenAiModel', `${value}/${popularModels.eden[value as keyof typeof popularModels.eden][0]}`)} disabled={isLocked}>
-                                        <SelectTrigger className="bg-primary text-primary-foreground"><SelectValue placeholder="Select a provider..." /></SelectTrigger>
+                                        <SelectTrigger className="bg-accent text-accent-foreground"><SelectValue placeholder="Select a provider..." /></SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="openai">OpenAI</SelectItem>
                                             <SelectItem value="google">Google</SelectItem>
@@ -548,7 +548,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview, o
                                 <div className="space-y-2">
                                     <Label htmlFor="eden-model">Model Name via Eden</Label>
                                     <Select value={settings.edenAiModel || ''} onValueChange={(value) => handleInputChange('edenAiModel', value)} disabled={isLocked}>
-                                        <SelectTrigger className="bg-primary text-primary-foreground"><SelectValue placeholder="Select a model..." /></SelectTrigger>
+                                        <SelectTrigger className="bg-accent text-accent-foreground"><SelectValue placeholder="Select a model..." /></SelectTrigger>
                                         <SelectContent>
                                         {edenModelsForProvider.map(model => (
                                             <SelectItem key={model} value={`${edenProvider}/${model}`}>{model}</SelectItem>
@@ -559,17 +559,17 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview, o
                             </div>
                         </div>
                         {(['google', 'openai', 'groq'] as const).map((providerId) => (
-                             <div key={providerId} className="space-y-4 p-3 border rounded-md bg-background">
+                             <div key={providerId} className="space-y-4 p-3 border rounded-md bg-primary">
                                 <h4 className="font-semibold flex items-center gap-2">{PROVIDER_CONFIG[providerId].icon} {PROVIDER_CONFIG[providerId].name} (Fallback)</h4>
                                 <ServiceStatusToggle providerId={providerId} isConfigured={!!settings[`${providerId}ApiKey`]} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
                                 <div className="space-y-2">
                                     <Label htmlFor={`${providerId}-ai-key`}>{`${PROVIDER_CONFIG[providerId].name}`} API Key</Label>
-                                    <Input id={`${providerId}-ai-key`} type="password" placeholder={`Your ${PROVIDER_CONFIG[providerId].name} API Key`} value={settings[`${providerId}ApiKey`] || ''} onChange={(e) => handleInputChange(`${providerId}ApiKey`, e.target.value)} disabled={isLocked} className="bg-primary text-primary-foreground placeholder:text-primary-foreground/70"/>
+                                    <Input id={`${providerId}-ai-key`} type="password" placeholder={`Your ${PROVIDER_CONFIG[providerId].name} API Key`} value={settings[`${providerId}ApiKey`] || ''} onChange={(e) => handleInputChange(`${providerId}ApiKey`, e.target.value)} disabled={isLocked} className="bg-accent text-accent-foreground placeholder:text-accent-foreground/70"/>
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor={`${providerId}-model-name`}>{`${PROVIDER_CONFIG[providerId].name}`} Model Name</Label>
                                     <Select value={settings[`${providerId}ModelName`] || defaultModels[`${providerId}ModelName`]} onValueChange={(value) => handleModelSelect(`${providerId}ModelName`, value)} disabled={isLocked}>
-                                        <SelectTrigger className="bg-primary text-primary-foreground"><SelectValue placeholder="Select a model..." /></SelectTrigger>
+                                        <SelectTrigger className="bg-accent text-accent-foreground"><SelectValue placeholder="Select a model..." /></SelectTrigger>
                                         <SelectContent>
                                             {popularModels[providerId].map(model => (
                                                 <SelectItem key={model} value={model}>{model}</SelectItem>
@@ -587,7 +587,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview, o
                                         value={customModels[`${providerId}ModelName`] || ''}
                                         onChange={(e) => handleCustomModelChange(`${providerId}ModelName`, e.target.value)}
                                         disabled={isLocked}
-                                        className="bg-primary text-primary-foreground placeholder:text-primary-foreground/70"
+                                        className="bg-accent text-accent-foreground placeholder:text-accent-foreground/70"
                                     />
                                 </div>
                                 )}
@@ -603,35 +603,35 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview, o
                         </div>
                     </AccordionTrigger>
                     <AccordionContent className="space-y-4 pt-4 pl-2 border-l-2 border-primary/20">
-                        <div className="space-y-4 p-3 border rounded-md bg-background">
+                        <div className="space-y-4 p-3 border rounded-md bg-primary">
                            <p className="text-sm text-muted-foreground">These settings are required for the "Shared Bot Store" feature. You can find them in your Firebase project settings.</p>
                             <div className="space-y-2">
                                 <Label htmlFor="firebaseApiKey">API Key</Label>
-                                <Input id="firebaseApiKey" type="password" placeholder="Firebase Web API Key" value={settings.firebaseApiKey || ''} onChange={(e) => handleInputChange('firebaseApiKey', e.target.value)} disabled={isLocked} className="bg-primary text-primary-foreground placeholder:text-primary-foreground/70"/>
+                                <Input id="firebaseApiKey" type="password" placeholder="Firebase Web API Key" value={settings.firebaseApiKey || ''} onChange={(e) => handleInputChange('firebaseApiKey', e.target.value)} disabled={isLocked} className="bg-accent text-accent-foreground placeholder:text-accent-foreground/70"/>
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="firebaseAuthDomain">Auth Domain</Label>
-                                <Input id="firebaseAuthDomain" type="text" placeholder="your-project.firebaseapp.com" value={settings.firebaseAuthDomain || ''} onChange={(e) => handleInputChange('firebaseAuthDomain', e.target.value)} disabled={isLocked} className="bg-primary text-primary-foreground placeholder:text-primary-foreground/70"/>
+                                <Input id="firebaseAuthDomain" type="text" placeholder="your-project.firebaseapp.com" value={settings.firebaseAuthDomain || ''} onChange={(e) => handleInputChange('firebaseAuthDomain', e.target.value)} disabled={isLocked} className="bg-accent text-accent-foreground placeholder:text-accent-foreground/70"/>
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="firebaseProjectId">Project ID</Label>
-                                <Input id="firebaseProjectId" type="text" placeholder="your-project-id" value={settings.firebaseProjectId || ''} onChange={(e) => handleInputChange('firebaseProjectId', e.target.value)} disabled={isLocked} className="bg-primary text-primary-foreground placeholder:text-primary-foreground/70"/>
+                                <Input id="firebaseProjectId" type="text" placeholder="your-project-id" value={settings.firebaseProjectId || ''} onChange={(e) => handleInputChange('firebaseProjectId', e.target.value)} disabled={isLocked} className="bg-accent text-accent-foreground placeholder:text-accent-foreground/70"/>
                             </div>
                              <div className="space-y-2">
                                 <Label htmlFor="firebaseStorageBucket">Storage Bucket</Label>
-                                <Input id="firebaseStorageBucket" type="text" placeholder="your-project.appspot.com" value={settings.firebaseStorageBucket || ''} onChange={(e) => handleInputChange('firebaseStorageBucket', e.target.value)} disabled={isLocked} className="bg-primary text-primary-foreground placeholder:text-primary-foreground/70"/>
+                                <Input id="firebaseStorageBucket" type="text" placeholder="your-project.appspot.com" value={settings.firebaseStorageBucket || ''} onChange={(e) => handleInputChange('firebaseStorageBucket', e.target.value)} disabled={isLocked} className="bg-accent text-accent-foreground placeholder:text-accent-foreground/70"/>
                             </div>
                              <div className="space-y-2">
                                 <Label htmlFor="firebaseMessagingSenderId">Messaging Sender ID</Label>
-                                <Input id="firebaseMessagingSenderId" type="text" placeholder="1234567890" value={settings.firebaseMessagingSenderId || ''} onChange={(e) => handleInputChange('firebaseMessagingSenderId', e.target.value)} disabled={isLocked} className="bg-primary text-primary-foreground placeholder:text-primary-foreground/70"/>
+                                <Input id="firebaseMessagingSenderId" type="text" placeholder="1234567890" value={settings.firebaseMessagingSenderId || ''} onChange={(e) => handleInputChange('firebaseMessagingSenderId', e.target.value)} disabled={isLocked} className="bg-accent text-accent-foreground placeholder:text-accent-foreground/70"/>
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="firebaseAppId">App ID</Label>
-                                <Input id="firebaseAppId" type="text" placeholder="1:12345:web:67890" value={settings.firebaseAppId || ''} onChange={(e) => handleInputChange('firebaseAppId', e.target.value)} disabled={isLocked} className="bg-primary text-primary-foreground placeholder:text-primary-foreground/70"/>
+                                <Input id="firebaseAppId" type="text" placeholder="1:12345:web:67890" value={settings.firebaseAppId || ''} onChange={(e) => handleInputChange('firebaseAppId', e.target.value)} disabled={isLocked} className="bg-accent text-accent-foreground placeholder:text-accent-foreground/70"/>
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="firebaseMeasurementId">Measurement ID</Label>
-                                <Input id="firebaseMeasurementId" type="text" placeholder="G-XXXXXXXXXX" value={settings.firebaseMeasurementId || ''} onChange={(e) => handleInputChange('firebaseMeasurementId', e.target.value)} disabled={isLocked} className="bg-primary text-primary-foreground placeholder:text-primary-foreground/70"/>
+                                <Input id="firebaseMeasurementId" type="text" placeholder="G-XXXXXXXXXX" value={settings.firebaseMeasurementId || ''} onChange={(e) => handleInputChange('firebaseMeasurementId', e.target.value)} disabled={isLocked} className="bg-accent text-accent-foreground placeholder:text-accent-foreground/70"/>
                             </div>
                         </div>
                     </AccordionContent>
@@ -644,42 +644,42 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview, o
                         </div>
                     </AccordionTrigger>
                     <AccordionContent className="space-y-4 pt-4 pl-2 border-l-2 border-primary/20">
-                        <div className="space-y-4 p-3 border rounded-md bg-background">
+                        <div className="space-y-4 p-3 border rounded-md bg-primary">
                            <h4 className="font-semibold flex items-center gap-2"><Bot className="h-5 w-5 text-accent"/> Discord</h4>
                            <ServiceStatusToggle providerId="discord" isConfigured={!!settings.discordWebhook || !!settings.discordToken} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
                            <div className="space-y-2">
                                 <Label htmlFor="discord-token">Discord Bot Token (For Python Bot)</Label>
-                                <Input id="discord-token" type="password" placeholder="Needed to run the separate Python bot" value={settings.discordToken || ''} onChange={(e) => handleInputChange('discordToken', e.target.value)} disabled={isLocked} className="bg-primary text-primary-foreground placeholder:text-primary-foreground/70"/>
+                                <Input id="discord-token" type="password" placeholder="Needed to run the separate Python bot" value={settings.discordToken || ''} onChange={(e) => handleInputChange('discordToken', e.target.value)} disabled={isLocked} className="bg-accent text-accent-foreground placeholder:text-accent-foreground/70"/>
                            </div>
                            <div className="space-y-2">
                                 <Label htmlFor="discord-webhook">Discord Webhook URL (For App to Send)</Label>
-                                <Input id="discord-webhook" type="password" placeholder="For sending messages from this app to Discord" value={settings.discordWebhook || ''} onChange={(e) => handleInputChange('discordWebhook', e.target.value)} disabled={isLocked} className="bg-primary text-primary-foreground placeholder:text-primary-foreground/70"/>
+                                <Input id="discord-webhook" type="password" placeholder="For sending messages from this app to Discord" value={settings.discordWebhook || ''} onChange={(e) => handleInputChange('discordWebhook', e.target.value)} disabled={isLocked} className="bg-accent text-accent-foreground placeholder:text-accent-foreground/70"/>
                            </div>
                         </div>
-                        <div className="space-y-4 p-3 border rounded-md bg-background">
+                        <div className="space-y-4 p-3 border rounded-md bg-primary">
                            <h4 className="font-semibold flex items-center gap-2"><Bot className="h-5 w-5 text-accent"/> Twitch</h4>
                            <ServiceStatusToggle providerId="twitch" isConfigured={!!settings.twitchToken} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
                             <div className="space-y-2">
                                 <Label htmlFor="twitch-token">Twitch Bot Token (Optional)</Label>
-                                <Input id="twitch-token" type="password" placeholder="For direct Twitch bot actions" value={settings.twitchToken || ''} onChange={(e) => handleInputChange('twitchToken', e.target.value)} disabled={isLocked} className="bg-primary text-primary-foreground placeholder:text-primary-foreground/70"/>
+                                <Input id="twitch-token" type="password" placeholder="For direct Twitch bot actions" value={settings.twitchToken || ''} onChange={(e) => handleInputChange('twitchToken', e.target.value)} disabled={isLocked} className="bg-accent text-accent-foreground placeholder:text-accent-foreground/70"/>
                             </div>
                         </div>
-                        <div className="space-y-4 p-3 border rounded-md bg-background">
+                        <div className="space-y-4 p-3 border rounded-md bg-primary">
                            <h4 className="font-semibold flex items-center gap-2"><Radio className="h-5 w-5 text-accent"/> Streamer.bot</h4>
                            <ServiceStatusToggle providerId="streamerbot" isConfigured={true} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="streamerbot-address">Server Address</Label>
-                                    <Input id="streamerbot-address" type="text" placeholder="127.0.0.1" value={settings.streamerbotServerAddress || ''} onChange={(e) => handleInputChange('streamerbotServerAddress', e.target.value)} disabled={isLocked} className="bg-primary text-primary-foreground placeholder:text-primary-foreground/70"/>
+                                    <Input id="streamerbot-address" type="text" placeholder="127.0.0.1" value={settings.streamerbotServerAddress || ''} onChange={(e) => handleInputChange('streamerbotServerAddress', e.target.value)} disabled={isLocked} className="bg-accent text-accent-foreground placeholder:text-accent-foreground/70"/>
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="streamerbot-port">Server Port</Label>
-                                    <Input id="streamerbot-port" type="text" placeholder="9003" value={settings.streamerbotServerPort || ''} onChange={(e) => handleInputChange('streamerbotServerPort', e.target.value)} disabled={isLocked} className="bg-primary text-primary-foreground placeholder:text-primary-foreground/70"/>
+                                    <Input id="streamerbot-port" type="text" placeholder="9003" value={settings.streamerbotServerPort || ''} onChange={(e) => handleInputChange('streamerbotServerPort', e.target.value)} disabled={isLocked} className="bg-accent text-accent-foreground placeholder:text-accent-foreground/70"/>
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="streamerbot-webhook-url">Streamer.bot Webhook URL (for events)</Label>
-                                <Input id="streamerbot-webhook-url" type="text" value={settings.streamerbotWebhookUrl || ''} onChange={(e) => handleInputChange('streamerbotWebhookUrl', e.target.value)} disabled={isLocked} className="bg-primary text-primary-foreground placeholder:text-primary-foreground/70"/>
+                                <Input id="streamerbot-webhook-url" type="text" value={settings.streamerbotWebhookUrl || ''} onChange={(e) => handleInputChange('streamerbotWebhookUrl', e.target.value)} disabled={isLocked} className="bg-accent text-accent-foreground placeholder:text-accent-foreground/70"/>
                             </div>
                         </div>
                     </AccordionContent>
@@ -692,12 +692,12 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview, o
                         </div>
                     </AccordionTrigger>
                     <AccordionContent className="space-y-4 pt-4 pl-2 border-l-2 border-primary/20">
-                        <div className="space-y-4 p-3 border rounded-md bg-background">
+                        <div className="space-y-4 p-3 border rounded-md bg-primary">
                             <h4 className="font-semibold">Provider Selection</h4>
                             <div className="space-y-2">
                                 <Label htmlFor="tts-provider">Text-to-Speech Provider</Label>
                                 <Select value={settings.ttsProvider || 'google'} onValueChange={(value) => handleInputChange('ttsProvider', value)} disabled={isLocked}>
-                                    <SelectTrigger className="bg-primary text-primary-foreground"><SelectValue placeholder="Select a provider..." /></SelectTrigger>
+                                    <SelectTrigger className="bg-accent text-accent-foreground"><SelectValue placeholder="Select a provider..." /></SelectTrigger>
                                     <SelectContent>
                                         {serviceProviders.tts.map(p => <SelectItem key={p} value={p} className="capitalize">{p}</SelectItem>)}
                                     </SelectContent>
@@ -706,7 +706,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview, o
                             <div className="space-y-2">
                                 <Label htmlFor="stt-provider">Speech-to-Text Provider</Label>
                                 <Select value={settings.sttProvider || 'openai'} onValueChange={(value) => handleInputChange('sttProvider', value)} disabled={isLocked}>
-                                    <SelectTrigger className="bg-primary text-primary-foreground"><SelectValue placeholder="Select a provider..." /></SelectTrigger>
+                                    <SelectTrigger className="bg-accent text-accent-foreground"><SelectValue placeholder="Select a provider..." /></SelectTrigger>
                                     <SelectContent>
                                         {serviceProviders.stt.map(p => <SelectItem key={p} value={p} className="capitalize">{p}</SelectItem>)}
                                     </SelectContent>
@@ -715,7 +715,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview, o
                             <div className="space-y-2">
                                 <Label htmlFor="translation-provider">Translation Provider</Label>
                                 <Select value={settings.translationProvider || 'google'} onValueChange={(value) => handleInputChange('translationProvider', value)} disabled={isLocked}>
-                                    <SelectTrigger className="bg-primary text-primary-foreground"><SelectValue placeholder="Select a provider..." /></SelectTrigger>
+                                    <SelectTrigger className="bg-accent text-accent-foreground"><SelectValue placeholder="Select a provider..." /></SelectTrigger>
                                     <SelectContent>
                                         {serviceProviders.translation.map(p => <SelectItem key={p} value={p} className="capitalize">{p}</SelectItem>)}
                                     </SelectContent>
@@ -732,7 +732,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview, o
                         </div>
                     </AccordionTrigger>
                     <AccordionContent className="space-y-4 pt-4 pl-2 border-l-2 border-primary/20">
-                        <div className="space-y-4 p-3 border rounded-md bg-background">
+                        <div className="space-y-4 p-3 border rounded-md bg-primary">
                            <h4 className="font-semibold flex items-center gap-2"><Server className="h-5 w-5 text-accent"/> Remote Access</h4>
                            <div className="space-y-2">
                                <Label htmlFor="remote-hub-address">Remote Hub Address</Label>
@@ -743,7 +743,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview, o
                                    value={settings.remoteHubAddress || ''} 
                                    onChange={(e) => handleInputChange('remoteHubAddress', e.target.value)} 
                                    disabled={isLocked}
-                                   className="bg-primary text-primary-foreground placeholder:text-primary-foreground/70"
+                                   className="bg-accent text-accent-foreground placeholder:text-accent-foreground/70"
                                />
                                <p className="text-xs text-muted-foreground">Enter your public tunneling URL (like ngrok) to control your local hub from this deployed UI.</p>
                            </div>
@@ -757,7 +757,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview, o
                                     value={settings.remoteAccessSecret || ''} 
                                     onChange={(e) => handleInputChange('remoteAccessSecret', e.target.value)} 
                                     disabled={isLocked}
-                                    className="bg-primary text-primary-foreground placeholder:text-primary-foreground/70"
+                                    className="bg-accent text-accent-foreground placeholder:text-accent-foreground/70"
                                     />
                                     <Button type="button" variant="outline" size="icon" onClick={generateSecretKey} aria-label="Generate new secret key" disabled={isLocked}>
                                         <RefreshCw className="h-4 w-4"/>
@@ -768,13 +768,13 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview, o
                                 </p>
                            </div>
                         </div>
-                        <div className="space-y-4 p-3 border rounded-md bg-background">
+                        <div className="space-y-4 p-3 border rounded-md bg-primary">
                             <h4 className="font-semibold flex items-center gap-2"><Link className="h-5 w-5 text-accent"/> Nexus Connect</h4>
                              <ServiceStatusToggle providerId="nexusconnect" isConfigured={true} providerStatus={providerStatus} onStatusChange={handleStatusChange} isLocked={isLocked}/>
                             <div className="space-y-2">
                                 <Label htmlFor="nexus-webhook-url">Your Inbound Webhook URL (Share this)</Label>
                                 <div className="flex items-center gap-2">
-                                    <Input id="nexus-webhook-url" type="text" value={settings.nexusConnectWebhookUrl || ''} readOnly disabled={isLocked} className="bg-primary text-primary-foreground placeholder:text-primary-foreground/70"/>
+                                    <Input id="nexus-webhook-url" type="text" value={settings.nexusConnectWebhookUrl || ''} readOnly disabled={isLocked} className="bg-accent text-accent-foreground placeholder:text-accent-foreground/70"/>
                                     <Button type="button" variant="outline" size="icon" onClick={() => copyToClipboard(settings.nexusConnectWebhookUrl || '')} disabled={isLocked}><Copy className="h-4 w-4"/></Button>
                                 </div>
                             </div>
@@ -789,7 +789,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview, o
                                                 value={conn}
                                                 onChange={(e) => handleConnectionChange(index, e.target.value)}
                                                 disabled={isLocked}
-                                                className="bg-primary text-primary-foreground placeholder:text-primary-foreground/70"
+                                                className="bg-accent text-accent-foreground placeholder:text-accent-foreground/70"
                                             />
                                             <Button type="button" variant="destructive" size="icon" onClick={() => handleRemoveConnection(index)} disabled={isLocked}><Trash2 className="h-4 w-4"/></Button>
                                         </div>
