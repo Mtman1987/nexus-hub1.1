@@ -312,11 +312,11 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
 
 
   const targetOptions = [
-    { id: 'AI Bot', icon: <Bot className="h-4 w-4" /> },
-    { id: 'Discord', icon: <DiscordLogo className="h-4 w-4" /> },
-    { id: 'Twitch', icon: <Twitch className="h-4 w-4" /> },
-    { id: 'Streamer.bot', icon: <Radio className="h-4 w-4" /> },
-    { id: 'Website', icon: <Globe className="h-4 w-4" /> },
+    { id: 'AI Bot', icon: <Bot className="h-4 w-4 text-primary" /> },
+    { id: 'Discord', icon: <DiscordLogo className="h-4 w-4 text-primary" /> },
+    { id: 'Twitch', icon: <Twitch className="h-4 w-4 text-primary" /> },
+    { id: 'Streamer.bot', icon: <Radio className="h-4 w-4 text-primary" /> },
+    { id: 'Website', icon: <Globe className="h-4 w-4 text-primary" /> },
   ];
 
   const handleNexusTargetSelect = (url: string) => {
@@ -332,7 +332,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
       <CardHeader>
         <div className="flex justify-between items-start">
              <div className="flex items-center gap-2 flex-grow">
-               <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto text-accent">
+               <Button variant="ghost" size="icon" {...dragHandleProps} className="cursor-grab p-1 h-auto w-auto text-secondary">
                 <GripVertical />
               </Button>
               <div className="flex-grow">
@@ -356,7 +356,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
         </div>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col gap-4 overflow-hidden">
-        <ScrollArea className="flex-grow bg-card rounded-lg p-4 border" ref={scrollAreaRef}>
+        <ScrollArea className="flex-grow p-4" ref={scrollAreaRef}>
           <div className="space-y-4">
             {messages.length === 0 ? (
               <p className="text-sm text-center text-muted-foreground py-8">Chat history will be displayed here.</p>
@@ -466,7 +466,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
                                     }}
                                 />
                                 <Label htmlFor="nexus-connect-trigger" className="flex items-center gap-1.5 cursor-pointer">
-                                    <Link className="h-4 w-4" />
+                                    <Link className="h-4 w-4 text-primary" />
                                     Nexus Connect {selectedNexusTargets.length > 0 && `(${selectedNexusTargets.length})`}
                                 </Label>
                             </div>
@@ -503,5 +503,3 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
 });
 
 UnifiedChat.displayName = 'UnifiedChat';
-
-    
