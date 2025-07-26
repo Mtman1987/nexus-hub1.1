@@ -450,7 +450,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview, o
               <GripVertical />
             </Button>
             <div className='flex-grow flex items-center gap-2'>
-              <ShieldCheck className="w-6 h-6 text-accent" />
+              <ShieldCheck className="w-6 h-6 text-primary" />
               <div>
                 <CardTitle>
                   API Key Vault
