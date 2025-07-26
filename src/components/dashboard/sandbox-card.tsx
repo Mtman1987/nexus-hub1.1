@@ -15,6 +15,7 @@ import { getCodeGeneration } from '@/services/ai';
 import type { CodeGeneratorInput } from '@/ai/types';
 import { cn } from '@/lib/utils';
 import { useLogs } from '@/context/LogContext';
+import { Input } from '../ui/input';
 
 type Message = {
     sender: 'user' | 'ai';
@@ -32,8 +33,10 @@ interface SandboxCardProps {
 export function SandboxCard({ onPopOut, isPoppedOut = false, onHide, dragHandleProps, isPreview }: SandboxCardProps) {
     const [instruction, setInstruction] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
     const [generatedCode, setGeneratedCode] = useState<string | null>(null);
     const [messages, setMessages] = useState<Message[]>([]);
+    const [fileName, setFileName] = useState('');
     const { toast } = useToast();
     const { addLog } = useLogs();
     const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -108,37 +111,38 @@ export function SandboxCard({ onPopOut, isPoppedOut = false, onHide, dragHandleP
 
     const handleSave = async () => {
         if (!generatedCode) {
-            toast({
-                title: 'Nothing to Save',
-                description: 'Please generate some code first.',
-                variant: 'destructive'
-            });
+            toast({ title: 'Nothing to Save', description: 'Please generate some code first.', variant: 'destructive' });
             return;
         }
-        setIsLoading(true);
+        if (!fileName.trim()) {
+            toast({ title: 'File Name Required', description: 'Please enter a file name.', variant: 'destructive' });
+            return;
+        }
+
+        const finalFileName = fileName.endsWith('.tsx') ? fileName : `${fileName}.tsx`;
+        
+        setIsSaving(true);
         try {
             const result = await saveToSandbox({
                 code: generatedCode,
-                filePath: 'src/components/sandbox/generated-card.tsx'
+                filePath: `src/components/sandbox/finished_code/${finalFileName}`
             });
 
             if (result.success) {
                 toast({
-                    title: 'Code Saved to Sandbox',
-                    description: 'Your code has been written to the sandbox file. A page refresh may be needed to see changes.',
+                    title: 'Code Saved',
+                    description: `Saved to finished_code/${finalFileName}`,
                 });
+                addLog({service: 'Sandbox', level: 'info', message: 'Successfully saved component to finished code folder.'})
             } else {
                 throw new Error(result.message);
             }
         } catch (error) {
             const err = error as Error;
-            toast({
-                title: 'Save Failed',
-                description: err.message,
-                variant: 'destructive'
-            });
+            toast({ title: 'Save Failed', description: err.message, variant: 'destructive' });
+            addLog({service: 'Sandbox', level: 'error', message: 'Failed to save component.', details: err.stack});
         } finally {
-            setIsLoading(false);
+            setIsSaving(false);
         }
     };
 
@@ -236,9 +240,6 @@ export function SandboxCard({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                             <Button variant="ghost" size="icon" className="h-7 w-7" onClick={copyToClipboard}>
                                 <Copy className="h-4 w-4" />
                             </Button>
-                             <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleSave} disabled={isLoading}>
-                                {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                            </Button>
                         </div>
                         <ScrollArea className="flex-grow mt-2">
                             <pre className="bg-muted p-4 rounded-lg overflow-x-auto text-xs h-full">
@@ -247,6 +248,17 @@ export function SandboxCard({ onPopOut, isPoppedOut = false, onHide, dragHandleP
                                 </code>
                             </pre>
                         </ScrollArea>
+                        <div className="flex items-center gap-2 mt-4">
+                            <Input 
+                                placeholder="component-name.tsx" 
+                                value={fileName}
+                                onChange={e => setFileName(e.target.value)}
+                            />
+                            <Button onClick={handleSave} disabled={isSaving}>
+                                {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4" />}
+                                Save to Finished Code
+                            </Button>
+                        </div>
                     </div>
                 )}
             </CardContent>
