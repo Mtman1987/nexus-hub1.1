@@ -1,4 +1,3 @@
-
 import { LogViewer } from '@/components/dashboard/log-viewer';
 import { ApiSettings } from '@/components/dashboard/api-settings';
 import { UnifiedChat } from '@/components/dashboard/unified-chat';
@@ -18,7 +17,6 @@ import { CodeHelper } from '@/components/dashboard/code-helper';
 import { VideoGenerator } from '@/components/dashboard/video-generator';
 import { CustomModule } from '@/components/dashboard/custom-module';
 import { SandboxCard } from '@/components/dashboard/sandbox-card';
-import { CommandCenterControl } from '@/components/dashboard/command-center-control';
 import { ModuleLoader } from '@/components/dashboard/module-loader';
 
 import {

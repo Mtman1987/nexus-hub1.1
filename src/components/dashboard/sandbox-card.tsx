@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
@@ -73,8 +72,8 @@ export function SandboxCard({ onPopOut, isPoppedOut = false, onHide, dragHandleP
             }));
 
             const input: CodeGeneratorInput = {
-                instruction,
-                language: 'TypeScript', // Or make this selectable
+                instruction: `${instruction}. The component should get all its functionality from pre-existing shadcn components and not create new ones. Do not use any client side hooks, and there should only be one root JSX element for the component.`,
+                language: 'TypeScript',
                 config,
                 history,
             };

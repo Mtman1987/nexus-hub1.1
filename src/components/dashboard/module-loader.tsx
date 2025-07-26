@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo } from 'react';
@@ -49,7 +48,7 @@ export function ModuleLoader({ onPopOut, isPoppedOut = false, onHide, dragHandle
 
     const LoadedComponent = useMemo(() => {
         if (!selectedComponent) return null;
-        return dynamic(() => import(`@/components/sandbox/finished_code/${selectedComponent}`), {
+        return dynamic(() => import(`@/components/sandbox/finished_code/${selectedComponent.replace('.tsx', '')}`), {
             loading: () => <div className="flex items-center justify-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>,
             ssr: false,
         });
