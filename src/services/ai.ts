@@ -19,6 +19,7 @@ import { speechToTextFlow } from '@/ai/flows/speech-to-text-flow';
 import { ttsFlow } from '@/ai/flows/tts-flow';
 import { codeGeneratorFlow } from '@/ai/flows/code-generator-flow';
 import { videoGeneratorFlow } from '@/ai/flows/video-generator-flow';
+import { getSandboxComponents as getSandboxComponentsFlow } from '@/ai/flows/get-sandbox-components-flow';
 
 
 import type { FlowLog, SetupAssistantInput, SetupAssistantOutput, UnifiedChatInput, UnifiedChatOutput } from '@/ai/types';
@@ -32,6 +33,7 @@ import type { ResumeParserInput, ResumeParserOutput } from '@/ai/types';
 import type { TranslationInput, TranslationOutput, SpeechToTextInput, SpeechToTextOutput } from '@/ai/types';
 import type { CodeGeneratorInput, CodeGeneratorOutput } from '@/ai/types';
 import type { VideoGeneratorInput, VideoGeneratorOutput } from '@/ai/types';
+import { GetSandboxComponentsOutput } from '@/ai/flows/get-sandbox-components-flow';
 
 
 /**
@@ -124,4 +126,11 @@ export async function getTranscription(input: SpeechToTextInput): Promise<{respo
  */
 export async function generateVideo(input: VideoGeneratorInput): Promise<VideoGeneratorOutput> {
     return videoGeneratorFlow(input);
+}
+
+/**
+ * Service function to get the list of available sandbox components.
+ */
+export async function getSandboxComponents(): Promise<GetSandboxComponentsOutput> {
+    return getSandboxComponentsFlow();
 }

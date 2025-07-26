@@ -27,6 +27,8 @@ import { LogProvider } from '@/context/LogContext';
 import { BotNameProvider } from '@/context/BotNameContext';
 import { SidebarProvider } from '@/context/SidebarContext';
 import { AudioTranscription } from '@/components/dashboard/audio-transcription';
+import { SandboxCard } from '@/components/dashboard/sandbox-card';
+import { ModuleLoader } from '@/components/dashboard/module-loader';
 
 const moduleMap: { [key: string]: React.ComponentType<any> } = {
   logViewer: LogViewer,
@@ -45,6 +47,8 @@ const moduleMap: { [key: string]: React.ComponentType<any> } = {
   resumeParser: ResumeParser,
   translator: Translator,
   codeHelper: CodeHelper,
+  sandboxCard: SandboxCard,
+  moduleLoader: ModuleLoader,
   customModule: CustomModule,
   audioTranscription: AudioTranscription,
 };
