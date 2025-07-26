@@ -328,7 +328,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
   const isNexusConnectChecked = form.watch('targets').includes('Nexus Connect');
 
   return (
-    <Card className="flex flex-col h-full">
+    <Card className="flex flex-col h-full bg-card">
       <CardHeader>
         <div className="flex justify-between items-start">
              <div className="flex items-center gap-2 flex-grow">
@@ -336,7 +336,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
                 <GripVertical />
               </Button>
               <div className="flex-grow">
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-title-foreground">
                   <MessageSquare className="h-6 w-6 text-primary" />
                   Unified Chat
                 </CardTitle>
@@ -347,7 +347,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
             </div>
              <div className="flex items-center">
               {!isPoppedOut && onHide && (
-                <Button variant="ghost" size="icon" onClick={onHide}>
+                <Button variant="ghost" size="icon" onClick={onHide} className="text-destructive">
                   <EyeOff className="h-4 w-4" />
                 </Button>
               )}
@@ -356,7 +356,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
         </div>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col gap-4 overflow-hidden">
-        <ScrollArea className="flex-grow bg-muted/20 rounded-lg p-4" ref={scrollAreaRef}>
+        <ScrollArea className="flex-grow bg-background rounded-lg p-4 border" ref={scrollAreaRef}>
           <div className="space-y-4">
             {messages.length === 0 ? (
               <p className="text-sm text-center text-muted-foreground py-8">Chat history will be displayed here.</p>
@@ -364,18 +364,18 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
               messages.map((msg) => (
                 <div key={msg.id} className={`group flex items-start gap-3 ${msg.sender === 'user' ? 'justify-end' : ''}`}>
                   {msg.sender === 'ai' && (
-                    <div className="flex flex-col gap-1 items-center">
+                    <div className="flex flex-col gap-1 items-center text-primary">
                         <Bot className="h-6 w-6" />
                         {loadingAudio === msg.id ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
-                           <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handlePlayAudio(msg.id, msg.text)}>
+                           <Button variant="ghost" size="icon" className="h-6 w-6 text-primary" onClick={() => handlePlayAudio(msg.id, msg.text)}>
                              <Play className="h-4 w-4"/>
                            </Button>
                         )}
                     </div>
                   )}
-                  <div className={`relative rounded-lg p-3 text-sm max-w-md ${msg.sender === 'user' ? 'bg-primary text-primary-foreground' : 'bg-secondary'}`}>
+                  <div className={`relative rounded-lg p-3 text-sm max-w-md ${msg.sender === 'user' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'}`}>
                     <Button variant="ghost" size="icon" className="absolute -top-2 -left-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity bg-background/50 hover:bg-background" onClick={() => handleSaveMessage(msg)}>
                        <Save className="h-3 w-3" />
                     </Button>
@@ -503,3 +503,4 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
 });
 
 UnifiedChat.displayName = 'UnifiedChat';
+
