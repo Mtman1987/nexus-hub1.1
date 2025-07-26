@@ -356,7 +356,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
         </div>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col gap-4 overflow-hidden">
-        <ScrollArea className="flex-grow bg-background rounded-lg p-4 border" ref={scrollAreaRef}>
+        <ScrollArea className="flex-grow bg-card rounded-lg p-4 border" ref={scrollAreaRef}>
           <div className="space-y-4">
             {messages.length === 0 ? (
               <p className="text-sm text-center text-muted-foreground py-8">Chat history will be displayed here.</p>
@@ -406,7 +406,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
                     <FormItem>
                     <FormControl>
                         <div className="flex items-center gap-2">
-                        <Input ref={ref} placeholder="Type your message..." className="flex-grow" {...field} />
+                        <Input ref={ref} placeholder="Type your message..." className="flex-grow bg-accent text-accent-foreground placeholder:text-accent-foreground/70" {...field} />
                         <Button
                             type="submit"
                             disabled={loading}
