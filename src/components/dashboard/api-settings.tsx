@@ -520,7 +520,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview, o
                 <AccordionItem value="ai-providers">
                     <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                         <div className="flex items-center gap-2">
-                            <Cpu className="h-5 w-5 text-accent"/>
+                            <Cpu className="h-5 w-5 text-primary"/>
                             AI Providers
                         </div>
                     </AccordionTrigger>
@@ -598,7 +598,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview, o
                  <AccordionItem value="firebase-config">
                     <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                         <div className="flex items-center gap-2">
-                            <Database className="h-5 w-5 text-accent"/>
+                            <Database className="h-5 w-5 text-primary"/>
                             Firebase Configuration
                         </div>
                     </AccordionTrigger>
@@ -639,7 +639,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview, o
                 <AccordionItem value="service-integrations">
                     <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                         <div className="flex items-center gap-2">
-                            <Share2 className="h-5 w-5 text-accent"/>
+                            <Share2 className="h-5 w-5 text-primary"/>
                             Service Integrations
                         </div>
                     </AccordionTrigger>
@@ -687,7 +687,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview, o
                 <AccordionItem value="audio-language">
                     <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                         <div className="flex items-center gap-2">
-                            <AudioLines className="h-5 w-5 text-accent"/>
+                            <AudioLines className="h-5 w-5 text-primary"/>
                             Audio & Language
                         </div>
                     </AccordionTrigger>
@@ -727,7 +727,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview, o
                  <AccordionItem value="connectivity">
                     <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                         <div className="flex items-center gap-2">
-                           <Link className="h-5 w-5 text-accent"/>
+                           <Link className="h-5 w-5 text-primary"/>
                             Connectivity
                         </div>
                     </AccordionTrigger>
