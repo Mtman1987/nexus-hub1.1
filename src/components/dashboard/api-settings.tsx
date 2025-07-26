@@ -442,7 +442,7 @@ export function ApiSettings({ isPoppedOut = false, dragHandleProps, isPreview, o
 
 
   return (
-    <Card className="flex flex-col h-full bg-card">
+    <Card className="flex flex-col h-full bg-secondary/20">
       <CardHeader>
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-2 flex-grow">
