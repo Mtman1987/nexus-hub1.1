@@ -356,7 +356,7 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
         </div>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col gap-4 overflow-hidden">
-        <ScrollArea className="flex-grow p-4" ref={scrollAreaRef}>
+        <ScrollArea className="flex-grow rounded-lg bg-primary/20 p-4" ref={scrollAreaRef}>
           <div className="space-y-4">
             {messages.length === 0 ? (
               <p className="text-sm text-center text-muted-foreground py-8">Chat history will be displayed here.</p>
@@ -503,3 +503,5 @@ export const UnifiedChat = forwardRef<HTMLInputElement, UnifiedChatProps>(({ onP
 });
 
 UnifiedChat.displayName = 'UnifiedChat';
+
+    
